@@ -1,7 +1,9 @@
 from flask import Flask, request, jsonify
 from services.user_service import UserService
+from repositories.json_user_repository import JsonUserRepository
 
 app = Flask(__name__)
+
 
 user_service = UserService(JsonUserRepository())
 
