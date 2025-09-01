@@ -42,7 +42,7 @@ class UserService:
             email=data["email"],
             address=data["address"],
             password=data["password"],
-            gender=data["gender"]   # ✅ เก็บเพศ
+            gender=data["gender"]   
         )
 
         # อัปเดต list ในเมมโมรี + บันทึกลงไฟล์

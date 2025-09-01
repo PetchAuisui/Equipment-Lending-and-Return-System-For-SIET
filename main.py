@@ -1,6 +1,6 @@
 from flask import Flask, request, jsonify
 from services.user_service import UserService
-from services.auth_service import AuthService  
+from services.auth_service import AuthService
 from repositories.json_user_repository import JsonUserRepository
 
 app = Flask(__name__)

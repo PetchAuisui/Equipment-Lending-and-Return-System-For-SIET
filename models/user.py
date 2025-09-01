@@ -16,13 +16,13 @@ class User:
             "id": self.id,
             "name": self.name,
             "id_card": self.id_card,
+            "gender": self.gender,
             "major": self.major,
             "member_type": self.member_type,
             "phone": self.phone,
             "email": self.email,
             "address": self.address,
-            "password": self.password,
-            "gender": self.gender
+            "password": self.password       
         }
 
     @staticmethod
