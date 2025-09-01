@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 
+
 class BaseUserRepository(ABC):
     @abstractmethod
     def load_users(self):

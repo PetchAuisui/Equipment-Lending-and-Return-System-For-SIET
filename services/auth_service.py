@@ -14,4 +14,4 @@ class AuthService:
 
         data = user.to_dict()
         data.pop("password", None)   # ไม่ส่งรหัสกลับ
-        return {"message": "Login successful", "user": data}, 200
+        return {"message": "Login successful"}, 200
