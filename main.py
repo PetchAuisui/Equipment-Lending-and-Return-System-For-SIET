@@ -9,7 +9,7 @@ def home():
 
 @app.route("/teacher")
 def home():
-    return "Hello, Project Teacher!"
+    return "Hello, Project!"
 
 
 if __name__ == "__main__":
