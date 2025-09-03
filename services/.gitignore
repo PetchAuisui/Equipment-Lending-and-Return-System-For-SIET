@@ -1,0 +1,12 @@
+# Python cache
+__pycache__/
+*.pyc
+
+# Database / JSON files
+*.json
+
+# Environment / settings
+.env
+
+# VSCode settings
+.vscode/
