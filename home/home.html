@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <title>Home Page</title>
+    <!-- CSS ของหน้า -->
+    <link rel="stylesheet" href="home.css">
+</head>
+<body>
+    <!-- Navbar -->
+    <div id="navbar"></div> 
+    <!-- JS -->
+    <script>
+        // โหลด Navbar
+        fetch("/navbar/navbar.html")
+            .then(r => r.text())
+            .then(html => {
+                document.getElementById("navbar").innerHTML = html;
+                let link = document.createElement("link");
+                link.rel = "stylesheet";
+                link.href = "/navbar/navbar.css";
+                document.head.appendChild(link);
+                let script = document.createElement("script");
+                script.src = "/navbar/navbar.js";
+                document.body.appendChild(script);
+            });
+
+        // โหลด JS ของหน้า Home
+        let scriptHome = document.createElement("script");
+        scriptHome.src = "home.js";
+        document.body.appendChild(scriptHome);
+    </script>
+    <!-- Navbar -->
+
+    <!-- เริ่มขียนตรงนี้นะทุกโคน -->
+    <h1>ยินดีต้อนรับสู่ Home Page</h1>
+    <p>นี่คือเนื้อหาของหน้า Home</p>
+    
+</body>
+</html>
