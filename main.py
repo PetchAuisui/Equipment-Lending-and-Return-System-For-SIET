@@ -7,6 +7,9 @@ app = Flask(__name__)
 def home():
     return "Hello, Flask!"
 
+@app.route("/equipment")
+def home():
+    return "Hello, My feature Equeipment!"
 
 if __name__ == "__main__":
     app.run(debug=True)
