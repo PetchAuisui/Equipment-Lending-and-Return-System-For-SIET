@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="/About_Us/About_Us.css">
+    <script src="/About_Us/About_Us.js"></script>
+    <title>About Us</title>
+</head>
+<body>
+    <!-- Navbar -->
+    <div id="navbar"></div> 
+    <!-- JS -->
+    <script>
+        // โหลด Navbar
+        fetch("/navbar/navbar.html")
+            .then(r => r.text())
+            .then(html => {
+                document.getElementById("navbar").innerHTML = html;
+                let link = document.createElement("link");
+                link.rel = "stylesheet";
+                link.href = "/navbar/navbar.css";
+                document.head.appendChild(link);
+                let script = document.createElement("script");
+                script.src = "/navbar/navbar.js";
+                document.body.appendChild(script);
+            });
+
+        // โหลด JS ของหน้า Home
+        let scriptHome = document.createElement("script");
+        scriptHome.src = "home.js";
+        document.body.appendChild(scriptHome);
+    </script>
+    <!-- Navbar -->
+
+    <h1>About Page</h1>
+    <!-- เริ่มขียนตรงนี้นะทุกโคน -->
+
+</body>
+</html>
