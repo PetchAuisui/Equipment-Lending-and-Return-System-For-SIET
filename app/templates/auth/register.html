@@ -1,5 +1,49 @@
-{% extends 'base/base.html' %}
+{% extends 'shared/base.html' %}
 {% block title %}Register{% endblock %}
 {% block content %}
 <h1>Register</h1>
+
+{% if error %}<p style="color:#c0392b">{{ error }}</p>{% endif %}
+{% if success %}<p style="color:#27ae60">Register success!</p>{% endif %}
+
+<form method="post" action="{{ url_for('auth.register_action') }}" style="max-width:520px">
+  <label>Name</label>
+  <input name="name" value="{{ (old.name if old else '') }}" required>
+
+  <label>ID Card</label>
+  <input name="id_card" value="{{ (old.id_card if old else '') }}" required>
+
+  <label>Major</label>
+  <input name="major" value="{{ (old.major if old else '') }}" required>
+
+  <label>Member Type</label>
+  <input name="member_type" value="{{ (old.member_type if old else '') }}" required>
+
+  <label>Phone</label>
+  <input name="phone" value="{{ (old.phone if old else '') }}" required>
+
+  <label>Email (@kmitl.ac.th)</label>
+  <input name="email" type="email" value="{{ (old.email if old else '') }}" required>
+
+  <label>Address</label>
+  <input name="address" value="{{ (old.address if old else '') }}" required>
+
+  <label>Gender</label>
+  <input name="gender" value="{{ (old.gender if old else '') }}" required>
+
+  <label>Password</label>
+  <input name="password" type="password" required>
+
+  <label>Confirm Password</label>
+  <input name="confirm_password" type="password" required>
+
+  <button type="submit">Create account</button>
+</form>
+
+<style>
+form { display:grid; gap:10px }
+label { font-weight:600 }
+input, button { padding:8px; }
+button { cursor:pointer }
+</style>
 {% endblock %}
