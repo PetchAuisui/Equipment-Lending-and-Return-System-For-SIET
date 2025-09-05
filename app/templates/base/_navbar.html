@@ -12,6 +12,7 @@
         <a href="{{ url_for('auth.login_page') }}">Login</a>
         <a>|</a>
         <a href="{{ url_for('auth.register_page') }}">Sing in</a>
+        <i class="ri-user-line icon_user" ></i>
     </div>
 
     <div class="navbar_menu">
@@ -20,6 +21,10 @@
         <a href="{{ url_for('tracking.track_index') }}">Track Status</a>
         <a href="{{ url_for('pages.policy') }}">Policy</a>
         <a href="{{ url_for('pages.about_us') }}">About Us</a>
+        <div class="navbar_light">
+          <input class="Search_input" type="text" placeholder="Search...">
+          <i class="ri-notification-4-line icon_bell"></i>
+        </div>
     </div>  
 
   </nav>
