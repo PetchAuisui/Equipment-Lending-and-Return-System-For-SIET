@@ -1,0 +1,31 @@
+
+.navbar {
+    display: flex;
+    flex-direction: column; /* จัดลูก ๆ เป็นแนวตั้ง */
+    margin: 0;
+    padding: 0;
+}
+
+.navbar_login {
+    background-color: rgb(255, 166, 204);
+}
+
+.navbar_login a {
+    margin: 0 10px;
+    text-decoration: none;
+    color: #333;
+    float: right;
+}
+
+
+
+.navbar_menu  {
+    background-color: rgb(109, 142, 99);
+
+}
+
+.navbar_menu a {
+    margin: 0 10px;
+    text-decoration: none;
+    color: #333;
+}
