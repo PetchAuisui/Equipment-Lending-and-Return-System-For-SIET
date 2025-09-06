@@ -1,49 +1,75 @@
-{% extends 'shared/base.html' %}
-{% block title %}Register{% endblock %}
+{% extends 'base/base.html' %}
+{% block title %}Sign in | SEIT KMITL{% endblock %}
 {% block content %}
-<h1>Register</h1>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/register.css') }}">
 
-{% if error %}<p style="color:#c0392b">{{ error }}</p>{% endif %}
-{% if success %}<p style="color:#27ae60">Register success!</p>{% endif %}
+<section class="auth">
+  <h1 class="auth__heading">sign in</h1>
 
-<form method="post" action="{{ url_for('auth.register_action') }}" style="max-width:520px">
-  <label>Name</label>
-  <input name="name" value="{{ (old.name if old else '') }}" required>
+  <div class="auth__card">
+    <form class="auth__form" method="post" action="{{ url_for('auth.register_action') }}">
+      {% if error %}<div class="auth__alert auth__alert--error">{{ error }}</div>{% endif %}
+      {% if success %}<div class="auth__alert auth__alert--success">สมัครสมาชิกสำเร็จ!</div>{% endif %}
 
-  <label>ID Card</label>
-  <input name="id_card" value="{{ (old.id_card if old else '') }}" required>
+      <div class="auth__grid">
+        <div class="auth__field auth__field--full">
+          <label class="auth__label">ชื่อ–นามสกุล</label>
+          <input class="auth__input" type="text" name="name" required>
+        </div>
 
-  <label>Major</label>
-  <input name="major" value="{{ (old.major if old else '') }}" required>
+        <div class="auth__field auth__field--full">
+          <label class="auth__label">รหัสนักศึกษา</label>
+          <input class="auth__input" type="text" name="student_id" required>
+        </div>
 
-  <label>Member Type</label>
-  <input name="member_type" value="{{ (old.member_type if old else '') }}" required>
+        <div class="auth__field">
+          <label class="auth__label">เพศ</label>
+          <select class="auth__input" name="gender">
+            <option value="">เลือกเพศ</option>
+            <option value="male">ชาย</option>
+            <option value="female">หญิง</option>
+            <option value="other">อื่น ๆ</option>
+          </select>
+        </div>
 
-  <label>Phone</label>
-  <input name="phone" value="{{ (old.phone if old else '') }}" required>
+        <div class="auth__field">
+          <label class="auth__label">ประเภทสมาชิก</label>
+          <select class="auth__input" name="member_type">
+            <option value="">เลือกประเภทสมาชิก</option>
+            <option value="student">นักศึกษา</option>
+            <option value="teacher">อาจารย์</option>
+            <option value="staff">เจ้าหน้าที่</option>
+          </select>
+        </div>
 
-  <label>Email (@kmitl.ac.th)</label>
-  <input name="email" type="email" value="{{ (old.email if old else '') }}" required>
+        <div class="auth__field auth__field--full">
+          <label class="auth__label">สาขาวิชา</label>
+          <input class="auth__input" type="text" name="major" required>
+        </div>
 
-  <label>Address</label>
-  <input name="address" value="{{ (old.address if old else '') }}" required>
+        <div class="auth__field auth__field--full">
+          <label class="auth__label">เบอร์โทรศัพท์</label>
+          <input class="auth__input" type="tel" name="phone" required>
+        </div>
 
-  <label>Gender</label>
-  <input name="gender" value="{{ (old.gender if old else '') }}" required>
+        <div class="auth__field auth__field--full">
+          <label class="auth__label">อีเมล (กรอกอีเมลสถาบันของคุณเท่านั้น)</label>
+          <input class="auth__input" type="email" name="email" placeholder="xxxxx@kmitl.ac.th" required>
+        </div>
 
-  <label>Password</label>
-  <input name="password" type="password" required>
+        <div class="auth__field auth__field--full">
+          <label class="auth__label">Password</label>
+          <input class="auth__input" type="password" name="password" required>
+        </div>
 
-  <label>Confirm Password</label>
-  <input name="confirm_password" type="password" required>
+        <div class="auth__field auth__field--full">
+          <label class="auth__label">Confirm-Password</label>
+          <input class="auth__input" type="password" name="confirm_password" required>
+        </div>
+      </div>
 
-  <button type="submit">Create account</button>
-</form>
-
-<style>
-form { display:grid; gap:10px }
-label { font-weight:600 }
-input, button { padding:8px; }
-button { cursor:pointer }
-</style>
+      <button class="auth__submit" type="submit">Register</button>
+    </form>
+  </div>
+</section>
 {% endblock %}
