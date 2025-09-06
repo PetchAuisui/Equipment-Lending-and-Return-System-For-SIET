@@ -36,7 +36,7 @@ def register_action():
         return jsonify({"user": user.public_dict()}), 201
 
     # ถ้าเป็นฟอร์ม: แสดงผลลัพธ์ง่าย ๆ (ปรับเป็น redirect ได้)
-    return render_template("auth/register.html", success=True, user=user.public_dict()), 201
+    return render_template("auth/login.html", success=True, user=user.public_dict()), 201
 
 
 @auth_bp.get("/login")
