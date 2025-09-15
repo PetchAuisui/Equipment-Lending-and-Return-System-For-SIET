@@ -83,7 +83,13 @@
     </div>
     <h3 id="regSuccTitle" class="auth-success__title">สมัครสมาชิกสำเร็จ</h3>
     <p class="auth-success__desc">บัญชีของคุณถูกสร้างเรียบร้อย 🎉</p>
-    <a href="{{ url_for('auth.login_page') }}" class="auth-success__btn">ไปหน้า Login</a>
+    <button class="auth-success__btn" onclick="goLogin()">ไปหน้า Login</button>
+    <script>
+      function goLogin() {
+        window.location.href = "{{ url_for('auth.login_page') }}";
+      }
+    </script>
+
   </div>
 </div>
 
