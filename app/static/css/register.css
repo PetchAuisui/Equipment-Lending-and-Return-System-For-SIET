@@ -68,3 +68,18 @@
   .auth__field{ grid-column:1 / -1; }
   .auth__card{ border-radius:var(--radius-lg); }
 }
+
+.auth-success { position: fixed; inset: 0; display: none; place-items: center; background: rgba(0,0,0,.35); z-index: 9999; }
+.auth-success.active { display: grid; }
+.auth-success__card { background: #fff; padding: 28px 24px; border-radius: 16px; width: min(420px, 92vw); text-align: center; box-shadow: 0 18px 40px rgba(0,0,0,.15); }
+.auth-success__title { margin: 14px 0 4px; font: 800 22px/1.2 Inter,system-ui; color:#14532d; }
+.auth-success__desc { margin: 0 0 16px; color:#475569; }
+.auth-success__btn { border:0; padding:10px 16px; border-radius:10px; background:#0f766e; color:#fff; font-weight:700; cursor:pointer; }
+.auth-success__btn:hover { filter:brightness(1.05); }
+
+.check-wrap { width:96px; height:96px; margin: 0 auto 8px; }
+.check-svg { width:100%; height:100%; }
+.check-circle { fill:#ecfdf5; stroke:#10b981; stroke-width:6; }
+.check-mark { fill:none; stroke:#10b981; stroke-width:6; stroke-linecap:round; stroke-linejoin:round;
+              stroke-dasharray: 48; stroke-dashoffset: 48; animation: draw .7s ease .15s forwards; }
+@keyframes draw { to { stroke-dashoffset: 0; } }
