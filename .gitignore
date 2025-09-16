@@ -1,0 +1,3 @@
+# Python-specific files
+__pycache__/
+*.py[co]
