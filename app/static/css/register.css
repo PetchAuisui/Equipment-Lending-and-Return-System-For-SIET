@@ -10,20 +10,36 @@
 *::before,
 *::after{ box-sizing:border-box; }
 
-.container{ max-width:1100px; padding:24px 16px 64px; }
+/* ===== Section (ไม่แตะ navbar, ไม่ใช้ margin:auto) ===== */
+.auth{
+  isolation:isolate;                 /* กันสไตล์ navbar มาปน */
+  display:grid;                      /* ใช้ grid จัดกลาง */
+  justify-items:center;              /* ลูกทุกตัวกึ่งกลางแนวนอน */
+  align-content:start;               /* จัดแนวตั้งเริ่มจากด้านบน */
+  padding:56px 16px 64px;            /* เว้นใต้ navbar ด้วย padding */
+  background:transparent;
+}
 
-/* ===== Section ===== */
-.auth{ padding:32px 0 64px; }                       /* เผื่อ navbar + เว้นท้ายหน้า */
+/* ให้ h1 และ card มีความกว้างเท่ากันเพื่อกึ่งกลางจริง */
+:where(.auth__heading,.auth__card){
+  width:min(820px,92vw);
+  justify-self:center;
+}
+
+/* ===== Heading ===== */
 .auth__heading{
   font:800 clamp(32px,3.8vw,56px)/1.1 ui-sans-serif,system-ui,Segoe UI,Arial;
-  text-align:center; letter-spacing:1px; margin:12px 0 22px; color:var(--text);
+  text-align:center; letter-spacing:1px; color:var(--text);
+  margin:0 0 22px 0;
 }
 
 /* ===== Card ===== */
 .auth__card{
-  background:var(--card-pink); border-radius:var(--radius-xl);
-  padding:clamp(24px,3.4vw,40px); max-width:820px; margin:0 auto;
-  box-shadow:var(--shadow-lg); border:2px solid rgba(0,0,0,.05);
+  background:var(--card-pink);
+  border-radius:var(--radius-xl);
+  padding:clamp(24px,3.4vw,40px);
+  box-shadow:var(--shadow-lg);
+  border:2px solid rgba(0,0,0,.05);
 }
 
 /* ===== Alerts ===== */
@@ -32,14 +48,14 @@
 .auth__alert--success{ background:#dcfce7; color:#166534; border:1px solid #bbf7d0; }
 
 /* ===== Form ===== */
-.auth__form{ width:100%; }
+.auth__form{ width:100%; display:grid; }   /* form เป็น grid เพื่อให้ใช้ justify-self ได้ */
 
 .auth__grid{
   display:grid; grid-template-columns:repeat(12,1fr);
   column-gap:28px; row-gap:16px;
 }
 
-.auth__field{ grid-column:span 6; }    /* ครึ่งแถว (6/12) */
+.auth__field{ grid-column:span 6; }
 .auth__field--full{ grid-column:1 / -1; }
 
 .auth__label{ display:block; font-size:13px; color:var(--text); margin:2px 0 6px; line-height:1.15; }
@@ -54,10 +70,15 @@
 
 /* ===== Button ===== */
 .auth__submit{
-  display:block; width:min(420px,85%); margin:26px auto 6px; height:52px;
-  border:0; border-radius:12px; background:var(--green-cta); color:var(--white);
+  display:inline-block;              /* ปุ่มไม่กินเต็มแถว */
+  width:min(420px,85%);
+  height:52px;
+  border:0; border-radius:12px;
+  background:var(--green-cta); color:var(--white);
   font-weight:700; font-size:18px; cursor:pointer;
   transition:transform .02s ease, filter .15s ease;
+  justify-self:center;               /* กึ่งกลางใน grid */
+  margin-top:26px;
 }
 .auth__submit:hover{ filter:brightness(1.03); }
 .auth__submit:active{ transform:translateY(1px); }
@@ -69,6 +90,7 @@
   .auth__card{ border-radius:var(--radius-lg); }
 }
 
+/* ===== Success Popup ===== */
 .auth-success { position: fixed; inset: 0; display: none; place-items: center; background: rgba(0,0,0,.35); z-index: 9999; }
 .auth-success.active { display: grid; }
 .auth-success__card { background: #fff; padding: 28px 24px; border-radius: 16px; width: min(420px, 92vw); text-align: center; box-shadow: 0 18px 40px rgba(0,0,0,.15); }
