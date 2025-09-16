@@ -1,5 +1,120 @@
 {% extends 'base/base.html' %}
-{% block title %}Register{% endblock %}
+{% block title %}Sign in | SEIT KMITL{% endblock %}
 {% block content %}
-<h1>Register</h1>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/register.css') }}">
+<section class="auth">
+  <h1 class="auth__heading">sign in</h1>
+
+  <div class="auth__card">
+    <form class="auth__form" method="post" action="{{ url_for('auth.register_action') }}">
+      {% if error %}<div class="auth__alert auth__alert--error">{{ error }}</div>{% endif %}
+      {% if success %}<div class="auth__alert auth__alert--success">สมัครสมาชิกสำเร็จ!</div>{% endif %}
+
+      <div class="auth__grid">
+        <div class="auth__field auth__field--full">
+          <label class="auth__label">ชื่อ–นามสกุล</label>
+          <input class="auth__input" type="text" name="name" value="{{ old.name if old else '' }}" required>
+        </div>
+
+        <div class="auth__field auth__field--full">
+          <label class="auth__label">รหัสนักศึกษา</label>
+          <input class="auth__input" type="text" name="student_id" value="{{ old.student_id if old else '' }}" required>
+        </div>
+
+        <div class="auth__field">
+          <label class="auth__label">เพศ</label>
+          <select class="auth__input" name="gender" required>
+            <option value="">เลือกเพศ</option>
+            <option value="male"   {% if old and old.gender=='male' %}selected{% endif %}>ชาย</option>
+            <option value="female" {% if old and old.gender=='female' %}selected{% endif %}>หญิง</option>
+            <option value="other"  {% if old and old.gender=='other' %}selected{% endif %}>อื่น ๆ</option>
+          </select>
+        </div>
+
+        <div class="auth__field">
+          <label class="auth__label">ประเภทสมาชิก</label>
+          <select class="auth__input" name="member_type" required>
+            <option value="">เลือกประเภทสมาชิก</option>
+            <option value="student" {% if old and old.member_type=='student' %}selected{% endif %}>นักศึกษา</option>
+            <option value="teacher" {% if old and old.member_type=='teacher' %}selected{% endif %}>อาจารย์</option>
+            <option value="staff"   {% if old and old.member_type=='staff' %}selected{% endif %}>เจ้าหน้าที่</option>
+          </select>
+        </div>
+
+        <div class="auth__field auth__field--full">
+          <label class="auth__label">สาขาวิชา</label>
+          <input class="auth__input" type="text" name="major" value="{{ old.major if old else '' }}" required>
+        </div>
+
+        <div class="auth__field auth__field--full">
+          <label class="auth__label">เบอร์โทรศัพท์</label>
+          <input class="auth__input" type="tel" name="phone" value="{{ old.phone if old else '' }}" required>
+        </div>
+
+        <div class="auth__field auth__field--full">
+          <label class="auth__label">อีเมล (กรอกอีเมลสถาบันของคุณเท่านั้น)</label>
+          <input class="auth__input" type="email" name="email" placeholder="xxxxx@kmitl.ac.th" value="{{ old.email if old else '' }}" required>
+        </div>
+
+        <div class="auth__field auth__field--full">
+          <label class="auth__label">Password</label>
+          <input class="auth__input" type="password" name="password" required>
+        </div>
+
+        <div class="auth__field auth__field--full">
+          <label class="auth__label">Confirm-Password</label>
+          <input class="auth__input" type="password" name="confirm_password" required>
+        </div>
+      </div>
+
+      <button class="auth__submit" type="submit">Register</button>
+    </form>
+  </div>
+</section>
+
+<!-- ===== Success Popup (Markup) ===== -->
+<div id="regSuccess" class="auth-success" aria-hidden="true">
+  <div class="auth-success__card" role="dialog" aria-modal="true" aria-labelledby="regSuccTitle">
+    <div class="check-wrap">
+      <svg class="check-svg" viewBox="0 0 64 64" aria-hidden="true">
+        <circle class="check-circle" cx="32" cy="32" r="28"></circle>
+        <path class="check-mark" d="M18 33 L28 43 L46 24"></path>
+      </svg>
+    </div>
+    <h3 id="regSuccTitle" class="auth-success__title">สมัครสมาชิกสำเร็จ</h3>
+    <p class="auth-success__desc">บัญชีของคุณถูกสร้างเรียบร้อย 🎉</p>
+    <button class="auth-success__btn" onclick="goLogin()">ไปหน้า Login</button>
+    <script>
+      function goLogin() {
+        window.location.href = "{{ url_for('auth.login_page') }}";
+      }
+    </script>
+
+  </div>
+</div>
+
+<!-- ===== Success Popup (Script) ===== -->
+<script>
+  function openSuccess() {
+    const o = document.getElementById('regSuccess');
+    if (!o) return;
+    o.classList.add('active');
+    o.setAttribute('aria-hidden','false');
+  }
+  function closeSuccess() {
+    const o = document.getElementById('regSuccess');
+    if (!o) return;
+    o.classList.remove('active');
+    o.setAttribute('aria-hidden','true');
+  }
+
+  // โชว์อัตโนมัติเมื่อ backend ส่ง success=True
+  {% if success %}
+  window.addEventListener('DOMContentLoaded', () => {
+    openSuccess();
+    // ถ้าอยากให้เด้งไปหน้า login อัตโนมัติ หลัง 2 วิ ให้เปิดบรรทัดล่างนี้
+    // setTimeout(() => { window.location.href = "{{ url_for('auth.login_page') }}"; }, 2000);
+  });
+  {% endif %}
+</script>
 {% endblock %}
