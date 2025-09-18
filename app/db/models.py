@@ -12,6 +12,8 @@ class User(Base):
     __tablename__ = "users"
     user_id       = Column(Integer, primary_key=True, autoincrement=True)
     name          = Column(String, nullable=False)
+    student_id   = Column(String, unique=True)   # null ได้สำหรับ non-student
+    employee_id  = Column(String, unique=True)   # null ได้สำหรับ non-staff
     email         = Column(String, nullable=False, unique=True)   # enforce @kmitl.ac.th in app layer
     phone         = Column(String)
     major         = Column(String)
