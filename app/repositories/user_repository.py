@@ -1,10 +1,9 @@
 # app/repositories/user_repository.py
 from typing import Optional, Dict
-from sqlalchemy import or_
 from sqlalchemy.exc import IntegrityError
 from app.db.db import SessionLocal
 from app.db.models import User as UserORM
-from app.models.user import User
+from app.models.user import User  # โดเมนคลาส สำหรับคืนค่า
 
 ALLOWED_FIELDS = {
     "student_id", "employee_id", "name", "email", "phone",
@@ -28,6 +27,7 @@ class UserRepository:
             role=o.role,
         )
 
+    # ---------- lookups ----------
     def find_by_email(self, email: str) -> Optional[User]:
         row = self.session.query(UserORM).filter(UserORM.email == email).first()
         return self._to_domain(row) if row else None
@@ -40,29 +40,32 @@ class UserRepository:
         row = self.session.query(UserORM).filter(UserORM.employee_id == employee_id).first()
         return self._to_domain(row) if row else None
 
-    def upsert(self, data: Dict) -> User:
+    # ---------- INSERT ONLY (ใช้กับ Register) ----------
+    def add(self, data: Dict) -> User:
         d = {k: v for k, v in dict(data).items() if k in ALLOWED_FIELDS}
-
-        # หา record เดิมด้วย student_id หรือ employee_id หรือ email
-        row = self.session.query(UserORM).filter(
-            or_(
-                UserORM.email == d.get("email"),
-                UserORM.student_id == d.get("student_id"),
-                UserORM.employee_id == d.get("employee_id"),
-            )
-        ).first()
-
-        if row:
-            for k, v in d.items():
-                setattr(row, k, v)
-        else:
-            row = UserORM(**d)
-            self.session.add(row)
-
+        row = UserORM(**d)
+        self.session.add(row)
         try:
             self.session.commit()
+            self.session.refresh(row)  # ให้มีค่า id/ค่า default กลับมา
+        except IntegrityError:
+            self.session.rollback()
+            # ปล่อยให้ service ตีความ/แปลงข้อความเอง หรือ raise ต่อ
+            raise
+        return self._to_domain(row)
+
+    # ---------- UPDATE (เผื่อใช้ภายหลัง) ----------
+    def update(self, user_id: int, data: Dict) -> Optional[User]:
+        d = {k: v for k, v in dict(data).items() if k in ALLOWED_FIELDS}
+        row = self.session.get(UserORM, user_id)
+        if not row:
+            return None
+        for k, v in d.items():
+            setattr(row, k, v)
+        try:
+            self.session.commit()
+            self.session.refresh(row)
         except IntegrityError:
             self.session.rollback()
             raise
-
         return self._to_domain(row)
