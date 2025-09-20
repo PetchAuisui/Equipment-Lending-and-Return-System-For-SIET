@@ -17,7 +17,7 @@
         </div>
 
         <div class="auth__field auth__field--full">
-          <label class="auth__label">รหัสนักศึกษา</label>
+          <label class="auth__label">รหัสประจำตัว</label>
           <input class="auth__input" type="text" name="student_id" value="{{ old.student_id if old else '' }}" required>
         </div>
 
@@ -41,10 +41,21 @@
           </select>
         </div>
 
-        <div class="auth__field auth__field--full">
-          <label class="auth__label">สาขาวิชา</label>
-          <input class="auth__input" type="text" name="major" value="{{ old.major if old else '' }}" required>
-        </div>
+      <div class="auth__field auth__field--full">
+        <label class="auth__label">สาขาวิชา</label>
+        <select class="auth__input" name="major" required>
+          <option value="">กรุณาเลือกสาขา</option>
+          <option value="ครุศาสตร์สถาปัตยกรรม">ครุศาสตร์สถาปัตยกรรม</option>
+          <option value="ครุศาสตร์อุตสาหกรรม">ครุศาสตร์อุตสาหกรรม</option>
+          <option value="ครุศาสตร์วิศวกรรม">ครุศาสตร์วิศวกรรม</option>
+          <option value="ครุศาสตร์เกษตร">ครุศาสตร์เกษตร</option>
+          <option value="ภาษาและสังคม">ภาษาและสังคม</option>
+          <option value="สำนักงานมาตราฐานครุศาสตร์อุตสาหกรรมและเทคโนโลยี">
+            สำนักงานมาตราฐานครุศาสตร์อุตสาหกรรมและเทคโนโลยี
+          </option>
+        </select>
+      </div>
+
 
         <div class="auth__field auth__field--full">
           <label class="auth__label">เบอร์โทรศัพท์</label>
