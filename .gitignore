@@ -1,5 +1,28 @@
-data/*.json
+# ไฟล์ Python compiled
+*.pyc
+*.pyo
+*.pyd
 
-
+# โฟลเดอร์ __pycache__
 __pycache__/
-*.py[co]
+
+# ไฟล์ชั่วคราวจาก VSCode / Code Runner
+tempCodeRunnerFile.py
+
+# ไฟล์ environment
+.env
+.venv
+env/
+venv/
+ENV/
+
+# ไฟล์จาก IDE
+.vscode/
+.idea/
+
+# Logs
+*.log
+
+# Mac / Windows files
+.DS_Store
+Thumbs.db

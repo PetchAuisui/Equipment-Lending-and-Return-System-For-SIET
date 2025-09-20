@@ -1,12 +1,11 @@
 # app/repositories/user_repository.py
-from typing import Dict, Optional
+from typing import Optional, Dict
 from sqlalchemy import or_
 from sqlalchemy.exc import IntegrityError
 from app.db.db import SessionLocal
 from app.db.models import User as UserORM
 from app.models.user import User
 
-# อนุญาตให้บันทึกเฉพาะ field ที่มีจริงในตาราง users
 ALLOWED_FIELDS = {
     "student_id", "employee_id", "name", "email", "phone",
     "major", "member_type", "gender", "password_hash", "role"
@@ -37,12 +36,20 @@ class UserRepository:
         row = self.session.query(UserORM).filter(UserORM.student_id == student_id).first()
         return self._to_domain(row) if row else None
 
+    def find_by_employee_id(self, employee_id: str) -> Optional[User]:
+        row = self.session.query(UserORM).filter(UserORM.employee_id == employee_id).first()
+        return self._to_domain(row) if row else None
+
     def upsert(self, data: Dict) -> User:
-        # ✅ กรองให้เหลือเฉพาะ field ที่ตาราง users มีจริง
         d = {k: v for k, v in dict(data).items() if k in ALLOWED_FIELDS}
 
+        # หา record เดิมด้วย student_id หรือ employee_id หรือ email
         row = self.session.query(UserORM).filter(
-            or_(UserORM.student_id == d["student_id"], UserORM.email == d["email"])
+            or_(
+                UserORM.email == d.get("email"),
+                UserORM.student_id == d.get("student_id"),
+                UserORM.employee_id == d.get("employee_id"),
+            )
         ).first()
 
         if row:
