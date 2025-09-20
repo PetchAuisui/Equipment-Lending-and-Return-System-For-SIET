@@ -1,5 +1,34 @@
 {% extends 'base/base.html' %}
-{% block title %}Login{% endblock %}
+{% block title %}Login | SEIT KMITL{% endblock %}
 {% block content %}
-<h1>Login</h1>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}">
+
+<section class="loginv2">
+  <h1 class="loginv2__title">Login</h1>
+
+  <div class="loginv2__card">
+    {% if error %}
+      <div class="loginv2__alert loginv2__alert--error">{{ error }}</div>
+    {% elif success %}
+      <div class="loginv2__alert loginv2__alert--success">{{ success }}</div>
+    {% endif %}
+
+    <form class="loginv2__form" method="post" action="{{ url_for('auth.login_action') }}">
+      <div class="loginv2__field">
+        <label class="loginv2__label">อีเมล</label>
+        <input class="loginv2__input" type="email" name="email" placeholder="username@kmitl.ac.th" required>
+      </div>
+
+      <div class="loginv2__field">
+        <label class="loginv2__label">รหัสผ่าน</label>
+        <input class="loginv2__input" type="password" name="password" minlength="6" required>
+      </div>
+
+      <div class="loginv2__actions">
+        <a class="loginv2__forgot" href="#" onclick="alert('ติดต่อผู้ดูแลระบบเพื่อรีเซ็ตรหัสผ่าน');return false;">I forget password</a>
+        <button class="loginv2__btn" type="submit">Login</button>
+      </div>
+    </form>
+  </div>
+</section>
 {% endblock %}
