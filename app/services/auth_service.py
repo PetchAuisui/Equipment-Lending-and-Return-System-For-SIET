@@ -79,21 +79,20 @@ class AuthService:
 
         return None
 
-    def register(self, data: Dict):
+    def register(self, data: Dict) -> User:
         member_type = self._norm(data["member_type"]).lower()
         student_id  = self._norm(data.get("student_id"))
         employee_id = self._norm(data.get("employee_id") or "")
 
         if member_type == "student":
-            payload_sid = student_id
-            payload_eid = None
+            sid, eid = student_id, None
         else:
-            payload_sid = None
-            payload_eid = employee_id or student_id
+            eid = employee_id or student_id
+            sid = None
 
         record = {
-            "student_id":   payload_sid,
-            "employee_id":  payload_eid,
+            "student_id":   sid,
+            "employee_id":  eid,
             "name":         self._norm(data["name"]),
             "major":        self._norm(data["major"]),
             "member_type":  member_type,
@@ -103,6 +102,6 @@ class AuthService:
             "password_hash": generate_password_hash(str(data["password"])),
             "role":         "member",
         }
-        # ให้ repository จัดการ ORM/SQL เอง
-        user = self.user_repo.upsert(record)
-        return user
+
+        user = self.user_repo.add(record)   # ต้อง indent อยู่ในฟังก์ชัน
+        return user                         # <<< indent ให้เท่ากับ user = ...
