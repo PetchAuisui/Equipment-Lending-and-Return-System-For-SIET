@@ -1,13 +1,17 @@
 from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker, declarative_base
+from sqlalchemy.orm import declarative_base, sessionmaker, scoped_session
 
-DATABASE_URL = "sqlite:///app.db"   # เปลี่ยนเป็น "sqlite:///instance/app.db" ถ้าจัดเก็บในโฟลเดอร์ instance/
+DATABASE_URL = "sqlite:///app.db"  # เก็บ DB ใน instance/
 
 engine = create_engine(
     DATABASE_URL,
-    echo=False,
     future=True,
-    connect_args={"check_same_thread": False},  # เผื่อใช้กับ Flask
+    echo=False,
+    connect_args={"check_same_thread": False},
 )
-SessionLocal = sessionmaker(bind=engine, autoflush=False, expire_on_commit=False)
+
+SessionLocal = scoped_session(
+    sessionmaker(bind=engine, autoflush=False, autocommit=False, expire_on_commit=False)
+)
+
 Base = declarative_base()

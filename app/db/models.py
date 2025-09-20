@@ -5,32 +5,32 @@ from sqlalchemy import (
     ForeignKey, UniqueConstraint, Index, CheckConstraint, JSON
 )
 from sqlalchemy.orm import relationship
-from db import Base
+from app.db.db import Base
 
 # ---------- users ----------
 class User(Base):
     __tablename__ = "users"
     user_id       = Column(Integer, primary_key=True, autoincrement=True)
     name          = Column(String, nullable=False)
-    student_id   = Column(String, unique=True)   # null ได้สำหรับ non-student
-    employee_id  = Column(String, unique=True)   # null ได้สำหรับ non-staff
-    email         = Column(String, nullable=False, unique=True)   # enforce @kmitl.ac.th in app layer
+    student_id    = Column(String, unique=True)         # null ได้สำหรับ non-student
+    employee_id   = Column(String, unique=True)         # null ได้สำหรับ non-staff
+    email         = Column(String, nullable=False, unique=True)
     phone         = Column(String)
     major         = Column(String)
-    member_type   = Column(String)                               # student, staff, etc.
+    member_type   = Column(String)                      # student, teacher, staff, ...
     gender        = Column(String)
     password_hash = Column(String, nullable=False)
+    role          = Column(String, nullable=False, default="member")   # ✅ เพิ่มคอลัมน์นี้
     created_at    = Column(DateTime, default=datetime.utcnow)
     updated_at    = Column(DateTime, default=datetime.utcnow)
 
-    classes          = relationship("Class", back_populates="owner")
-    rents            = relationship("Rent", back_populates="user")
-    stock_movements  = relationship("StockMovement", back_populates="actor")
-    returns          = relationship("Return", back_populates="receiver")
-    roles            = relationship("UserRole", back_populates="user")
-    notifications    = relationship("Notification", back_populates="user")
+    classes           = relationship("Class", back_populates="owner")
+    rents             = relationship("Rent", back_populates="user")
+    stock_movements   = relationship("StockMovement", back_populates="actor")
+    returns           = relationship("Return", back_populates="receiver")
+    notifications     = relationship("Notification", back_populates="user")
     renewals_approved = relationship("Renewal", back_populates="approver")
-    audits           = relationship("Audit", back_populates="actor")
+    audits            = relationship("Audit", back_populates="actor")
 
 # ---------- subjects ----------
 class Subject(Base):
@@ -174,23 +174,7 @@ class ItemBroke(Base):
         CheckConstraint("type in ('broke','lost')", name="ck_item_brokes_type_enum"),
     )
 
-# ---------- roles ----------
-class Role(Base):
-    __tablename__ = "roles"
-    role_id    = Column(Integer, primary_key=True, autoincrement=True)
-    name       = Column(String, nullable=False, unique=True)
-    created_at = Column(DateTime, default=datetime.utcnow)
 
-    user_roles = relationship("UserRole", back_populates="role")
-
-class UserRole(Base):
-    __tablename__ = "user_roles"
-    user_id     = Column(Integer, ForeignKey("users.user_id"), primary_key=True)
-    role_id     = Column(Integer, ForeignKey("roles.role_id"), primary_key=True)
-    assigned_at = Column(DateTime, default=datetime.utcnow)
-
-    user = relationship("User", back_populates="roles")
-    role = relationship("Role", back_populates="user_roles")
 
 # ---------- notifications ----------
 class Notification(Base):
