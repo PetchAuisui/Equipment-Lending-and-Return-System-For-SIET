@@ -1,0 +1,64 @@
+.loginv2 { max-width: 980px; margin: 24px auto 64px; padding: 0 16px; }
+.loginv2__title { text-align: center; font-size: 56px; font-weight: 800; margin: 8px 0 24px; }
+
+.loginv2__card {
+  background: #f9a4c4;           /* ชมพูตามภาพ */
+  border-radius: 96px;
+  padding: 40px 32px 48px;
+  box-shadow: 0 8px 22px rgba(0,0,0,.10) inset;
+}
+
+.loginv2__alert {
+  margin: 0 0 16px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  font-weight: 600;
+}
+.loginv2__alert--error   { background:#ffe6e6; color:#b30021; border:1px solid #f5b5b5; }
+.loginv2__alert--success { background:#e8ffef; color:#0a7a47; border:1px solid #b7efcf; }
+
+.loginv2__form { display: grid; gap: 22px; }
+.loginv2__field { display: grid; gap: 8px; }
+.loginv2__label { font-weight: 800; font-size: 20px; }
+
+.loginv2__input {
+  width: 100%;
+  height: 44px;
+  border-radius: 10px;
+  border: 1px solid #b8b8b8;
+  background: #fff;
+  padding: 0 14px;
+  font-size: 16px;
+  outline: none;
+}
+.loginv2__input:focus { border-color: #7aa37d; box-shadow: 0 0 0 3px rgba(122,163,125,.25); }
+
+.loginv2__actions {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 12px;
+  margin-top: 8px;
+}
+.loginv2__forgot {
+  justify-self: end;
+  font-weight: 700;
+  text-decoration: none;
+  color: #111;
+}
+.loginv2__forgot:hover { text-decoration: underline; }
+
+.loginv2__btn{
+  grid-column: 1 / -1;
+  height: 64px;
+  border: 0;
+  border-radius: 14px;
+  background: #6c8b63;     /* เขียวตามปุ่มในภาพ */
+  color: #fff;
+  font-weight: 800;
+  font-size: 28px;
+  box-shadow: 0 8px 0 #8fa18a, 0 12px 18px rgba(0,0,0,.20);
+  cursor: pointer;
+}
+.loginv2__btn:hover { filter: brightness(1.02); transform: translateY(-1px); }
+.loginv2__btn:active { transform: translateY(2px); box-shadow: 0 6px 0 #8fa18a; }
