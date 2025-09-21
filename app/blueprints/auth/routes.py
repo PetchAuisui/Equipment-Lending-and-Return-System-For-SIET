@@ -1,24 +1,20 @@
-from flask import render_template, request, jsonify, current_app
+from flask import render_template, request, jsonify, redirect, url_for, session
 from . import auth_bp
 from app.services.auth_service import AuthService
-
-# ใช้ repo แบบ DB
 from app.repositories.user_repository import UserRepository
 from app.db.db import SessionLocal
 
 def _svc() -> AuthService:
-    repo = UserRepository(SessionLocal())
-    return AuthService(repo)
+    return AuthService(UserRepository(SessionLocal()))
 
-# ── Register ─────────────────────────────────────────────
+# ---------- Register ----------
 @auth_bp.get("/register")
 def register_page():
     return render_template("auth/register.html")
 
 @auth_bp.post("/register")
 def register_action():
-    payload = request.get_json(silent=True) if request.is_json else (request.form.to_dict() or {})
-    current_app.logger.debug("register payload: %r", payload)
+    payload = request.get_json(silent=True) or request.form.to_dict() or {}
 
     svc = _svc()
     err = svc.validate_register(payload)
@@ -30,11 +26,33 @@ def register_action():
     user = svc.register(payload)
 
     if request.is_json:
-        return jsonify({"user": user.public_dict()}), 201
+        return jsonify({"user": {"id": user["id"], "email": user["email"], "name": user["name"]}}), 201
+    return render_template("auth/register.html", success=True, user=user), 200
 
-    return render_template("auth/register.html", success=True, user=user.public_dict()), 200
-
-# ── Login (เพิ่ม endpoint ให้ตรงกับที่ template เรียก) ──
-@auth_bp.get("/login", endpoint="login_page")
+# ---------- Login ----------
+@auth_bp.get("/login")
 def login_page():
     return render_template("auth/login.html")
+
+@auth_bp.post("/login")
+def login_action():
+    raw = request.get_json(silent=True) or request.form.to_dict() or {}
+    email = raw.get("email", "")
+    password = raw.get("password", "")
+
+    svc = _svc()
+    ok, err, user = svc.login(email, password)
+
+    if request.is_json:
+        if not ok:
+            return jsonify({"error": err}), 401
+        return jsonify({"ok": True, "user": {"email": user["email"], "name": user["name"]}}), 200
+
+    if not ok:
+        return render_template("auth/login.html", error=err, old={"email": email}), 401
+
+    # เก็บ session แบบง่าย ๆ
+    session["user_email"] = user["email"]
+    session["user_name"]  = user["name"]
+    # เปลี่ยนปลายทางตามที่ต้องการ
+    return redirect(url_for("pages.home"))
