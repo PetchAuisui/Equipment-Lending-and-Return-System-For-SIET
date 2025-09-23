@@ -5,7 +5,7 @@ body {
 
 .sidebar {
   height: 100vh;
-  width: 100px;
+  width: 80px;
   position: fixed;
   left: 0;
   background-color: #dbdada; /* เทาอ่อน */
@@ -21,16 +21,33 @@ body {
 }
 
 .sidebar a {
-  display: block;
+  display: flex;
+  align-items: center;
+  gap: 10px;              /* ระยะห่าง icon-text */
   padding: 10px;
   text-decoration: none;
   color: #000;
   transition: 0.3s;
+  white-space: nowrap;    /* กันข้อความตัดบรรทัด */
+}
+
+.sidebar a i {
+  font-size: 30px;
+  min-width: 60px;        /* กัน icon ขยับเวลา hover */
+  text-align: center;
+}
+
+.sidebar a span {
+  opacity: 0;             /* ซ่อนข้อความตอน sidebar แคบ */
+  transition: opacity 0.3s;
+}
+
+.sidebar:hover a span {
+  opacity: 1;             /* โชว์ข้อความตอน hover */
 }
 
 .sidebar a:hover {
   background-color: #d19ab0; /* ชมพู */
   color: #000;
   font-weight: bold;
-  font-size: 20px;
 }
