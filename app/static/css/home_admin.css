@@ -1,0 +1,81 @@
+body {
+  margin: 0;
+  font-family: "Tahoma", sans-serif;
+}
+
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 60px;             /* ขนาดตอนหุบ */
+  height: 100vh;
+  background-color: #777777;
+  overflow: hidden;
+  transition: width 0.3s;
+  padding-top: 10px;
+}
+
+.sidebar:hover {
+  width: 220px;            /* ขยายตอน hover */
+}
+
+.search-box {
+  display: flex;
+  align-items: center;
+  background: #fff;
+  border-radius: 20px;
+  padding: 5px 10px;
+  margin: 0 10px 20px;
+  opacity: 0;              /* ซ่อนตอนหุบ */
+  transition: opacity 0.3s;
+}
+
+.sidebar:hover .search-box {
+  opacity: 1;              /* โผล่ตอน hover */
+}
+
+.search-box input {
+  border: none;
+  outline: none;
+  flex: 1;
+}
+
+.search-box button {
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.menu {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.menu-title {
+  background-color: #d69cb0; /* ชมพู */
+  padding: 8px 10px;
+  font-weight: bold;
+  margin-bottom: 5px;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.sidebar:hover .menu-title {
+  opacity: 1;
+}
+
+.menu li a {
+  display: block;
+  padding: 8px 10px;
+  text-decoration: none;
+  color: #000;
+  white-space: nowrap;   /* กันตัดบรรทัด */
+  opacity: 0;            /* ซ่อนตอนหุบ */
+  transition: opacity 0.3s;
+}
+
+.sidebar:hover .menu li a {
+  opacity: 1;            /* โผล่ตอน hover */
+}
