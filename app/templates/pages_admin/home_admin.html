@@ -1,29 +1,23 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <static url="{{ url_for('static', filename='css/home_admin.css') }}">
-    <title>Home</title>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/home_admin.css') }}">
+  <title>Home</title>
 </head>
 {% extends 'base/base_admin.html' %}
 {% block title %}home_admin{% endblock %}
 {% block content %}
 <body>
   <div class="sidebar">
-    <input type="text" class="search-box" placeholder="ค้นหา...">
-    <ul class="menu">
-      <li class="menu-title">หน้าหลัก</li>
-      <li><a href="#">จัดการอุปกรณ์</a></li>
-      <li><a href="#">คืนอุปกรณ์</a></li>
-      <li><a href="#">ประวัติยืม-คืน</a></li>
-      <li><a href="#">อุปกรณ์สูญหาย/ชำรุด</a></li>
-      <li><a href="#">จัดการสมาชิก</a></li>
-      <li><a href="#">รายงานสรุป</a></li>
-    </ul>
+    <a href="#">หน้าหลัก</a>
+    <a href="#">จัดการอุปกรณ์</a>
+    <a href="#">คืนอุปกรณ์</a>
+    <a href="#">ประวัติยืม-คืน</a>
+    <a href="#">อุปกรณ์สูญหาย/ชำรุด</a>
+    <a href="#">จัดการสมาชิก</a>
+    <a href="#">รายงานสรุป</a>
   </div>
 </body>
-
 {% endblock %}
 </html>
-
-
