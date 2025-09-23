@@ -1,19 +1,20 @@
-# app/services/auth_service.py
 from __future__ import annotations
-
-import re
-from typing import Dict, Optional
-from werkzeug.security import generate_password_hash
+from typing import Dict, Optional, Tuple, Union
+from dataclasses import is_dataclass
+from werkzeug.security import generate_password_hash, check_password_hash
 
 from app.repositories.user_repository import UserRepository
+from app.services import validators as v  #
 
-EMAIL_RE   = re.compile(r"^[A-Za-z0-9._%+\-]+@kmitl\.ac\.th$", re.IGNORECASE)
-PHONE_RE   = re.compile(r"^0\d{8,9}$")              # 9–10 หลักขึ้นต้นด้วย 0
-STUDENT_RE = re.compile(r"^\d{7,10}$")              # รหัสนศ.
-EMP_RE     = re.compile(r"^[A-Za-z0-9\-]{3,20}$")   # รูปแบบรหัสบุคลากร (ยืดหยุ่น)
+try:
+    from app.services.schemas import LoginDTO  # @dataclass {email, password}
+except Exception:
+    LoginDTO = None  # type: ignore
+
 
 ALLOWED_MEMBER_TYPES = {"student", "teacher", "officer", "staff"}
 ALLOWED_GENDERS      = {"male", "female", "other"}
+
 
 class AuthService:
     def __init__(self, user_repo: UserRepository):
@@ -21,30 +22,31 @@ class AuthService:
 
     @staticmethod
     def _norm(s: str) -> str:
-        return (s or "").strip()
+        return v.norm(s)
 
+    # ----------------- Register -----------------
     def validate_register(self, data: Dict) -> Optional[str]:
         required = [
             "name", "major", "member_type", "phone",
             "email", "password", "confirm_password", "gender"
         ]
         for f in required:
-            if f not in data or self._norm(str(data[f])) == "":
+            if f not in data or v.norm(str(data[f])) == "":
                 return f"Missing field: {f}"
 
-        member_type = self._norm(data["member_type"]).lower()
-        email       = self._norm(data["email"]).lower()
-        phone       = self._norm(data["phone"])
-        gender      = self._norm(data["gender"]).lower()
+        member_type = v.norm(data["member_type"]).lower()
+        email       = v.norm(data["email"]).lower()
+        phone       = v.norm(data["phone"])
+        gender      = v.norm(data["gender"]).lower()
 
-        if not EMAIL_RE.match(email):
-            return "Email must be a valid @kmitl.ac.th address"
-        if not PHONE_RE.match(phone):
-            return "Invalid phone number"
         if member_type not in ALLOWED_MEMBER_TYPES:
             return f"member_type must be one of: {', '.join(ALLOWED_MEMBER_TYPES)}"
         if gender not in ALLOWED_GENDERS:
             return f"gender must be one of: {', '.join(ALLOWED_GENDERS)}"
+        if not v.validate_email(email):
+            return "Email must be a valid @kmitl.ac.th address"
+        if not v.validate_phone(phone):
+            return "Invalid phone number"
 
         password = str(data["password"])
         confirm  = str(data["confirm_password"])
@@ -54,35 +56,34 @@ class AuthService:
             return "Password and Confirm-Password do not match"
 
         # ---- ตรวจ id ตามประเภท ----
-        student_id  = self._norm(data.get("student_id"))
-        employee_id = self._norm(data.get("employee_id") or "")
+        student_id  = v.norm(data.get("student_id"))
+        employee_id = v.norm(data.get("employee_id") or "")
 
         if member_type == "student":
             if not student_id:
                 return "Missing field: student_id"
-            if not STUDENT_RE.match(student_id):
+            if not v.validate_student_id(student_id):
                 return "Invalid student_id format"
             if self.user_repo.find_by_student_id(student_id):
                 return "Student ID already registered"
         else:
-            emp = employee_id or student_id  # รองรับกรณีส่งมาในช่อง student_id เดิม
+            emp = employee_id or student_id
             if not emp:
                 return "Missing field: employee_id"
-            if not EMP_RE.match(emp):
+            if not v.validate_employee_id(emp):
                 return "Invalid employee_id format"
             if self.user_repo.find_by_employee_id(emp):
                 return "Employee ID already registered"
 
-        # ซ้ำ email
         if self.user_repo.find_by_email(email):
             return "Email already registered"
 
         return None
 
-    def register(self, data: Dict) -> User:
-        member_type = self._norm(data["member_type"]).lower()
-        student_id  = self._norm(data.get("student_id"))
-        employee_id = self._norm(data.get("employee_id") or "")
+    def register(self, data: Dict):
+        member_type = v.norm(data["member_type"]).lower()
+        student_id  = v.norm(data.get("student_id"))
+        employee_id = v.norm(data.get("employee_id") or "")
 
         if member_type == "student":
             sid, eid = student_id, None
@@ -93,15 +94,56 @@ class AuthService:
         record = {
             "student_id":   sid,
             "employee_id":  eid,
-            "name":         self._norm(data["name"]),
-            "major":        self._norm(data["major"]),
+            "name":         v.norm(data["name"]),
+            "major":        v.norm(data["major"]),
             "member_type":  member_type,
-            "phone":        self._norm(data["phone"]),
-            "email":        self._norm(str(data["email"])).lower(),
-            "gender":       self._norm(data["gender"]).lower(),
+            "phone":        v.norm(data["phone"]),
+            "email":        v.norm(str(data["email"])).lower(),
+            "gender":       v.norm(data["gender"]).lower(),
             "password_hash": generate_password_hash(str(data["password"])),
             "role":         "member",
         }
 
-        user = self.user_repo.add(record)   # ต้อง indent อยู่ในฟังก์ชัน
-        return user                         # <<< indent ให้เท่ากับ user = ...
+        return self.user_repo.add(record)
+
+    # ----------------- Login -----------------
+    def login(
+        self,
+        creds: Union["LoginDTO", Dict, Tuple[str, str], None] = None,
+        password: Optional[str] = None,
+    ):
+        if is_dataclass(creds) and getattr(creds, "__class__", None).__name__ == "LoginDTO":
+            email = v.norm(creds.email).lower()
+            pwd   = creds.password
+        elif isinstance(creds, dict):
+            email = v.norm(str(creds.get("email", ""))).lower()
+            pwd   = creds.get("password", "")
+        elif isinstance(creds, tuple):
+            email = v.norm(str(creds[0])).lower()
+            pwd   = creds[1]
+        else:
+            email = v.norm(str(creds or "")).lower()
+            pwd   = password or ""
+
+        if not email or not pwd:
+            return False, "Email and password are required", None
+
+        user = self.user_repo.find_by_email(email)
+        if not user:
+            return False, "User not found", None
+
+        pwd_hash = _get(user, "password_hash")
+        if not pwd_hash or not check_password_hash(pwd_hash, pwd):
+            return False, "Invalid password", None
+
+        return True, None, user
+
+    authenticate = login
+
+
+def _get(obj, name: str, default=None):
+    if obj is None:
+        return default
+    if isinstance(obj, dict):
+        return obj.get(name, default)
+    return getattr(obj, name, default)
