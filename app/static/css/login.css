@@ -1,0 +1,130 @@
+/* ===== Theme (ให้ตรงกับ register.css) ===== */
+:root{
+  --card-pink:#ffb7cc;
+  --green-cta:#7b996f;
+  --text:#222;
+  --muted:#6b7280;
+  --white:#fff;
+  --radius-xl:28px;
+  --radius-lg:18px;
+  --shadow-lg:0 14px 40px rgba(0,0,0,.12);
+  --card-pad: clamp(24px,3.4vw,40px);
+}
+
+/* ===== Container (กึ่งกลางด้วย grid, ไม่ใช้ margin auto) ===== */
+.loginv2{
+  isolation:isolate;
+  display:grid;
+  justify-items:center;
+  align-content:start;
+  padding:56px 16px 64px;
+  color:var(--text);
+  font-family: ui-sans-serif,system-ui,"Segoe UI",Arial;
+}
+
+/* ให้ title + card กว้างเท่ากัน */
+:where(.loginv2__title,.loginv2__card){ width:min(820px,92vw); }
+
+/* ===== Heading ===== */
+.loginv2__title{
+  font:800 clamp(32px,3.8vw,56px)/1.1 ui-sans-serif,system-ui,"Segoe UI",Arial !important;
+  text-align:center !important;
+  letter-spacing:1px;
+  margin:0 0 22px;
+}
+
+/* ===== Card ===== */
+.loginv2__card{
+  background:var(--card-pink);
+  border-radius:var(--radius-xl);
+  padding:var(--card-pad);
+  box-shadow:var(--shadow-lg);
+  border:2px solid rgba(0,0,0,.05);
+  font-size:17px;
+}
+
+/* ===== Alerts ===== */
+.loginv2__alert{ border-radius:12px; padding:10px 14px; margin-bottom:12px; font-size:14px; line-height:1.35; }
+.loginv2__alert--error{   background:#fee2e2; color:#991b1b; border:1px solid #fecaca; }
+.loginv2__alert--success{ background:#dcfce7; color:#166534; border:1px solid #bbf7d0; }
+
+/* ===== Form ===== */
+.loginv2__form{
+  display:grid !important;
+  row-gap:18px !important;
+  width:100% !important;
+}
+
+.loginv2__field{ display:block !important; width:100% !important; }
+
+.loginv2__label{
+  display:block !important;
+  font-size:17px !important;
+  font-weight:700 !important;
+  color:var(--text) !important;
+  margin:0 0 6px !important;
+  line-height:1.15 !important;
+}
+
+/* input ให้เต็มความกว้างแน่นอน */
+.loginv2__input{
+  display:block !important;
+  width:100% !important;
+  max-width:100% !important;
+  height:42px !important;
+  box-sizing:border-box !important;
+  border-radius:10px !important;
+  border:2px solid rgba(0,0,0,.08) !important;
+  background:var(--white) !important;
+  padding:9px 12px !important;
+  font-size:16px !important;
+  outline:none !important;
+  transition:border-color .15s ease, box-shadow .15s ease !important;
+}
+.loginv2__input:focus{
+  border-color:rgba(0,0,0,.25) !important;
+  box-shadow:0 0 0 4px rgba(0,0,0,.06) !important;
+}
+
+/* ===== Actions: แถวบนเป็นลิงก์, แถวล่างเป็นปุ่ม ===== */
+.loginv2__actions{
+  display:grid !important;
+  grid-template-columns:1fr !important;
+  row-gap:8px !important;
+  align-items:center !important;
+  margin-top:4px !important;
+}
+
+.loginv2__forgot{
+  justify-self:start !important;
+  font-size:14px !important;
+  font-weight:600 !important;
+  color:var(--muted) !important;
+  text-decoration:none !important;
+}
+.loginv2__forgot:hover{ text-decoration:underline !important; }
+
+/* ===== Button (ล็อกสไตล์กันโดนทับ) ===== */
+.loginv2__btn{
+  justify-self:center !important;
+  display:block !important;
+  width:min(420px,85%) !important;
+  height:52px !important;
+  border:0 !important;
+  border-radius:12px !important;
+  background:var(--green-cta) !important;
+  color:#fff !important;
+  font-weight:700 !important;
+  font-size:18px !important;
+  cursor:pointer !important;
+  transition:transform .02s ease, filter .15s ease !important;
+  margin-top:8px !important;
+}
+.loginv2__btn:hover{ filter:brightness(1.03) !important; }
+.loginv2__btn:active{ transform:translateY(1px) !important; }
+
+/* ===== Responsive ===== */
+@media (max-width:720px){
+  .loginv2__card{ border-radius:var(--radius-lg); }
+  .loginv2__btn{ width:100% !important; }
+}
