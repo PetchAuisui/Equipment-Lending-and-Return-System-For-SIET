@@ -1,50 +1,13 @@
 body {
   margin: 0;
-  font-family: "Tahoma", sans-serif;
+  font-family: sans-serif;
 }
 
 .sidebar {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 60px;             /* ขนาดตอนหุบ */
+  width: 250px;
+  background-color: #ff0000; /* เทา */
   height: 100vh;
-  background-color: #777777;
-  overflow: hidden;
-  transition: width 0.3s;
-  padding-top: 10px;
-}
-
-.sidebar:hover {
-  width: 220px;            /* ขยายตอน hover */
-}
-
-.search-box {
-  display: flex;
-  align-items: center;
-  background: #fff;
-  border-radius: 20px;
-  padding: 5px 10px;
-  margin: 0 10px 20px;
-  opacity: 0;              /* ซ่อนตอนหุบ */
-  transition: opacity 0.3s;
-}
-
-.sidebar:hover .search-box {
-  opacity: 1;              /* โผล่ตอน hover */
-}
-
-.search-box input {
-  border: none;
-  outline: none;
-  flex: 1;
-}
-
-.search-box button {
-  border: none;
-  background: none;
-  cursor: pointer;
-  font-size: 16px;
+  padding: 10px;
 }
 
 .menu {
@@ -53,29 +16,33 @@ body {
   margin: 0;
 }
 
-.menu-title {
-  background-color: #d69cb0; /* ชมพู */
-  padding: 8px 10px;
-  font-weight: bold;
-  margin-bottom: 5px;
-  opacity: 0;
-  transition: opacity 0.3s;
+/* กล่องค้นหา */
+.search-box {
+  width: 100%;
+  height: 40px;
+  background: #ddd;
+  border-radius: 20px;
+  margin-bottom: 15px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+  border: none;
+  padding: 0 15px;
+  font-size: 14px;
+  outline: none;
 }
 
-.sidebar:hover .menu-title {
-  opacity: 1;
+/* เมนู */
+.menu-title {
+  background-color: #d19ab0; /* ชมพู */
+  padding: 10px;
+  font-weight: bold;
+}
+
+.menu li {
+  padding: 10px;
 }
 
 .menu li a {
-  display: block;
-  padding: 8px 10px;
   text-decoration: none;
   color: #000;
-  white-space: nowrap;   /* กันตัดบรรทัด */
-  opacity: 0;            /* ซ่อนตอนหุบ */
-  transition: opacity 0.3s;
-}
-
-.sidebar:hover .menu li a {
-  opacity: 1;            /* โผล่ตอน hover */
+  display: block;
 }
