@@ -76,7 +76,7 @@ def login_action():
     # ---- Form Mode ----
     if not ok:
         return render_template("auth/login.html", error=err, old={"email": email}), 401
-
+    
     # ---- เก็บ session ----
     student_id   = _get(user, "student_id")
     employee_id  = _get(user, "employee_id")
@@ -103,7 +103,6 @@ def logout_action():
     return redirect(url_for("pages.home"))
 
 
-
 @auth_bp.app_context_processor
 def inject_current_user():
     return {
@@ -114,7 +113,6 @@ def inject_current_user():
             "is_authenticated": session.get("is_authenticated", False),
         }
     }
-
 
 
 def _get(obj, name: str, default=None):
