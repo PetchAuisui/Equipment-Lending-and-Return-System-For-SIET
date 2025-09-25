@@ -4,6 +4,8 @@ from datetime import datetime
 from sqlalchemy import text
 from sqlalchemy.exc import IntegrityError
 from app.db.db import SessionLocal
+from typing import Dict, Optional
+
 
 # เพื่อกัน key แปลก ๆ หลุดเข้ามาเวลา build SQL
 ALLOWED_FIELDS: Iterable[str] = {
@@ -17,7 +19,7 @@ class UserRepository:
         self.session = session or SessionLocal()
 
     # ---------- helper ----------
-    def _row_to_dict(self, row) -> Dict | None:
+    def _row_to_dict(self, row) -> Optional[Dict]:
         return dict(row._mapping) if row else None
 
     def _sanitize(self, data: Dict) -> Dict:
