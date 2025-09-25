@@ -1,53 +1,77 @@
-body {
-  margin: 0;
-  font-family: sans-serif;
+/* ===== Dashboard Wrapper ===== */
+.dashboard {
+  padding: 32px 24px;         /* เว้นระยะบน-ข้าง */
+  margin-left: 80px;          /* กันไม่ให้ชน sidebar ซ้าย (ปรับตามจริง) */
+  box-sizing: border-box;
 }
 
-.sidebar {
-  height: 100vh;
-  width: 80px;
-  position: fixed;
-  left: 0;
-  background-color: #dbdada; /* เทาอ่อน */
-  overflow-x: hidden;
-  transition: 0.5s;
-  padding-top: 20px;
+/* ===== Grid Layout ===== */
+.dashboard__grid {
+  max-width: 1100px;          /* จำกัดความกว้างรวม */
+  margin: 0 auto;             /* จัดกึ่งกลาง */
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); /* 3 คอลัมน์ */
+  gap: 32px 48px;             /* ระยะห่างแถว-คอลัมน์ */
+  justify-items: center;      /* การ์ดอยู่กลางในแต่ละคอลัมน์ */
 }
 
-.sidebar:hover {
-  width: 250px;
-  background-color: #999; /* เทา */
-  padding: 10px;
-}
+/* ===== Card Style ===== */
+.card {
+  width: 340px;               /* เดิม 280px → ขยาย */
+  height: 180px;              /* เดิม 140px → ขยาย */
+  background: #e0e0e0;
+  border-radius: 12px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.08);
 
-.sidebar a {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 10px;              /* ระยะห่าง icon-text */
-  padding: 10px;
+  justify-content: center;
+
   text-decoration: none;
-  color: #000;
-  transition: 0.3s;
-  white-space: nowrap;    /* กันข้อความตัดบรรทัด */
+  color: #222;
+  transition: transform .2s ease, box-shadow .2s ease;
 }
 
-.sidebar a i {
-  font-size: 30px;
-  min-width: 60px;        /* กัน icon ขยับเวลา hover */
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+}
+
+/* ===== Card Icon & Title ===== */
+.card__icon {
+  width: 80px;                /* เดิม 56px → ให้ใหญ่ขึ้น */
+  height: 80px;
+  object-fit: contain;
+  margin-bottom: 14px;
+}
+
+.card__title {
+  font-size: 22px;            /* เดิม 15px → ใหญ่ขึ้นนิด */
+  font-weight: 600;
   text-align: center;
 }
 
-.sidebar a span {
-  opacity: 0;             /* ซ่อนข้อความตอน sidebar แคบ */
-  transition: opacity 0.3s;
+/* ===== Responsive ===== */
+@media (max-width: 1100px) {
+  .dashboard__grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 
-.sidebar:hover a span {
-  opacity: 1;             /* โชว์ข้อความตอน hover */
-}
-
-.sidebar a:hover {
-  background-color: #d19ab0; /* ชมพู */
-  color: #000;
-  font-weight: bold;
+@media (max-width: 640px) {
+  .dashboard {
+    margin-left: 0;           /* มือถือไม่ต้องเว้น sidebar */
+    padding: 16px;
+  }
+  .dashboard__grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  .card {
+    width: 100%;
+    max-width: 360px;         /* กันไม่ให้ยืดเกินไป */
+    margin: 0 auto;
+    height: 200px;            /* ให้สูงขึ้นอีกสำหรับมือถือ */
+  }
 }

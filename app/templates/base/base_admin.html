@@ -4,12 +4,22 @@
     <meta charset="utf-8" />
     <title>{% block title %}Equipment Lending{% endblock %}</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}">
+      <link rel="stylesheet" href="{{ url_for('static', filename='css/naverbar_admin.css') }}">
     <link href="https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css" rel="stylesheet">
 
   </head>
   <body>
     {% include 'base/_navbar_register.html' %}
     <main class="container">
+    <div class="sidebar">
+    <a href="#"><i class="ri-home-4-line"></i><span>หน้าหลัก</span></a>
+    <a href="#"><i class="ri-tools-line"></i><span>จัดการอุปกรณ์</span></a>
+    <a href="#"><i class="ri-arrow-go-back-line"></i><span>คืนอุปกรณ์</span></a>
+    <a href="#"><i class="ri-time-line"></i><span>ประวัติยืม-คืน</span></a>
+    <a href="#"><i class="ri-alert-line"></i><span>อุปกรณ์สูญหาย/ชำรุด</span></a>
+    <a href="#"><i class="ri-account-circle-line"></i><span>จัดการสมาชิก</span></a>
+    <a href="#"><i class="ri-file-paper-2-line"></i><span>รายงานสรุป</span></a>
+    </div>
       {% block content %}{% endblock %}
     </main>
   </body>
