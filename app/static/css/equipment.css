@@ -1,0 +1,84 @@
+.Title {
+  font-size: 36px;
+  text-align: center;
+  margin: 30px 0;
+}
+
+.device_box {
+  background-color: rgb(173, 238, 217);
+  width: 350px;
+  height: auto; /* ขยายตามเนื้อหา */
+  border-radius: 15px;
+  display: flex;
+  align-items: center;
+  padding: 20px;
+  margin: 0 auto;
+  box-shadow: 0px 2px 6px rgba(0,0,0,0.2);
+  transition: transform 0.2s;
+}
+
+.device_box:hover {
+  transform: scale(1.05);
+}
+
+.image {
+  width: 150px;
+  height: auto;
+  margin-right: 20px;
+}
+
+.device_info {
+  display: flex;
+  flex-direction: column;
+  font-size: 18px;
+  flex: 1;
+  justify-content: center;
+}
+
+.device_name {
+  font-weight: bold;
+  margin-bottom: 4px; /* ลดระยะห่างลง ให้ชิดขึ้น */
+}
+
+.amount {
+  font-size: 16px;
+  margin-bottom: 20px; /* เพิ่มช่องว่างก่อนปุ่ม */
+}
+
+/* กล่องปุ่ม */
+.button_group {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px; /* ขยับปุ่มลงมา */
+}
+
+/* ปุ่ม */
+.btn {
+  flex: 1;
+  padding: 8px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: 0.3s;
+}
+
+/* ปุ่มรายละเอียด (เหลือง) */
+.btn-detail {
+  background-color: #ffc107; /* เหลือง */
+  color: #000;
+}
+
+.btn-detail:hover {
+  background-color: #e0a800;
+}
+
+/* ปุ่มยืม (น้ำเงิน) */
+.btn-borrow {
+  background-color: #2196f3;
+  color: white;
+}
+
+.btn-borrow:hover {
+  background-color: #1976d2;
+}

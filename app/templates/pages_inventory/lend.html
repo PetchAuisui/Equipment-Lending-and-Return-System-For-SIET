@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/equipment.css') }}">
+    <title>Equipment</title>
+</head>
+{% extends 'base/base.html' %}
+{% block title %}Equipment{% endblock %}
+{% block content %}
+<body>
+<h1 class="Title">ระบบยืมอุปกรณ์</h1>
+
+<div class="device_box">
+    <img class="image" src="{{ url_for('static', filename='images/hdmi.jpg') }}" alt="hdmi">
+    <div class="device_info">
+        <span class="device_name">สาย HDMI</span>
+        <span class="amount">จำนวนเครื่องที่ว่าง : 3</span>
+
+        <div class="button_group">
+        <button class="btn btn-detail">รายละเอียด</button>
+        <button class="btn btn-borrow" >ยืม</button>
+        </div>
+    </div>
+    </div>
+
+</body>
+{% endblock %}
+</html>
