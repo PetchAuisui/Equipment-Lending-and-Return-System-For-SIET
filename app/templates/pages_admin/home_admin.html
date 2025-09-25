@@ -1,13 +1,41 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/home_admin.css') }}">
-  <title>Home</title>
-</head>
 {% extends 'base/base_admin.html' %}
 {% block title %}home_admin{% endblock %}
 {% block content %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/home_admin.css') }}">
 
+<div class="dashboard">
+  <section class="dashboard__grid" aria-label="เมนูด่วน">
+
+    <a class="card" href="#">
+      <img class="card__icon" src="{{ url_for('static', filename='css/image/device.png') }}" alt="">
+      <div class="card__title">จัดการอุปกรณ์</div>
+    </a>
+
+    <a class="card" href="#">
+      <img class="card__icon" src="{{ url_for('static', filename='css/image/history.png') }}" alt="">
+      <div class="card__title">ประวัติยืม-คืน</div>
+    </a>
+
+    <a class="card" href="#">
+      <img class="card__icon" src="{{ url_for('static', filename='css/image/exclamation-mark.png') }}" alt="">
+      <div class="card__title">อุปกรณ์สูญหาย/ชำรุด</div>
+    </a>
+
+    <a class="card" href="#">
+      <img class="card__icon" src="{{ url_for('static', filename='css/image/back.png') }}" alt="">
+      <div class="card__title">คืนอุปกรณ์</div>
+    </a>
+
+    <a class="card" href="#">
+      <img class="card__icon" src="{{ url_for('static', filename='css/image/user.png') }}" alt="">
+      <div class="card__title">จัดการสมาชิก</div>
+    </a>
+
+    <a class="card" href="#">
+      <img class="card__icon" src="{{ url_for('static', filename='css/image/statistics.png') }}" alt="">
+      <div class="card__title">รายงานสรุปประจำเดือน</div>
+    </a>
+
+  </section>
+</div>
 {% endblock %}
-</html>
