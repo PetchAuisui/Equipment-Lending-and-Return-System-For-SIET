@@ -23,6 +23,14 @@ ENV/
 # Logs
 *.log
 
-# Mac / Windows files
+# SQLite / Database files
+*.db
+*.sqlite
+*.sqlite3
+
+# OS files
 .DS_Store
 Thumbs.db
+
+
+app.db
