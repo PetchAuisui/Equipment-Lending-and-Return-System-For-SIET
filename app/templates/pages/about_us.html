@@ -2,15 +2,15 @@
 {% block title %}About Us{% endblock %}
 
 {% block content %}
-<div style="padding: 30px; max-width: 850px;">
+<div style="padding: 30px; max-width: 850px; margin: auto; text-align: center;">
 
   <!-- หัวข้อหลัก -->
-  <h2 style="font-size: 20px; font-weight: bold; margin-bottom: 15px;">
+  <h2 style="font-size: 22px; font-weight: bold; margin-bottom: 20px;">
     ระบบจัดการการยืม–คืนอุปกรณ์ คณะครุศาสตร์อุตสาหกรรมและเทคโนโลยี
   </h2>
 
   <!-- ย่อหน้าอธิบาย -->
-  <p style="line-height: 1.8; font-size: 16px; margin-bottom: 25px;">
+  <p style="line-height: 1.9; font-size: 16px; margin-bottom: 30px;">
     ถูกพัฒนาขึ้นเพื่อแก้ปัญหาความไม่สะดวกของระบบเดิม<br>
     ทำให้การยืม–คืนอุปกรณ์ของนักศึกษาและอาจารย์เป็นเรื่องที่ 
     <strong>ง่าย สะดวก รวดเร็ว</strong><br>
@@ -50,11 +50,11 @@
     <a href="https://maps.google.com" target="_blank" style="color: #d19ab0;">ลิงก์แผนที่</a>
   </p>
 
-  <!-- ✅ ใช้รูปแผนที่แทน iframe -->
-  <div style="margin-top: 15px; border-radius: 12px; overflow: hidden; border: 1px solid #ddd;">
+  <!-- ✅ รูปแผนที่ -->
+  <div style="margin-top: 20px; display: flex; justify-content: center;">
     <img src="{{ url_for('static', filename='images/map.png') }}"
          alt="แผนที่คณะครุศาสตร์อุตสาหกรรม"
-         style="width: 100%; height: auto; display: block;">
+         style="max-width: 90%; height: auto; border-radius: 12px; border: 1px solid #ddd;">
   </div>
 
 </div>
