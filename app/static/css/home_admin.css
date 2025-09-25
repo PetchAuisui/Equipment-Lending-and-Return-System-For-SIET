@@ -17,8 +17,8 @@
 
 /* ===== Card Style ===== */
 .card {
-  width: 280px;               /* fix ความกว้างการ์ด */
-  height: 140px;              /* fix ความสูงการ์ด */
+  width: 340px;               /* เดิม 280px → ขยาย */
+  height: 180px;              /* เดิม 140px → ขยาย */
   background: #e0e0e0;
   border-radius: 12px;
   box-shadow: 0 2px 4px rgba(0,0,0,0.08);
@@ -40,14 +40,14 @@
 
 /* ===== Card Icon & Title ===== */
 .card__icon {
-  width: 56px;
-  height: 56px;
+  width: 80px;                /* เดิม 56px → ให้ใหญ่ขึ้น */
+  height: 80px;
   object-fit: contain;
-  margin-bottom: 12px;
+  margin-bottom: 14px;
 }
 
 .card__title {
-  font-size: 15px;
+  font-size: 22px;            /* เดิม 15px → ใหญ่ขึ้นนิด */
   font-weight: 600;
   text-align: center;
 }
@@ -70,7 +70,8 @@
   }
   .card {
     width: 100%;
-    max-width: 320px;
+    max-width: 360px;         /* กันไม่ให้ยืดเกินไป */
     margin: 0 auto;
+    height: 200px;            /* ให้สูงขึ้นอีกสำหรับมือถือ */
   }
 }
