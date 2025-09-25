@@ -1,62 +1,31 @@
 {% extends 'base/base.html' %}
 {% block title %}About Us{% endblock %}
 
-{% block content2 %}
-  <div class="about-banner">ระบบจัดการการยืม–คืนอุปกรณ์ คณะครุศาสตร์อุตสาหกรรมและเทคโนโลยี</div>
-{% endblock %}
-
 {% block content %}
-<div class="about-wrap">
-  <section class="about-section">
-    <p class="lead">
-      ถูกพัฒนาขึ้นเพื่อแก้ปัญหาความไม่สะดวกของระบบเดิม ทำให้การยืม–คืนเป็นเรื่อง
-      <b>ง่าย สะดวก รวดเร็ว</b> และตรวจสอบสถานะได้ทุกขั้นตอน
-      <b>ระบบนี้พัฒนาขึ้นโดยนักศึกษา เพื่อให้นักศึกษาใช้งานง่ายที่สุด</b>
-    </p>
-  </section>
+<div style="padding: 30px; max-width: 850px;">
 
-  <section class="about-section">
-    <h3><span class="ico">📞</span> ช่องทางติดต่อเพิ่มเติม</h3>
-    <ul class="about-list">
-      <li>Line : <a href="#">@kmitl</a></li>
-      <li>☎ 012-000-0000 <small>(สอบถามทั่วไป)</small></li>
-      <li>☎ 02-000-0000 <small>(อุปกรณ์/ดูแล)</small></li>
-      <li>✉ <a href="mailto:support@siet.kmitl.ac.th">@kmitl.ac.th</a></li>
-    </ul>
-  </section>
+  <h2 style="font-size: 20px; font-weight: bold; margin-bottom: 15px;">
+    ระบบจัดการการยืม–คืนอุปกรณ์ คณะครุศาสตร์อุตสาหกรรมและเทคโนโลยี
+  </h2>
 
-  <section class="about-section">
-    <h3><span class="ico">🕐</span> เวลาทำการ</h3>
-    <p>จันทร์–ศุกร์ <b>08:30–16:30 น.</b> (ปิดเสาร์–อาทิตย์/นักขัตฤกษ์)</p>
-  </section>
+  <p style="line-height: 1.8; font-size: 16px; margin-bottom: 25px;">
+    ถูกพัฒนาขึ้นเพื่อแก้ปัญหาความไม่สะดวกของระบบเดิม<br>
+    ทำให้การยืม–คืนอุปกรณ์ของนักศึกษาและอาจารย์เป็นเรื่องที่ 
+    <strong>ง่าย สะดวก รวดเร็ว</strong><br>
+    พร้อมทั้งสามารถตรวจสอบสถานะได้ทุกขั้นตอน 
+    <strong>ระบบนี้ถูกพัฒนาขึ้นโดยนักศึกษา เพื่อให้นักศึกษาใช้งานง่ายที่สุด</strong>
+  </p>
 
-  <section class="about-section">
-    <h3><span class="ico">📍</span> ที่ตั้ง</h3>
-    <p>
-      <b>คณะครุศาสตร์อุตสาหกรรมและเทคโนโลยี — School of Industrial Education (SIET)</b><br>
-      เลขที่ 1 ถนนฉลองกรุง แขวง/เขตลาดกระบัง กรุงเทพฯ 10520
-    </p>
-  </section>
+  <h3 style="font-size: 18px; font-weight: bold; margin-top: 30px;">📞 ช่องทางติดต่อเพิ่มเติม</h3>
+  <ul style="line-height: 1.9; font-size: 16px; list-style: none; padding-left: 0;">
+    <li>• Line : <a href="#" style="color: #d19ab0;">@kmitl</a></li>
+    <li>• ☎ 012-000-0000 <small>(สอบถามทั่วไป)</small></li>
+    <li>• ☎ 02-000-0000 <small>(สอบถามเรื่องอุปกรณ์)</small></li>
+    <li>• ✉ <a href="mailto:support@siet.kmitl.ac.th" style="color: #d19ab0;">@kmitl.ac.th</a></li>
+  </ul>
 
-  <section class="about-section">
-    <h3>แผนที่</h3>
-    <p>ดูตำแหน่งได้ที่ Google Maps : <a href="https://maps.google.com" target="_blank">ลิงก์แผนที่</a></p>
-    <div class="about-map">
-      <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3875.560739937284!2d100.777!3d13.729"
-              width="100%" height="360" style="border:0;" loading="lazy" allowfullscreen></iframe>
-    </div>
-  </section>
-</div>
-
-<style>
-  .about-banner{background:#e9e9ee;border-radius:8px;padding:10px 14px;font-weight:700;color:#222;margin:8px 0 12px;}
-  .about-wrap{background:#f4f4f6;border-radius:12px;padding:16px 18px;box-shadow:0 1px 2px rgba(0,0,0,.06) inset;}
-  .about-section{background:#fff;border-radius:10px;padding:14px 16px;margin-bottom:12px;border:1px solid #eee;}
-  .lead{line-height:1.85;margin:0;font-size:16px;}
-  h3{margin:0 0 8px;font-size:16px;font-weight:700}.ico{margin-right:6px}
-  .about-list{margin:0;padding-left:18px;line-height:1.9;font-size:15.5px}.about-list li{margin:2px 0}
-  .about-map{border-radius:12px;overflow:hidden;border:1px solid #e5e5e5}
-  a{color:#d19ab0;text-decoration:none}a:hover{text-decoration:underline}
-  @media (max-width:900px){.about-wrap{padding:12px}.about-section{padding:12px}}
-</style>
-{% endblock %}
+  <h3 style="font-size: 18px; font-weight: bold; margin-top: 30px;">🕐 เวลาทำการ</h3>
+  <p style="font-size: 16px; line-height: 1.8;">
+    วันจันทร์ – ศุกร์ เวลา <strong>08:30 – 16:30 น.</strong><br>
+    ปิดทำการวันเสาร์ – อาทิตย์ และวันหยุดนักขัตฤกษ์
+  </p>
