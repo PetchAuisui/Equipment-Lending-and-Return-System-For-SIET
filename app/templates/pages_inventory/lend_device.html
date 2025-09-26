@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/equipment.css') }}">
+    <title>Equipment</title>
+</head>
+{% extends 'base/base.html' %}
+{% block content %}
+
+<h1 class="Title">ระบบยืมอุปกรณ์</h1>
+<div class="device-container">
+{% for item in equipments %}
+  <div class="device_box">
+    <!-- แสดงรูป -->
+    <img class="image" src="{{ url_for('static', filename=item.image) }}" alt="{{ item.name }}">
+    
+    <!-- ข้อมูลอุปกรณ์ -->
+    <div class="device_info">
+      <span class="device_name">{{ item.name }}</span>
+      <span class="amount">จำนวนคงเหลือ : {{ item.amount }}</span>
+    </div>
+
+    <!-- ปุ่มกด -->
+    <div class="button_group">
+      <a href="#" class="btn btn-detail">รายละเอียด</a>
+      <a href="/equipment/lend" class="btn btn-borrow">ยืม</a>
+    </div>
+  </div>
+ 
+{% endfor %}
+ </div>
+
+{% endblock %}
+</html>

@@ -1,0 +1,150 @@
+body {
+  font-family: sans-serif;
+  margin: 0;
+  padding: 0;
+  background: #fff;
+}
+
+.header {
+  background: #f7de81; /* เหลือง */
+  margin: 20px auto;
+  max-width: 900px;
+  padding: 30px;
+  font-size: 20px;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.header i {
+  font-size: 35px;
+}
+
+.header span {
+  font-size: 24px;
+  font-weight: bold;
+  padding-left: 30px;
+}
+
+.form-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+form {
+  width: 100%;
+  max-width: 900px;
+}
+
+/* ==== รูป + ชื่ออุปกรณ์ + ID ==== */
+.top-row {
+  display: flex;
+  align-items: stretch;   /* ให้สูงเท่ากัน */
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+.top-row .image {
+  width: 200px;
+  height: auto;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  box-shadow: 0px 2px 5px rgba(0,0,0,0.2);
+}
+
+/* กล่องข้อความ (ชื่อ+ID) แบ่งบรรทัดเท่ากัน */
+.device-info-box {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.device-info-box .form-group {
+  flex: 1; /* ให้แต่ละบรรทัดสูงเท่ากัน */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+/* ==== ฟิลด์ทั่วไป ==== */
+.row {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 15px;
+}
+
+.form-group {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 15px;
+}
+
+label {
+  margin-bottom: 5px;
+  font-size: 14px;
+}
+
+input, textarea {
+  padding: 10px;
+  border: 1px solid #aaa;
+  border-radius: 5px;
+  font-size: 14px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+textarea {
+  resize: none;
+}
+
+/* ==== ปุ่ม ==== */
+.button-group {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.btn {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.btn-cancel {
+  text-decoration: none; /* เอาเส้นใต้ลิงก์ออก */
+  background: #d9534f; /* แดง */
+  color: white;
+}
+
+.btn-cancel:hover {
+  background: #c9302c;
+}
+
+.btn-submit {
+  background: #5cb85c; /* เขียว */
+  color: white;
+  text-decoration: none; /* เอาเส้นใต้ลิงก์ออก */
+  text-align: center;
+}
+
+
+.btn-submit:hover {
+  background: #449d44;
+}
+
+.footer-box {
+  width: 100%;              /* กว้างเต็มหน้าจอ */
+  height: 70px;
+  background: rgb(255, 166, 204);        /* พื้นหลังชมพู */
+  border-radius: 0;         /* ไม่เอาขอบโค้ง */
+  margin-top: 30px;         /* เว้นจากฟอร์มด้านบน */
+}
+
+
