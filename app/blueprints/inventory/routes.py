@@ -5,7 +5,10 @@ from . import inventory_bp
 def equipment_index():
     return render_template("pages_inventory/lend_device.html")
 
-@inventory_bp.get("/lend")
+@inventory_bp.get('/lend')
 def lend():
-    return render_template("pages_inventory/lend.html")
+    return render_template('pages_inventory/lend.html')
+
+
+
 
