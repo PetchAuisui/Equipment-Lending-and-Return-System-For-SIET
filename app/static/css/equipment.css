@@ -67,6 +67,8 @@
 .btn-detail {
   background-color: #ffc107; /* เหลือง */
   color: #000;
+    text-decoration: none; /* เอาเส้นใต้ลิงก์ออก */
+
 }
 
 .btn-detail:hover {
@@ -77,6 +79,9 @@
 .btn-borrow {
   background-color: #2196f3;
   color: white;
+    text-decoration: none; /* เอาเส้นใต้ลิงก์ออก */
+    text-align: center;
+
 }
 
 .btn-borrow:hover {
