@@ -1,89 +1,120 @@
+body {
+  font-family: sans-serif;
+  margin: 0;
+  padding: 0;
+  background: #fff;
+}
+
+/* ===== Title ===== */
 .Title {
   font-size: 36px;
   text-align: center;
   margin: 30px 0;
 }
 
-.device_box {
-  background-color: rgb(173, 238, 217);
-  width: 350px;
-  height: auto; /* ขยายตามเนื้อหา */
-  border-radius: 15px;
+/* ===== Container ของอุปกรณ์ ===== */
+.device-container {
   display: flex;
-  align-items: center;
-  padding: 20px;
+  flex-wrap: wrap;          /* ให้ตัดบรรทัดอัตโนมัติ */
+  gap: 20px;                /* ระยะห่างระหว่างกล่อง */
+  justify-content: center;  /* จัดให้อยู่ตรงกลาง */
+  max-width: 1200px;
   margin: 0 auto;
-  box-shadow: 0px 2px 6px rgba(0,0,0,0.2);
+  padding: 20px;
+}
+
+/* ===== กล่องอุปกรณ์ ===== */
+.device_box {
+  flex: 0 0 calc(33.333% - 20px); /* 3 กล่องต่อแถว */
+  box-sizing: border-box;
+
+  background: #f9f9f9;
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  padding: 20px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  box-shadow: 0px 2px 6px rgba(0,0,0,0.1);
   transition: transform 0.2s;
 }
 
 .device_box:hover {
-  transform: scale(1.05);
+  transform: scale(1.03);
 }
 
+/* ===== รูปอุปกรณ์ ===== */
 .image {
   width: 150px;
   height: auto;
-  margin-right: 20px;
+  margin-bottom: 15px;
 }
 
+/* ===== ข้อมูลอุปกรณ์ ===== */
 .device_info {
-  display: flex;
-  flex-direction: column;
-  font-size: 18px;
-  flex: 1;
-  justify-content: center;
+  text-align: center;
+  margin-bottom: 15px;
 }
 
 .device_name {
   font-weight: bold;
-  margin-bottom: 4px; /* ลดระยะห่างลง ให้ชิดขึ้น */
+  font-size: 18px;
+  display: block;
+  margin-bottom: 5px;
 }
 
 .amount {
-  font-size: 16px;
-  margin-bottom: 20px; /* เพิ่มช่องว่างก่อนปุ่ม */
+  font-size: 14px;
+  color: #555;
 }
 
-/* กล่องปุ่ม */
+/* ===== ปุ่ม ===== */
 .button_group {
   display: flex;
+  justify-content: center;
   gap: 10px;
-  margin-top: 20px; /* ขยับปุ่มลงมา */
+  width: 100%;
 }
 
-/* ปุ่ม */
 .btn {
   flex: 1;
-  padding: 8px;
-  border: none;
-  border-radius: 8px;
+  text-decoration: none;
+  padding: 8px 12px;
+  border-radius: 6px;
   cursor: pointer;
+  text-align: center;
   font-size: 14px;
   transition: 0.3s;
 }
 
-/* ปุ่มรายละเอียด (เหลือง) */
+/* ปุ่มรายละเอียด */
 .btn-detail {
-  background-color: #ffc107; /* เหลือง */
+  background: #ffc107; /* เหลือง */
   color: #000;
-    text-decoration: none; /* เอาเส้นใต้ลิงก์ออก */
-
 }
 
 .btn-detail:hover {
-  background-color: #e0a800;
+  background: #e0a800;
 }
 
-/* ปุ่มยืม (น้ำเงิน) */
+/* ปุ่มยืม */
 .btn-borrow {
-  background-color: #2196f3;
+  background: #2196f3; /* น้ำเงิน */
   color: white;
-    text-decoration: none; /* เอาเส้นใต้ลิงก์ออก */
-    text-align: center;
-
 }
 
 .btn-borrow:hover {
-  background-color: #1976d2;
+  background: #1976d2;
+}
+
+/* ===== Footer ===== */
+.footer-box {
+  width: 100%;
+  height: 70px;
+  background: rgb(255, 166, 204); /* พื้นหลังชมพู */
+  border-radius: 0;
+  margin-top: 30px;
+  border-top: 3px solid #3f8cff; /* เส้นฟ้าด้านบน */
 }

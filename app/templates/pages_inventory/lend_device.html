@@ -10,7 +10,7 @@
 {% block content %}
 
 <h1 class="Title">ระบบยืมอุปกรณ์</h1>
-
+<div class="device-container">
 {% for item in equipments %}
   <div class="device_box">
     <!-- แสดงรูป -->
@@ -25,12 +25,12 @@
     <!-- ปุ่มกด -->
     <div class="button_group">
       <a href="#" class="btn btn-detail">รายละเอียด</a>
-      {# ถ้าคุณมี route ชื่อ lend_device ใช้ endpoint นี้แทน lend #}
-      <a href="/lend" class="btn btn-borrow">ยืม</a>
+      <a href="/equipment/lend" class="btn btn-borrow">ยืม</a>
     </div>
   </div>
+ 
 {% endfor %}
-
+ </div>
 
 {% endblock %}
 </html>
