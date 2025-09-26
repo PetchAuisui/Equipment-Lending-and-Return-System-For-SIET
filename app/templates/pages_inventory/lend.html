@@ -4,13 +4,101 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/lend.css') }}">
+
     <title>Document</title>
 </head>
 {% extends 'base/base.html' %}
-{% block title %}Equipment{% endblock %}
+{% block title %}ยืมอุปกรณ์{% endblock %}
 {% block content %}
 <body>
-    
+  <!-- Header -->
+  <div class="header">
+    <i class="ri-file-edit-fill"></i>
+    <span>บันทึกการ “ยืม” อุปกรณ์</span>
+  </div>
+
+  <!-- Form -->
+  <div class="form-container">
+    <form>
+      <!-- รูป + ชื่ออุปกรณ์ + ID -->
+      <div class="top-row">
+        <img class="image" src="{{ url_for('static', filename='images/hdmi.jpg') }}" alt="hdmi">
+
+        <div class="device-info-box">
+          <div class="form-group">
+            <label>ชื่ออุปกรณ์</label>
+            <input type="text">
+          </div>
+          <div class="form-group">
+            <label>ID</label>
+            <input type="text">
+          </div>
+        </div>
+      </div>
+
+      <!-- วันที่ยืม + กำหนดคืน -->
+      <div class="row">
+        <div class="form-group">
+          <label>วันที่ยืม</label>
+          <input type="date">
+        </div>
+        <div class="form-group">
+          <label>วันที่กำหนดคืน</label>
+          <input type="date">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>ชื่อ-นามสกุล</label>
+        <input type="text">
+      </div>
+
+      <div class="form-group">
+        <label>เบอร์โทร</label>
+        <input type="text">
+      </div>
+
+      <div class="row">
+        <div class="form-group">
+          <label>ชั้นปี</label>
+          <input type="text">
+        </div>
+        <div class="form-group">
+          <label>สาขา</label>
+          <input type="text">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>วิชา</label>
+        <input type="text">
+      </div>
+
+      <div class="form-group">
+        <label>อาจารย์ประจำวิชา</label>
+        <input type="text">
+      </div>
+
+      <div class="form-group">
+        <label>เหตุผลในการยืม</label>
+        <textarea rows="3"></textarea>
+      </div>
+
+      <div class="button-group">
+        <button type="button" class="btn btn-cancel">ยกเลิก</button>
+        <button type="submit" class="btn btn-submit">ยืนยันการยืม</button>
+      </div>
+    </form>
+    <!-- กล่องล่างสุด -->
+<div class="footer-box"></div>
+
+
+  </div>
 </body>
+
+
+
+
+
 {% endblock %}
 </html>
