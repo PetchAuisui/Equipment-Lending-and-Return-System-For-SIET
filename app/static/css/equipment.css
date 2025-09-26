@@ -36,6 +36,7 @@
 }
 
 .device_name {
+  margin-top: 10px;
   font-weight: bold;
   margin-bottom: 4px; /* ลดระยะห่างลง ให้ชิดขึ้น */
 }
@@ -43,6 +44,7 @@
 .amount {
   font-size: 16px;
   margin-bottom: 20px; /* เพิ่มช่องว่างก่อนปุ่ม */
+  margin-top: 15px;
 }
 
 /* กล่องปุ่ม */
