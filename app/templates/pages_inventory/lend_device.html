@@ -7,26 +7,30 @@
     <title>Equipment</title>
 </head>
 {% extends 'base/base.html' %}
-{% block title %}Equipment{% endblock %}
 {% block content %}
-<body>
+
 <h1 class="Title">ระบบยืมอุปกรณ์</h1>
 
-<div class="device_box">
-    <img class="image" src="{{ url_for('static', filename='images/hdmi.jpg') }}" alt="hdmi">
+{% for item in equipments %}
+  <div class="device_box">
+    <!-- แสดงรูป -->
+    <img class="image" src="{{ url_for('static', filename=item.image) }}" alt="{{ item.name }}">
+    
+    <!-- ข้อมูลอุปกรณ์ -->
     <div class="device_info">
-        <span class="device_name">สาย HDMI</span>
-        <span class="amount">จำนวนคงเหลือ : 3</span>
-
-        <div class="button_group">
-        <a href="#" class="btn btn-detail">รายละเอียด</a>
-        <a href="{{ url_for('inventory.lend') }}" class="btn btn-borrow">ยืม</a>
-
-
-        </div>
-    </div>
+      <span class="device_name">{{ item.name }}</span>
+      <span class="amount">จำนวนคงเหลือ : {{ item.amount }}</span>
     </div>
 
-</body>
+    <!-- ปุ่มกด -->
+    <div class="button_group">
+      <a href="#" class="btn btn-detail">รายละเอียด</a>
+      {# ถ้าคุณมี route ชื่อ lend_device ใช้ endpoint นี้แทน lend #}
+      <a href="/lend" class="btn btn-borrow">ยืม</a>
+    </div>
+  </div>
+{% endfor %}
+
+
 {% endblock %}
 </html>
