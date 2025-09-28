@@ -1,0 +1,102 @@
+{% extends 'base/base_admin.html' %}
+{% block title %}จัดการสมาชิก | Admin{% endblock %}
+{% block content %}
+
+<link rel="stylesheet" href="{{ url_for('static', filename='css/admin_user.css') }}">
+
+<div class="admin-users">
+  <div class="container">
+
+    <!-- Header -->
+    <div class="page-header">
+      <div class="page-title">จัดการสมาชิก</div>
+
+    <form class="searchbar" method="get" action="{{ url_for('admin_users.index') }}">
+
+        <input type="text" name="q" placeholder="รหัส/ชื่อ/อีเมล" value="{{ q or '' }}">
+        <button type="submit">ค้นหา</button>
+      </form>
+    </div>
+
+    <!-- Card -->
+    <section class="card">
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th class="col-code">รหัส</th>
+              <th>ชื่อ</th>
+              <th class="col-role">บทบาท</th>
+              <th>อีเมล</th>
+              <th class="col-major">ภาควิชา</th>
+              <th class="col-phone">เบอร์โทรศัพท์</th>
+              <th class="col-actions">actions</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            {% if users and users|length %}
+              {% for u in users %}
+              <tr>
+                <td>{{ u.code or ('U' ~ u.id) }}</td>
+                <td>{{ u.name }}</td>
+                <td>
+                  {% set role = (u.role or 'member') %}
+                  <span class="badge
+                    {{ 'badge--admin' if role=='admin'
+                       else 'badge--student' if role=='student'
+                       else 'badge--staff' if role=='staff'
+                       else 'badge--default' }}">
+                    {{ role }}
+                  </span>
+                </td>
+                <td>{{ u.email }}</td>
+                <td>{{ u.major or '-' }}</td>
+                <td>{{ u.phone or '-' }}</td>
+                <td>
+                  <a class="btn btn--sm" href="#">แก้ไข</a>
+                </td>
+              </tr>
+              {% endfor %}
+            {% else %}
+              <tr>
+                <td colspan="7" class="empty"></td>
+              </tr>
+            {% endif %}
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Footer / Pager -->
+      <div class="table-footer">
+        <div class="meta">
+          แสดงหน้า {{ page or 1 }}/{{ total_pages or 1 }} (ทั้งหมด {{ total or 0 }} รายการ)
+        </div>
+
+        {% set base = request.path %}
+        <nav class="pager">
+          {% if page and total_pages and page > 1 %}
+            <a href="{{ base }}?q={{ q or '' }}&page=1&per_page={{ per_page or 10 }}">« หน้าแรก</a>
+            <a href="{{ base }}?q={{ q or '' }}&page={{ page-1 }}&per_page={{ per_page or 10 }}">ก่อนหน้า</a>
+          {% else %}
+            <span class="disabled">« หน้าแรก</span>
+            <span class="disabled">ก่อนหน้า</span>
+          {% endif %}
+
+          <span class="current">หน้า {{ page or 1 }}</span>
+
+          {% if page and total_pages and page < total_pages %}
+            <a href="{{ base }}?q={{ q or '' }}&page={{ page+1 }}&per_page={{ per_page or 10 }}">ถัดไป</a>
+            <a href="{{ base }}?q={{ q or '' }}&page={{ total_pages }}&per_page={{ per_page or 10 }}">หน้าสุดท้าย »</a>
+          {% else %}
+            <span class="disabled">ถัดไป</span>
+            <span class="disabled">หน้าสุดท้าย »</span>
+          {% endif %}
+        </nav>
+      </div>
+    </section>
+
+  </div>
+</div>
+
+{% endblock %}
