@@ -1,0 +1,186 @@
+/* ===== Admin Users page (scoped) ===== */
+.admin-users {
+  --pink: #f6a6bf;         /* สีหัวชมพู */
+  --ink: #1f2937;          /* ตัวอักษรหลัก */
+  --muted: #6b7280;        /* ตัวอักษรรอง */
+  --line: #eceef2;         /* เส้นคั่น */
+  --card: #ffffff;
+  --chip-bg: #eef2ff;
+  --chip-tx: #334155;
+  --radius: 12px;
+  --shadow: 0 6px 18px rgba(0,0,0,.06);
+  padding: 20px 24px 32px;
+  margin-left: 72px;       /* เว้นจาก sidebar ซ้าย */
+  color: var(--ink);
+  font-size: 16px;
+}
+
+/* จำกัดความกว้าง + จัดกึ่งกลางคอนเทนต์ */
+.admin-users .container {
+  max-width: 1180px;
+  margin: 0 auto;
+}
+
+/* ===== Header ===== */
+.admin-users .page-header {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 12px;
+}
+.admin-users .page-title {
+  font-size: 20px;
+  font-weight: 700;
+}
+.admin-users .searchbar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.admin-users .searchbar input[type="text"] {
+  width: 320px;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  outline: none;
+}
+.admin-users .searchbar button {
+  padding: 10px 14px;
+  border: 0;
+  border-radius: 10px;
+  background: var(--pink);
+  color: #fff;
+  cursor: pointer;
+  transition: transform .04s ease, filter .2s ease;
+}
+.admin-users .searchbar button:active { transform: translateY(1px); }
+.admin-users .searchbar button:hover  { filter: brightness(.95); }
+
+/* ===== Card/Table wrapper ===== */
+.admin-users .card {
+  background: var(--card);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+
+/* ทำหัวตารางติดบนเวลาเลื่อน */
+.admin-users .table-wrap {
+  max-height: calc(100vh - 220px);
+  overflow: auto;
+  border-top-left-radius: var(--radius);
+  border-top-right-radius: var(--radius);
+}
+
+/* ===== Table ===== */
+.admin-users table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 920px;
+}
+
+.admin-users thead th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background: #fff5f8;               /* โทนชมพูอ่อนให้เข้ากับแถบบน */
+  color: var(--ink);
+  text-align: left;
+  font-weight: 700;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--line);
+}
+
+.admin-users tbody td {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--line);
+  vertical-align: middle;
+  color: var(--ink);
+}
+
+.admin-users tbody tr:nth-child(odd)  { background: #fcfcfd; } /* ซิกแซกอ่อน */
+.admin-users tbody tr:hover           { background: #f8fafc; } /* hover */
+
+/* ปรับความกว้างคอลัมน์ยอดฮิต */
+.admin-users th.col-code   { width: 120px; }
+.admin-users th.col-role   { width: 140px; }
+.admin-users th.col-major  { width: 180px; }
+.admin-users th.col-phone  { width: 150px; }
+.admin-users th.col-actions{ width: 120px; }
+
+/* ===== Badges ===== */
+.admin-users .badge {
+  display: inline-block;
+  padding: 5px 10px;
+  font-size: 12px;
+  font-weight: 700;
+  border-radius: 999px;
+  background: var(--chip-bg);
+  color: var(--chip-tx);
+}
+.admin-users .badge--admin   { background: #ffe8e8; color: #b91c1c; }
+.admin-users .badge--student { background: #e7f3ff; color: #075985; }
+.admin-users .badge--staff   { background: #fff4e6; color: #b45309; }
+
+/* ===== Buttons ===== */
+.admin-users .btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  border-radius: 10px;
+  border: 1px solid #e7e7e7;
+  background: #fff;
+  color: #111827;
+  text-decoration: none;
+  cursor: pointer;
+}
+.admin-users .btn:hover { background: #f5f7fa; }
+.admin-users .btn--sm   { padding: 6px 10px; font-size: 14px; }
+
+/* ===== Footer / Pager ===== */
+.admin-users .table-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  border-top: 1px solid var(--line);
+}
+.admin-users .pager { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.admin-users .pager a,
+.admin-users .pager span {
+  padding: 6px 10px;
+  border-radius: 8px;
+}
+.admin-users .pager a { color: #1d4ed8; text-decoration: none; }
+.admin-users .pager a:hover { background: #e6eefc; }
+.admin-users .pager .disabled { color: #9ca3af; }
+.admin-users .pager .current  { font-weight: 700; }
+
+/* ===== Empty state ===== */
+.admin-users .empty {
+  text-align: center;
+  color: var(--muted);
+  padding: 22px 16px;
+}
+.admin-users .empty::before {
+  content: "ไม่พบข้อมูล —";
+  margin-right: 6px;
+  color: #9aa1ab;
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 1024px) {
+  .admin-users { margin-left: 64px; }
+  .admin-users .searchbar input[type="text"] { width: 240px; }
+}
+
+@media (max-width: 640px) {
+  .admin-users { margin-left: 56px; padding: 16px 14px 24px; }
+  .admin-users .page-header { grid-template-columns: 1fr; align-items: start; gap: 10px; }
+  .admin-users .searchbar { width: 100%; }
+  .admin-users .searchbar input[type="text"] { width: 100%; }
+  .admin-users .table-wrap { max-height: calc(100vh - 260px); }
+}
