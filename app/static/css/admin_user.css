@@ -74,7 +74,7 @@
   z-index: 1;
   background: #fff5f8;
   color: var(--ink);
-  text-align: left;
+  text-align: center;
   font-weight: 700;
   padding: 14px 16px;
   border-bottom: 1px solid var(--line);
@@ -103,7 +103,11 @@
   overflow: hidden;
   text-overflow: ellipsis;
 }
-
+.admin-users td.col-actions {
+  display: flex;
+  justify-content: center;   /* ✅ กึ่งกลางในแนวนอน */
+  gap: 8px;                  /* ✅ เว้นระยะระหว่างปุ่ม */
+}
 /* ===== Badges ===== */
 .admin-users .badge {
   display: inline-block;
