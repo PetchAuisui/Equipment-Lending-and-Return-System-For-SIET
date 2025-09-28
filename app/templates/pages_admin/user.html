@@ -11,8 +11,7 @@
     <div class="page-header">
       <div class="page-title">จัดการสมาชิก</div>
 
-    <form class="searchbar" method="get" action="{{ url_for('admin_users.index') }}">
-
+      <form class="searchbar" method="get" action="{{ url_for('admin_users.index') }}">
         <input type="text" name="q" placeholder="รหัส/ชื่อ/อีเมล" value="{{ q or '' }}">
         <button type="submit">ค้นหา</button>
       </form>
@@ -25,8 +24,9 @@
           <thead>
             <tr>
               <th class="col-code">รหัส</th>
-              <th>ชื่อ</th>
+              <th class="col-name">ชื่อ</th>     <!-- ✅ เพิ่ม class -->
               <th class="col-role">บทบาท</th>
+              <th class="col-role">ประเภทสมาชิก</th>
               <th>อีเมล</th>
               <th class="col-major">ภาควิชา</th>
               <th class="col-phone">เบอร์โทรศัพท์</th>
@@ -38,8 +38,8 @@
             {% if users and users|length %}
               {% for u in users %}
               <tr>
-                <td>{{ u.code or ('U' ~ u.id) }}</td>
-                <td>{{ u.name }}</td>
+                <td>{{ u.code or ('U' ~ u.user_id) }}</td>
+                <td class="col-name">{{ u.name }}</td>
                 <td>
                   {% set role = (u.role or 'member') %}
                   <span class="badge
@@ -50,17 +50,21 @@
                     {{ role }}
                   </span>
                 </td>
+                <td>
+                  <span class="badge badge--default">{{ u.member_type or '-' }}</span>
+                </td>
                 <td>{{ u.email }}</td>
                 <td>{{ u.major or '-' }}</td>
                 <td>{{ u.phone or '-' }}</td>
                 <td>
-                  <a class="btn btn--sm" href="#">แก้ไข</a>
+                    <a class="btn btn--sm btn-edit" href="#">แก้ไข</a>
+                    <a class="btn btn--sm btn-delete" href="#">ลบ</a>
                 </td>
               </tr>
               {% endfor %}
             {% else %}
               <tr>
-                <td colspan="7" class="empty"></td>
+                <td colspan="8" class="empty">ไม่พบข้อมูล</td>
               </tr>
             {% endif %}
           </tbody>
@@ -98,5 +102,8 @@
 
   </div>
 </div>
+
+<!-- ✅ JS -->
+<script src="{{ url_for('static', filename='js/admin_user.js') }}"></script>
 
 {% endblock %}
