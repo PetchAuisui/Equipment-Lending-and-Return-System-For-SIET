@@ -92,7 +92,18 @@
           <option value="female" {% if user.gender=='female' %}selected{% endif %}>หญิง</option>
           <option value="other"  {% if user.gender=='other' %}selected{% endif %}>อื่นๆ</option>
         </select>
-      </div>
+      </div> 
+{% set selected_role =
+    (old.role if (old is defined and old and old.get('role')) else
+     (user.role if (user is defined and user and user.role) else "member")) %}
+
+<div class="form-group">
+  <label for="role">สิทธิ์การใช้งาน:</label>
+  <select id="role" class="auth__input" name="role" required>
+    <option value="member" {{ "selected" if selected_role=="member" else "" }}>สมาชิกทั่วไป</option>
+    <option value="staff"  {{ "selected" if selected_role=="staff" else "" }}>ผู้ดูแลระบบ</option>
+  </select>
+</div>
 
       <div class="form-actions">
         <button type="submit" class="btn btn-save">บันทึก</button>
