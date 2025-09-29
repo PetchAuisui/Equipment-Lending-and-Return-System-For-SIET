@@ -1,0 +1,23 @@
+.btn-edit {
+  background-color: #facc15; /* เหลือง */
+  color: #000;
+  padding: 6px 12px;
+  border-radius: 6px;
+  text-decoration: none;
+}
+
+.btn-save {
+  background-color: #16a34a; /* เขียว */
+  color: #fff;
+  padding: 8px 16px;
+  border-radius: 6px;
+  border: none;
+}
+
+.btn-cancel {
+  background-color: #ef4444; /* แดง */
+  color: #fff;
+  padding: 8px 16px;
+  border-radius: 6px;
+  text-decoration: none;
+}

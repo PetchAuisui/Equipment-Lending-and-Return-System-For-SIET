@@ -1,0 +1,47 @@
+{% extends 'base/base_admin.html' %}
+{% block title %}แก้ไขสมาชิก{% endblock %}
+{% block content %}
+
+<link rel="stylesheet" href="{{ url_for('static', filename='css/admin_user.css') }}">
+
+<div class="admin-users">
+  <div class="container">
+    <h2>แก้ไขข้อมูลสมาชิก</h2>
+
+    <form method="post"
+          action="{{ url_for('admin_users.edit_user_action', user_id=user.user_id) }}">
+      <label>ชื่อ:</label>
+      <input type="text" name="name" value="{{ user.name }}" required>
+
+      <label>อีเมล:</label>
+      <input type="email" name="email" value="{{ user.email }}" required>
+
+      <label>เบอร์โทร:</label>
+      <input type="text" name="phone" value="{{ user.phone or '' }}">
+
+      <label>ภาควิชา:</label>
+      <input type="text" name="major" value="{{ user.major or '' }}">
+
+      <label>ประเภทสมาชิก:</label>
+      <select name="member_type">
+        <option value="student"  {% if user.member_type=='student' %}selected{% endif %}>นักศึกษา</option>
+        <option value="teacher"  {% if user.member_type=='teacher' %}selected{% endif %}>อาจารย์</option>
+        <option value="officer"  {% if user.member_type=='officer' %}selected{% endif %}>เจ้าหน้าที่</option>
+        <option value="staff"    {% if user.member_type=='staff' %}selected{% endif %}>บุคลากร</option>
+      </select>
+
+      <label>เพศ:</label>
+      <select name="gender">
+        <option value="male"   {% if user.gender=='male' %}selected{% endif %}>ชาย</option>
+        <option value="female" {% if user.gender=='female' %}selected{% endif %}>หญิง</option>
+        <option value="other"  {% if user.gender=='other' %}selected{% endif %}>อื่นๆ</option>
+      </select>
+
+      <div style="margin-top:12px; display:flex; gap:10px;">
+        <button type="submit" class="btn btn-save">บันทึก</button>
+        <a href="{{ url_for('admin_users.index') }}" class="btn btn-cancel">ยกเลิก</a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}
