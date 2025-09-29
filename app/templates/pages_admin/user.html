@@ -24,7 +24,7 @@
           <thead>
             <tr>
               <th class="col-code">รหัส</th>
-              <th class="col-name">ชื่อ</th>     <!-- ✅ เพิ่ม class -->
+              <th class="col-name">ชื่อ</th>    
               <th class="col-role">บทบาท</th>
               <th class="col-role">ประเภทสมาชิก</th>
               <th>อีเมล</th>
@@ -58,7 +58,11 @@
                 <td>{{ u.phone or '-' }}</td>
                 <td class="col-actions">
                     <a class="btn btn--sm btn-edit" href="#">แก้ไข</a>
-                    <a class="btn btn--sm btn-delete" href="#">ลบ</a>
+                    <a href="#" 
+                      class="btn btn--sm btn-delete" 
+                      onclick="return confirmDelete({{ u.user_id }});">
+                      ลบ
+                    </a>                
                 </td>
               </tr>
               {% endfor %}
