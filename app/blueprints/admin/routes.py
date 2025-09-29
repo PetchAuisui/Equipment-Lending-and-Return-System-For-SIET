@@ -51,9 +51,18 @@ def edit_user_page(user_id: int):
 @admin_users_bp.post("/<int:user_id>/edit", endpoint="edit_user_action")
 def edit_user_action(user_id: int):
     svc = _svc()
-    updated, err = svc.update_user(user_id, request.form.to_dict())
+    form = request.form.to_dict()
+    updated, err = svc.update_user(user_id, form)
+
     if err:
-        flash(err, "error")
-        return redirect(url_for("admin_users.edit_user_page", user_id=user_id))
+        # ✅ แสดงหน้าเดิม พร้อม error + old เพื่อให้ Jinja ใส่ค่ากลับให้
+        user = svc.get_user(user_id)
+        return render_template(
+            "admin/edit_user.html",
+            user=user,
+            error=err,
+            old=form
+        ), 400
+
     flash("อัปเดตข้อมูลเรียบร้อยแล้ว ✅", "success")
     return redirect(url_for("admin_users.index"))
