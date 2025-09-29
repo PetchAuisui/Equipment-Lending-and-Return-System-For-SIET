@@ -1,23 +1,99 @@
-.btn-edit {
-  background-color: #facc15; /* เหลือง */
-  color: #000;
-  padding: 6px 12px;
-  border-radius: 6px;
-  text-decoration: none;
+/* ===== Page Wrapper ===== */
+.admin-users {
+  padding: 32px;
+  background: #f9fafb;
+  min-height: 100vh;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
 }
 
-.btn-save {
-  background-color: #16a34a; /* เขียว */
-  color: #fff;
-  padding: 8px 16px;
-  border-radius: 6px;
+.admin-users h2 {
+  font-size: 1.6rem;
+  font-weight: 600;
+  margin-bottom: 20px;
+  color: #1f2937; /* เทาเข้ม */
+}
+
+/* ===== Form Card ===== */
+.admin-users form {
+  background: #fff;
+  padding: 24px;
+  border-radius: 12px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.06);
+  max-width: 600px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* ===== Form Group ===== */
+.form-group {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 16px;
+}
+
+.form-group label {
+  margin-bottom: 6px;
+  font-weight: 600;
+  color: #374151; /* เทาเข้ม */
+}
+
+.form-group input,
+.form-group select {
+  padding: 10px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  background: #fff;
+  transition: border 0.2s, box-shadow 0.2s;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+  border-color: #3b82f6; /* ฟ้า */
+  box-shadow: 0 0 0 3px rgba(59,130,246,0.25);
+  outline: none;
+}
+
+/* ===== Actions ===== */
+.form-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+/* ===== Buttons ===== */
+.btn {
+  padding: 10px 18px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-block;
+  text-align: center;
+  transition: background 0.2s, transform 0.1s;
   border: none;
 }
 
-.btn-cancel {
-  background-color: #ef4444; /* แดง */
+.btn-save {
+  background: #16a34a;
   color: #fff;
-  padding: 8px 16px;
-  border-radius: 6px;
-  text-decoration: none;
+}
+.btn-save:hover { background: #15803d; }
+.btn-save:active { transform: translateY(1px); }
+
+.btn-cancel {
+  background: #ef4444;
+  color: #fff;
+}
+.btn-cancel:hover { background: #dc2626; }
+.btn-cancel:active { transform: translateY(1px); }
+
+.admin-users h2 {
+  font-size: 1.6rem;
+  font-weight: 600;
+  margin-bottom: 20px;
+  color: #1f2937; /* เทาเข้ม */
+  text-align: center;        /* ✅ จัดกลาง */
 }
