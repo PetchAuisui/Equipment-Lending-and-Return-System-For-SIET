@@ -1,6 +1,7 @@
 from math import ceil
 from typing import Dict, Any, List
 from app.repositories.user_repository import UserRepository
+from sqlalchemy import text
 
 class AdminUserService:
     def __init__(self, repo: UserRepository):
@@ -31,8 +32,8 @@ class AdminUserService:
                 "code": code,
                 "name": u.get("name", "-"),
                 "email": u.get("email", "-"),
-                "role": u.get("role", "member"),                 # ✅ role
-                "member_type": u.get("member_type", "-"),        # ✅ member_type
+                "role": u.get("role", "member"),               
+                "member_type": u.get("member_type", "-"),   
                 "major": u.get("major", "-"),
                 "phone": u.get("phone", "-"),
             })
@@ -47,3 +48,13 @@ class AdminUserService:
             "total_pages": total_pages,
             "q": q,
         }
+    
+
+    def drop_user(self, user_id: int) -> bool:
+        sql = text("DELETE FROM users WHERE user_id = :uid RETURNING user_id")
+        row = self.repo.session.execute(sql, {"uid": user_id}).first()
+        if not row:
+            return False    
+        self.repo.session.commit()
+        return True
+    
