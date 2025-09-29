@@ -16,7 +16,7 @@
 }
 
 .admin-users .container {
-  max-width: 1180px;
+  max-width: 1300px;
   margin: 0 auto;
 }
 
@@ -65,7 +65,7 @@
 .admin-users table {
   width: 100%;
   border-collapse: collapse;
-  table-layout: auto;   /* ✅ ปล่อยให้ auto */
+  table-layout: auto;
   min-width: 920px;
 }
 .admin-users thead th {
@@ -81,7 +81,7 @@
 }
 .admin-users tbody td {
   padding: 12px 16px;
-  border-bottom: 1px solid var(--line);
+  border-bottom: 1px solid #f0f2f5;  /* เส้นอ่อนลงจากสีเดิม */
   vertical-align: middle;
   color: var(--ink);
 }
@@ -91,10 +91,16 @@
 /* ===== Columns ===== */
 .admin-users th.col-code   { width: 120px; }
 .admin-users th.col-role   { width: 140px; }
-.admin-users th.col-major  { width: 180px; }
+.admin-users th.col-major,
+.admin-users td.col-major {
+  min-width: 190px;
+  width: 10%;         /* ขยายกว้างขึ้น */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
 .admin-users th.col-phone  { width: 150px; }
-.admin-users th.col-actions{ width: 120px; }
-/* ✅ ขยายช่องชื่อ */
+.admin-users th.col-actions{ width: 140px; }
 .admin-users th.col-name,
 .admin-users td.col-name {
   min-width: 155px;
@@ -103,11 +109,15 @@
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
+/* ===== Actions column ===== */
 .admin-users td.col-actions {
   display: flex;
-  justify-content: center;   /* ✅ กึ่งกลางในแนวนอน */
-  gap: 8px;                  /* ✅ เว้นระยะระหว่างปุ่ม */
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
 }
+
 /* ===== Badges ===== */
 .admin-users .badge {
   display: inline-block;
@@ -126,17 +136,37 @@
 .admin-users .btn {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  padding: 8px 12px;
-  border-radius: 10px;
-  border: 1px solid #e7e7e7;
-  background: #fff;
-  color: #111827;
-  text-decoration: none;
+  justify-content: center;
+  min-width: 70px;
+  padding: 8px 14px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
   cursor: pointer;
+  border: 1px solid transparent;
+  transition: all 0.2s ease;
+  text-decoration: none;
 }
-.admin-users .btn:hover { background: #f5f7fa; }
-.admin-users .btn--sm   { padding: 6px 10px; font-size: 14px; }
+
+/* ปุ่มแก้ไข */
+.admin-users .btn-edit {
+  background: #fef3c7;   /* เหลืองนวล */
+  border: 1px solid #facc15;
+  color: #92400e;
+}
+.admin-users .btn-edit:hover {
+  background: #fcd34d;   /* hover เข้ม */
+}
+
+/* ปุ่มลบ */
+.admin-users .btn-delete {
+  background: #fecaca;   /* แดงอ่อน */
+  border: 1px solid #ef4444;
+  color: #991b1b;
+}
+.admin-users .btn-delete:hover {
+  background: #f87171;   /* hover แดงสด */
+}
 
 /* ===== Footer / Pager ===== */
 .admin-users .table-footer {
@@ -169,26 +199,6 @@
   margin-right: 6px;
   color: #9aa1ab;
 }
-
-/* ===== ปุ่มเฉพาะ action ===== */
-.admin-users .btn-edit {
-  background: #fef9c3;   /* เหลืองอ่อน */
-  border-color: #facc15;
-  color: #92400e;
-}
-.admin-users .btn-edit:hover {
-  background: #fde68a;
-}
-
-.admin-users .btn-delete {
-  background: #fee2e2;   /* แดงอ่อน */
-  border-color: #ef4444;
-  color: #991b1b;
-}
-.admin-users .btn-delete:hover {
-  background: #fca5a5;
-}
-
 
 /* ===== Responsive ===== */
 @media (max-width: 1024px) {
