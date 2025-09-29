@@ -7,16 +7,19 @@ from app.services.admin_user_service import AdminUserService
 # ----- /admin (dashboard) -----
 admin_bp = Blueprint("admin", __name__, url_prefix="/admin")
 
+
 @admin_bp.get("/")
 def admin_home():
-    return render_template("pages_admin/home_admin.html")
+    return render_template("admin/home_admin.html")
 
 
 # ----- /admin/users (จัดการสมาชิก) -----
 admin_users_bp = Blueprint("admin_users", __name__, url_prefix="/admin/users")
 
+
 def _svc():
     return AdminUserService(UserRepository(SessionLocal()))
+
 
 @admin_users_bp.get("/", endpoint="index")
 def users_index():
@@ -26,7 +29,7 @@ def users_index():
 
     svc = _svc()
     payload = svc.get_user_table(page=page, per_page=per_page, q=q)
-    return render_template("pages_admin/user.html", **payload)
+    return render_template("admin/user.html", **payload)
 
 
 @admin_users_bp.post("/<int:user_id>/delete")
