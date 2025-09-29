@@ -6,11 +6,49 @@
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
 }
 
+/* กรอบเนื้อหาให้กว้างกำลังดีและอยู่กลางหน้า */
+.admin-users .container {
+  max-width: 720px;
+  margin: 0 auto;
+}
+
 .admin-users h2 {
   font-size: 1.6rem;
   font-weight: 600;
   margin-bottom: 20px;
-  color: #1f2937; /* เทาเข้ม */
+  color: #1f2937;             /* เทาเข้ม */
+  text-align: center;         /* จัดกลาง */
+}
+
+/* ===== Alerts / Flash / Error Bar ===== */
+.alerts {
+  margin: 0 auto 12px;
+  width: 100%;
+  max-width: 600px;           /* ให้เท่ากับความกว้างฟอร์ม */
+}
+
+.alert {
+  width: 100%;
+  max-width: 600px;           /* กันล้นต่อให้ลืมห่อด้วย .alerts */
+  margin: 0 auto 8px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: #f4f4f5;
+  color: #374151;
+  border: 1px solid #e5e7eb;
+  box-sizing: border-box;
+  overflow-wrap: anywhere;    /* ตัดคำยาว ๆ */
+}
+.alert-success { background: #ecfdf5; color: #065f46; border-color: #a7f3d0; }
+.alert-info    { background: #eef2ff; color: #3730a3; border-color: #c7d2fe; }
+.alert-error   { background: #fef2f2; color: #991b1b; border-color: #fecaca; }
+
+/* ข้อความผิดพลาดใต้ฟิลด์ */
+.field-error {
+  display: block;
+  margin-top: 6px;
+  font-size: 12px;
+  color: #b91c1c;
 }
 
 /* ===== Form Card ===== */
@@ -19,7 +57,7 @@
   padding: 24px;
   border-radius: 12px;
   box-shadow: 0 4px 8px rgba(0,0,0,0.06);
-  max-width: 600px;
+  max-width: 600px;           /* ให้พอดีกับ alerts */
   margin: 0 auto;
   display: flex;
   flex-direction: column;
@@ -36,24 +74,42 @@
 .form-group label {
   margin-bottom: 6px;
   font-weight: 600;
-  color: #374151; /* เทาเข้ม */
+  color: #374151;             /* เทาเข้ม */
 }
 
+/* อินพุต/เซเลกต์ (รวม .auth__input ที่มีอยู่เดิม) */
 .form-group input,
-.form-group select {
+.form-group select,
+.auth__input {
   padding: 10px 12px;
   border: 1px solid #d1d5db;
   border-radius: 8px;
   font-size: 0.95rem;
   background: #fff;
   transition: border 0.2s, box-shadow 0.2s;
+  width: 100%;
 }
 
 .form-group input:focus,
-.form-group select:focus {
-  border-color: #3b82f6; /* ฟ้า */
+.form-group select:focus,
+.auth__input:focus {
+  border-color: #3b82f6;      /* ฟ้า */
   box-shadow: 0 0 0 3px rgba(59,130,246,0.25);
   outline: none;
+}
+
+/* ไฮไลต์ช่องที่มี error (เติม class .is-invalid ที่ input/select เมื่อ validate ไม่ผ่าน) */
+.is-invalid {
+  border-color: #ef4444 !important;
+  box-shadow: 0 0 0 3px rgba(239,68,68,0.2) !important;
+}
+
+/* ปรับหัวข้อ optgroup ให้ดูเด่นขึ้น */
+select optgroup {
+  color: #6b7280;             /* เทาอ่อน */
+  font-style: normal;
+  font-weight: 600;
+  padding-top: 4px;
 }
 
 /* ===== Actions ===== */
@@ -61,6 +117,8 @@
   display: flex;
   gap: 12px;
   margin-top: 20px;
+  justify-content: center;
+  flex-wrap: wrap;
 }
 
 /* ===== Buttons ===== */
@@ -74,6 +132,7 @@
   text-align: center;
   transition: background 0.2s, transform 0.1s;
   border: none;
+  min-width: 120px;
 }
 
 .btn-save {
@@ -90,10 +149,9 @@
 .btn-cancel:hover { background: #dc2626; }
 .btn-cancel:active { transform: translateY(1px); }
 
-.admin-users h2 {
-  font-size: 1.6rem;
-  font-weight: 600;
-  margin-bottom: 20px;
-  color: #1f2937; /* เทาเข้ม */
-  text-align: center;        /* ✅ จัดกลาง */
+/* ===== Responsive ===== */
+@media (max-width: 640px) {
+  .admin-users { padding: 20px 16px; }
+  .admin-users form { padding: 16px; max-width: 100%; }
+  .alerts, .alert { max-width: 100%; }
 }
