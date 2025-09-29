@@ -76,7 +76,7 @@ class AdminUserService:
         major  = v.norm(data.get("major"))  or (current.get("major") or "")
         mtype  = (v.norm(data.get("member_type")) or (current.get("member_type") or "")).lower()
         gender = (v.norm(data.get("gender")) or (current.get("gender") or "")).lower()
-        role   = (v.norm(data.get("role")) or (current.get("role") or "member")).lower()  # ✅ ตรวจ role
+        role   = (v.norm(data.get("role")) or (current.get("role") or "member")).lower()  
 
         if not name:
             return "Missing field: name"
@@ -88,7 +88,7 @@ class AdminUserService:
             return f"member_type must be one of: {', '.join(ALLOWED_MEMBER_TYPES)}"
         if gender and gender not in ALLOWED_GENDERS:
             return f"gender must be one of: {', '.join(ALLOWED_GENDERS)}"
-        if role and role not in ALLOWED_ROLES:                              # ✅ ตรวจ role
+        if role and role not in ALLOWED_ROLES:                             
             return f"role must be one of: {', '.join(ALLOWED_ROLES)}"
 
         # ตรวจอีเมลซ้ำเฉพาะกรณีเปลี่ยนจริง
@@ -111,7 +111,7 @@ class AdminUserService:
             return None, err
 
         # อัปเดตเฉพาะคีย์ที่ส่งมา (partial update)
-        allowed = {"name", "email", "phone", "major", "member_type", "gender", "role"}  # ✅ เพิ่ม role
+        allowed = {"name", "email", "phone", "major", "member_type", "gender", "role"} 
         payload = {}
         for k in allowed:
             if k in data:
