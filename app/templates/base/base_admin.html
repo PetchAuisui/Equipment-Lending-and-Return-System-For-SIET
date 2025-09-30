@@ -12,12 +12,12 @@
     {% include 'base/_navbar_register.html' %}
     <main class="container">
     <div class="sidebar">
-    <a href="#"><i class="ri-home-4-line"></i><span>หน้าหลัก</span></a>
+    <a href="{{ url_for('admin.admin_home') }}"><i class="ri-home-4-line"></i><span>หน้าหลัก</span></a>
     <a href="#"><i class="ri-tools-line"></i><span>จัดการอุปกรณ์</span></a>
     <a href="#"><i class="ri-arrow-go-back-line"></i><span>คืนอุปกรณ์</span></a>
     <a href="#"><i class="ri-time-line"></i><span>ประวัติยืม-คืน</span></a>
     <a href="#"><i class="ri-alert-line"></i><span>อุปกรณ์สูญหาย/ชำรุด</span></a>
-    <a href="#"><i class="ri-account-circle-line"></i><span>จัดการสมาชิก</span></a>
+    <a href="{{ url_for('admin_users.index') }}"><i class="ri-account-circle-line"></i><span>จัดการสมาชิก</span></a>
     <a href="#"><i class="ri-file-paper-2-line"></i><span>รายงานสรุป</span></a>
     </div>
       {% block content %}{% endblock %}
