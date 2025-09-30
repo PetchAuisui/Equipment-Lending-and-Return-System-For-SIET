@@ -1,42 +1,78 @@
-<a href="{{ url_for('inventory.admin_equipment_new') }}"
-   style="padding:8px 14px; background:#2e7d32; color:#fff; text-decoration:none; border-radius:8px; display:inline-block;">
-   + เพิ่มอุปกรณ์
-</a>
+{% extends 'base/base_admin.html' %}
+{% block title %}จัดการอุปกรณ์{% endblock %}
 
-{% if items and items|length %}
-  {% for e in items %}
-  <div class="card" style="background:#eee; padding:14px; border-radius:12px; margin:12px 0;">
-    <div class="card__title" style="font-weight:600; margin-bottom:6px;">
-      {{ e.name }} ({{ e.code }})
+{% block content %}
+<div style="padding: 24px; max-width: 1100px; margin: 0 auto;">
+
+  <!-- หัวข้อ + ค้นหา -->
+  <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom: 20px;">
+    <div style="display:flex; align-items:center; gap:12px;">
+      <img src="{{ url_for('static', filename='image/icons/device.png') }}" style="width:48px; height:48px;">
+      <h1 style="font-size:26px; font-weight:700;">จัดการอุปกรณ์</h1>
     </div>
-    <p style="margin:0 0 10px;">
-      คงเหลือ: {{ e.available_qty }}/{{ e.total_qty }}
-    </p>
 
-    <!-- ปุ่มจัดการ -->
-    <div style="display:flex; gap:8px;">
-      <a href="{{ url_for('inventory.admin_equipment_edit', eid=e.id) }}"
-         style="padding:6px 10px; border:1px solid #ccc; border-radius:8px; background:#fff; text-decoration:none;">
-        ✏️ แก้ไข
-      </a>
+    <form action="{{ url_for('inventory.admin_equipment_list') }}" method="get" style="width:320px;">
+      <div style="display:flex; border:1px solid #ccc; border-radius:20px; overflow:hidden;">
+        <input type="search" name="q" value="{{ request.args.get('q','') }}"
+               placeholder="🔍 ค้นหาอุปกรณ์ / หมายเลข"
+               style="flex:1; padding:10px 14px; border:0; outline:0; font-size:15px;">
+        <button style="padding:10px 16px; border:0; background:#f2f2f2; cursor:pointer;">ค้นหา</button>
+      </div>
+    </form>
+  </div>
 
-      <form action="{{ url_for('inventory.admin_equipment_delete', eid=e.id) }}"
-            method="post" style="display:inline;"
-            onsubmit="return confirm('ยืนยันลบอุปกรณ์นี้หรือไม่?');">
-        {# ถ้าใช้ Flask-WTF ให้ใส่ csrf_token #}
-        {% if csrf_token %}<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">{% endif %}
-        {# ถ้า backend ใช้ method override #}
-        {# <input type="hidden" name="_method" value="DELETE"> #}
-        <button type="submit"
-                style="padding:6px 10px; border-radius:8px; border:1px solid #e57373; background:#ffebee;">
-          🗑 ลบ
-        </button>
-      </form>
-    </div>
+  <!-- กล่องหลัก: ทำให้เป็นตำแหน่งอ้างอิงเพื่อยึดปุ่มที่มุมล่างขวา -->
+  <div style="
+      position: relative;
+      background:#f5f5f5;
+      border-radius:12px;
+      padding: 24px 24px 88px;   /* เผื่อพื้นที่ด้านล่างให้ปุ่ม */
+      min-height: 360px;
+    ">
+
+    {% if items and items|length > 0 %}
+      <!-- รายการการ์ด: ให้ responsive สมส่วน -->
+      <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(420px, 1fr)); gap:20px;">
+        {% for e in items %}
+        <a href="{{ url_for('inventory.admin_equipment_edit', eid=e.equipment_id) }}"
+           style="text-decoration:none; color:inherit;">
+          <div style="background:white; border-radius:12px; padding:18px; display:flex; align-items:center; gap:20px;
+                      box-shadow:0 2px 6px rgba(0,0,0,0.08); transition:.2s; cursor:pointer;"
+               onmouseover="this.style.transform='translateY(-3px)'; this.style.boxShadow='0 4px 10px rgba(0,0,0,0.12)';"
+               onmouseout="this.style.transform='none'; this.style.boxShadow='0 2px 6px rgba(0,0,0,0.08)';">
+            <div style="width:100px; height:100px; border-radius:50%; background:#e5e5e5; flex-shrink:0;"></div>
+            <div style="font-size:15px; line-height:1.8;">
+              <div><strong>หมายเลข:</strong> {{ e.code or '—' }}</div>
+              <div><strong>อุปกรณ์:</strong> {{ e.name or '—' }}</div>
+              <div><strong>ยี่ห้อ:</strong> {{ e.brand or '—' }}</div>
+              <div><strong>สถานะ:</strong> {{ e.status or '—' }}</div>
+            </div>
+          </div>
+        </a>
+        {% endfor %}
+      </div>
+    {% else %}
+      <!-- ข้อความว่าง: จัดกลาง สัดส่วนสวย ไม่เบี้ยว -->
+      <div style="height:220px; display:flex; align-items:center; justify-content:center; color:#777; font-size:17px;">
+        — ยังไม่มีอุปกรณ์ในระบบ —
+      </div>
+    {% endif %}
+
+    <!-- ปุ่มเพิ่มอุปกรณ์: ยึดมุมล่างขวาของกล่องเทาเสมอ -->
+    <a href="{{ url_for('inventory.admin_equipment_new') }}"
+       style="
+          position:absolute; right:24px; bottom:24px;
+          display:inline-flex; align-items:center; gap:8px;
+          background:#4caf50; color:white; text-decoration:none;
+          padding:12px 20px; font-size:16px; font-weight:600;
+          border-radius:10px; box-shadow:0 3px 6px rgba(0,0,0,.15);
+          transition:.2s;
+       "
+       onmouseover="this.style.background='#45a049'; this.style.transform='translateY(-2px)';"
+       onmouseout="this.style.background='#4caf50'; this.style.transform='none';">
+      ➕ เพิ่มอุปกรณ์
+    </a>
+
   </div>
-  {% endfor %}
-{% else %}
-  <div style="background:#eee; padding:18px; border-radius:12px; margin-top:14px; text-align:center; color:#666;">
-    — ไม่มีอุปกรณ์ในระบบ —
-  </div>
-{% endif %}
+</div>
+{% endblock %}
