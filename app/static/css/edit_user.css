@@ -1,0 +1,170 @@
+/* ===== Page Wrapper ===== */
+.admin-users {
+  padding: 32px;
+  background: #f9fafb;
+  min-height: 100vh;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* กันล้นทั้งหมดภายใต้หน้า admin-users */
+.admin-users,
+.admin-users * , 
+.admin-users *::before, 
+.admin-users *::after {
+  box-sizing: border-box;
+}
+
+/* กรอบเนื้อหาให้กว้างกำลังดีและอยู่กลางหน้า */
+.admin-users .container {
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+.admin-users h2 {
+  font-size: 1.6rem;
+  font-weight: 600;
+  margin-bottom: 20px;
+  color: #1f2937;             /* เทาเข้ม */
+  text-align: center;         /* จัดกลาง */
+}
+
+/* ===== Alerts / Flash / Error Bar ===== */
+.alerts {
+  margin: 0 auto 12px;
+  width: 100%;
+  max-width: 600px;           /* ให้เท่ากับความกว้างฟอร์ม */
+}
+
+.alert {
+  width: 100%;
+  max-width: 600px;           /* กันล้นต่อให้ลืมห่อด้วย .alerts */
+  margin: 0 auto 8px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: #f4f4f5;
+  color: #374151;
+  border: 1px solid #e5e7eb;
+  overflow-wrap: anywhere;    /* ตัดคำยาว ๆ */
+}
+.alert-success { background: #ecfdf5; color: #065f46; border-color: #a7f3d0; }
+.alert-info    { background: #eef2ff; color: #3730a3; border-color: #c7d2fe; }
+.alert-error   { background: #fef2f2; color: #991b1b; border-color: #fecaca; }
+
+/* ข้อความผิดพลาดใต้ฟิลด์ */
+.field-error {
+  display: block;
+  margin-top: 6px;
+  font-size: 12px;
+  color: #b91c1c;
+}
+
+/* ===== Form Card ===== */
+.admin-users form {
+  background: #fff;
+  padding: 24px;
+  border-radius: 12px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.06);
+  max-width: 100%;           /* ให้พอดีกับ alerts */
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  /* overflow: hidden;  // เปิดเมื่อเห็นขอบ focus เกินมุมการ์ด */
+}
+
+/* ===== Form Group ===== */
+.form-group {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 16px;
+  min-width: 0;               /* กันลูกกางเกิน */
+}
+
+.form-group label {
+  margin-bottom: 6px;
+  font-weight: 600;
+  color: #374151;             /* เทาเข้ม */
+}
+
+/* อินพุต/เซเลกต์ (รวม .auth__input ที่มีอยู่เดิม) */
+.form-group input,
+.form-group select,
+.auth__input {
+  padding: 10px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  background: #fff;
+  transition: border 0.2s, box-shadow 0.2s;
+  width: 100%;
+  max-width: 100%;            /* กันล้นแนวนอน */
+  min-width: 0;               /* กันกางใน flex item */
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.auth__input:focus {
+  border-color: #3b82f6;      /* ฟ้า */
+  box-shadow: 0 0 0 3px rgba(59,130,246,0.25);
+  outline: none;
+}
+
+/* ไฮไลต์ช่องที่มี error (เติม class .is-invalid ที่ input/select เมื่อ validate ไม่ผ่าน) */
+.is-invalid {
+  border-color: #ef4444 !important;
+  box-shadow: 0 0 0 3px rgba(239,68,68,0.2) !important;
+}
+
+/* ปรับหัวข้อ optgroup ให้ดูเด่นขึ้น */
+select optgroup {
+  color: #6b7280;             /* เทาอ่อน */
+  font-style: normal;
+  font-weight: 600;
+  padding-top: 4px;
+}
+
+/* ===== Actions ===== */
+.form-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 20px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+/* ===== Buttons ===== */
+.btn {
+  padding: 10px 18px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-block;
+  text-align: center;
+  transition: background 0.2s, transform 0.1s;
+  border: none;
+  min-width: 120px;
+  font-size: 0.95rem;         /* ทำให้ปุ่มทุกปุ่มฟอนต์เท่ากัน */
+  line-height: 1.2;
+}
+
+.btn-save {
+  background: #16a34a;
+  color: #fff;
+}
+.btn-save:hover { background: #15803d; }
+.btn-save:active { transform: translateY(1px); }
+
+.btn-cancel {
+  background: #ef4444;
+  color: #fff;
+}
+.btn-cancel:hover { background: #dc2626; }
+.btn-cancel:active { transform: translateY(1px); }
+
+/* ===== Responsive ===== */
+@media (max-width: 640px) {
+  .admin-users { padding: 20px 16px; }
+  .admin-users form { padding: 16px; max-width: 100%; }
+  .alerts, .alert { max-width: 100%; }
+}

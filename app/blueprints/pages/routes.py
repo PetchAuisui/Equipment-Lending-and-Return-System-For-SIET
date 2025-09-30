@@ -13,6 +13,4 @@ def about_us():
 def policy():
     return render_template("pages/policy.html")
 
-@pages_bp.get("/home_admin")
-def home_admin():
-    return render_template("pages_admin/home_admin.html")
+
