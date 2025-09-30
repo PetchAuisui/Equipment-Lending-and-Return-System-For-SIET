@@ -212,3 +212,29 @@
   .admin-users .searchbar input[type="text"] { width: 100%; }
   .admin-users .table-wrap { max-height: calc(100vh - 260px); }
 }
+
+/* ===== Member Types ===== */
+.admin-users .badge--student {
+  background: #e0f2fe;  /* ฟ้าอ่อน */
+  color: #0369a1;
+}
+
+.admin-users .badge--teacher {
+  background: #ede9fe;  /* ม่วงอ่อน */
+  color: #5b21b6;
+}
+
+.admin-users .badge--officer {
+  background: #dcfce7;  /* เขียวอ่อน */
+  color: #166534;
+}
+
+.admin-users .badge--staff {
+  background: #fff4e6;  /* ส้มอ่อน */
+  color: #b45309;
+}
+
+.admin-users .badge--admin {
+  background: #fee2e2;  /* แดงอ่อน */
+  color: #b91c1c;
+}

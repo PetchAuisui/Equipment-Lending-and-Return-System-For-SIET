@@ -38,8 +38,13 @@
             {% if users and users|length %}
               {% for u in users %}
               <tr>
+                <!-- รหัส -->
                 <td>{{ u.code or ('U' ~ u.user_id) }}</td>
+
+                <!-- ชื่อ -->
                 <td class="col-name">{{ u.name }}</td>
+
+                <!-- บทบาท -->
                 <td>
                   {% set role = (u.role or 'member') %}
                   <span class="badge
@@ -50,12 +55,29 @@
                     {{ role }}
                   </span>
                 </td>
+
+                <!-- ประเภทสมาชิก -->
                 <td>
-                  <span class="badge badge--default">{{ u.member_type or '-' }}</span>
+                  {% set mtype = (u.member_type or '-') %}
+                  <span class="badge
+                    {{ 'badge--student' if mtype=='student'
+                       else 'badge--teacher' if mtype=='teacher'
+                       else 'badge--officer' if mtype=='officer'
+                       else 'badge--default' }}">
+                    {{ mtype }}
+                  </span>
                 </td>
+
+                <!-- อีเมล -->
                 <td>{{ u.email }}</td>
+
+                <!-- ภาควิชา -->
                 <td>{{ u.major or '-' }}</td>
+
+                <!-- เบอร์โทร -->
                 <td>{{ u.phone or '-' }}</td>
+
+                <!-- Actions -->
                 <td class="col-actions">
                     <a class="btn btn--sm btn-edit"
                       href="{{ url_for('admin_users.edit_user_page', user_id=u.user_id) }}">
