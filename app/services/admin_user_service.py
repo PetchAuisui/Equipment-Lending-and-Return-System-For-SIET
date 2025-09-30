@@ -1,20 +1,19 @@
 from math import ceil
 from typing import Dict, Any, List, Optional, Tuple
-from app.repositories.user_repository import UserRepository
 from sqlalchemy import text
+from app.repositories.user_repository import UserRepository
 from app.services import validators as v
 
 # -------- ใข้คนละความหมายกัน --------
-ALLOWED_MEMBER_TYPES = {"student", "teacher", "officer"} 
-ALLOWED_GENDERS      = {"male", "female", "other"}         
-ALLOWED_ROLES        = {"member", "staff"}                 
+ALLOWED_MEMBER_TYPES = {"student", "teacher", "officer"}
+ALLOWED_GENDERS      = {"male", "female", "other"}
+ALLOWED_ROLES        = {"member", "staff"}
 
 class AdminUserService:
     def __init__(self, repo: UserRepository):
         self.repo = repo
 
     def get_user_table(self, page: int = 1, per_page: int = 10, q: str = "") -> Dict[str, Any]:
-        # ... (เหมือนเดิม)
         try:
             page = max(int(page or 1), 1)
         except Exception:
@@ -37,8 +36,8 @@ class AdminUserService:
                 "code": code,
                 "name": u.get("name", "-"),
                 "email": u.get("email", "-"),
-                "role": u.get("role", "member"),           
-                "member_type": u.get("member_type", "-"),  
+                "role": u.get("role", "member"),
+                "member_type": u.get("member_type", "-"),
                 "major": u.get("major", "-"),
                 "phone": u.get("phone", "-"),
             })
@@ -49,13 +48,9 @@ class AdminUserService:
             "total": total, "total_pages": total_pages, "q": q,
         }
 
-    def drop_user(self, user_id: int) -> bool:
-        sql = text("DELETE FROM users WHERE user_id = :uid RETURNING user_id")
-        row = self.repo.session.execute(sql, {"uid": user_id}).first()
-        if not row:
-            return False
-        self.repo.session.commit()
-        return True
+    def drop_user(self, user_id: int, *, actor_id: Optional[int]) -> bool:
+        """ลบผู้ใช้ + เขียน audit 'deleted' ผ่าน repository"""
+        return self.repo.delete_user(user_id, actor_id=actor_id)
 
     def get_user(self, user_id: int) -> Optional[Dict[str, Any]]:
         row = self.repo.session.execute(
@@ -76,7 +71,7 @@ class AdminUserService:
         major  = v.norm(data.get("major"))  or (current.get("major") or "")
         mtype  = (v.norm(data.get("member_type")) or (current.get("member_type") or "")).lower()
         gender = (v.norm(data.get("gender")) or (current.get("gender") or "")).lower()
-        role   = (v.norm(data.get("role")) or (current.get("role") or "member")).lower()  
+        role   = (v.norm(data.get("role")) or (current.get("role") or "member")).lower()
 
         if not name:
             return "Missing field: name"
@@ -88,7 +83,7 @@ class AdminUserService:
             return f"member_type must be one of: {', '.join(ALLOWED_MEMBER_TYPES)}"
         if gender and gender not in ALLOWED_GENDERS:
             return f"gender must be one of: {', '.join(ALLOWED_GENDERS)}"
-        if role and role not in ALLOWED_ROLES:                             
+        if role and role not in ALLOWED_ROLES:
             return f"role must be one of: {', '.join(ALLOWED_ROLES)}"
 
         # ตรวจอีเมลซ้ำเฉพาะกรณีเปลี่ยนจริง
@@ -101,7 +96,8 @@ class AdminUserService:
                 return "Email already in use"
         return None
 
-    def update_user(self, user_id: int, data: Dict[str, Any]) -> Tuple[Optional[Dict[str, Any]], Optional[str]]:
+    def update_user(self, user_id: int, data: Dict[str, Any], *, actor_id: Optional[int]) -> Tuple[Optional[Dict[str, Any]], Optional[str]]:
+        """อัปเดตผู้ใช้ผ่าน repo เพื่อให้เกิด audit 'updated'"""
         current = self.get_user(user_id)
         if not current:
             return None, "User not found"
@@ -110,8 +106,8 @@ class AdminUserService:
         if err:
             return None, err
 
-        # อัปเดตเฉพาะคีย์ที่ส่งมา (partial update)
-        allowed = {"name", "email", "phone", "major", "member_type", "gender", "role"} 
+        # อัปเดตเฉพาะคีย์ที่อนุญาต (partial update)
+        allowed = {"name", "email", "phone", "major", "member_type", "gender", "role"}
         payload = {}
         for k in allowed:
             if k in data:
@@ -120,16 +116,7 @@ class AdminUserService:
         if not payload:
             return current, None
 
-        sets = ",\n                ".join(f"{k} = :{k}" for k in payload.keys())
-        row = self.repo.session.execute(
-            text(f"""
-                UPDATE users
-                SET {sets},
-                    updated_at = CURRENT_TIMESTAMP
-                WHERE user_id = :uid
-                RETURNING *
-            """),
-            {**payload, "uid": user_id}
-        ).first()
-        self.repo.session.commit()
-        return (dict(row._mapping), None) if row else (None, "User not found")
+        updated = self.repo.update_user(user_id, payload, actor_id=actor_id)
+        if not updated:
+            return None, "User not found"
+        return updated, None
