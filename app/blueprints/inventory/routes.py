@@ -20,11 +20,20 @@ def lend():
 
 @inventory_bp.route("/admin/equipments")
 def admin_equipment_list():
-    # ดึงข้อมูลจาก DB
+    q = request.args.get("q", "").strip()   # <--- เพิ่มบรรทัดนี้
     db = SessionLocal()
-    items = db.query(Equipment).all()
+    query = db.query(Equipment).filter(Equipment.is_active == True)
+
+    if q:  # <--- ถ้ามีคำค้นหา
+        query = query.filter(
+            (Equipment.name.ilike(f"%{q}%")) |
+            (Equipment.code.ilike(f"%{q}%"))
+        )
+
+    items = query.order_by(Equipment.created_at.desc()).all()
     db.close()
     return render_template("pages_inventory/admin_equipment_list.html", items=items)
+
 
 # ฟอร์มเพิ่มอุปกรณ์
 @inventory_bp.route("/admin/equipments/new", methods=["GET", "POST"])
