@@ -1,0 +1,42 @@
+<a href="{{ url_for('inventory.admin_equipment_new') }}"
+   style="padding:8px 14px; background:#2e7d32; color:#fff; text-decoration:none; border-radius:8px; display:inline-block;">
+   + เพิ่มอุปกรณ์
+</a>
+
+{% if items and items|length %}
+  {% for e in items %}
+  <div class="card" style="background:#eee; padding:14px; border-radius:12px; margin:12px 0;">
+    <div class="card__title" style="font-weight:600; margin-bottom:6px;">
+      {{ e.name }} ({{ e.code }})
+    </div>
+    <p style="margin:0 0 10px;">
+      คงเหลือ: {{ e.available_qty }}/{{ e.total_qty }}
+    </p>
+
+    <!-- ปุ่มจัดการ -->
+    <div style="display:flex; gap:8px;">
+      <a href="{{ url_for('inventory.admin_equipment_edit', eid=e.id) }}"
+         style="padding:6px 10px; border:1px solid #ccc; border-radius:8px; background:#fff; text-decoration:none;">
+        ✏️ แก้ไข
+      </a>
+
+      <form action="{{ url_for('inventory.admin_equipment_delete', eid=e.id) }}"
+            method="post" style="display:inline;"
+            onsubmit="return confirm('ยืนยันลบอุปกรณ์นี้หรือไม่?');">
+        {# ถ้าใช้ Flask-WTF ให้ใส่ csrf_token #}
+        {% if csrf_token %}<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">{% endif %}
+        {# ถ้า backend ใช้ method override #}
+        {# <input type="hidden" name="_method" value="DELETE"> #}
+        <button type="submit"
+                style="padding:6px 10px; border-radius:8px; border:1px solid #e57373; background:#ffebee;">
+          🗑 ลบ
+        </button>
+      </form>
+    </div>
+  </div>
+  {% endfor %}
+{% else %}
+  <div style="background:#eee; padding:18px; border-radius:12px; margin-top:14px; text-align:center; color:#666;">
+    — ไม่มีอุปกรณ์ในระบบ —
+  </div>
+{% endif %}
