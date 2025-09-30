@@ -7,19 +7,12 @@
 <div class="admin-users">
   <div class="container">
     <h2>แก้ไขข้อมูลสมาชิก</h2>
-    <div class="alerts">
-  {% with msgs = get_flashed_messages(with_categories=True) %}
-    {% if msgs %}
-      {% for cat, m in msgs %}
-        <div class="alert {{ 'alert-success' if cat=='success' else 'alert-info' }}">{{ m }}</div>
-      {% endfor %}
-    {% endif %}
-  {% endwith %}
-
+<div class="alerts">
   {% if error %}
     <div class="alert alert-error">{{ error }}</div>
   {% endif %}
 </div>
+
     <form method="post"
           action="{{ url_for('admin_users.edit_user_action', user_id=user.user_id) }}">
       
