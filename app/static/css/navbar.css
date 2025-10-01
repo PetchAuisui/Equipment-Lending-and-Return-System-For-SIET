@@ -1,8 +1,22 @@
+body {
+    margin: 0;
+    font-family: sans-serif;
+
+    /* กันไม่ให้เนื้อหาถูก navbar บัง */
+    padding-top: 60px; /* ปรับตามความสูงรวมของ navbar_login + navbar_menu */
+}
+
 .navbar {
     display: flex;
     flex-direction: column; 
     margin: 0;
     padding: 0;
+
+    position: fixed;   /* ✅ ทำให้ติดกับ viewport */
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1000;     /* ให้อยู่เหนือ content */
 }
 
 .navbar_login {
@@ -10,6 +24,7 @@
     justify-content: flex-end;  
     align-items: center;
     background-color: rgb(255, 166, 204);
+    height: 60px;  /* กำหนดชัดเจน */
 }
 
 .navbar_login a {
@@ -19,50 +34,49 @@
     font-size: 24px;
 }
 
-.icon_user{
+.icon_user {
     font-size: 50px;  
-    margin: 0 10px;
-    text-decoration: none;
     margin: 10px;
 }
 
-.navbar_menu  {
+.navbar_menu {
     background-color: rgb(109, 142, 99);
     gap: 20px;
     display: flex;
+    align-items: center;
+    height: 60px;  /* กำหนดชัดเจน */
+    margin-top: 60px;
 }
 
 .navbar_menu a {
-    padding: 20px 10px 20px 10px;
+    padding: 20px 10px;
     text-decoration: none;
     color: #333;
     font-size: 28px;
 }
 
-.navbar_light{
+.navbar_light {
     margin-left: auto;
     margin-right: 20px;
-    
 }
 
-.icon_bell{
+.icon_bell {
     color: #333;
     font-size: 38px;
     padding-top: 10px;
 }
 
-.Search_input{
+.Search_input {
     width: 300px;
     height: 40px;
     margin: 10px 20px 10px 0px;
-    border-radius: 20px ;
+    border-radius: 20px;
     box-shadow: 0 10px 10px rgba(0,0,0,0.3);
 }
 
-.navbar_login a:hover{
-    color: rgb(255, 255, 255);
+.navbar_login a:hover {
+    color: #fff;
 }
-.navbar_menu a:hover{
-    color: rgb(255, 255, 255);
+.navbar_menu a:hover {
+    color: #fff;
 }
-
