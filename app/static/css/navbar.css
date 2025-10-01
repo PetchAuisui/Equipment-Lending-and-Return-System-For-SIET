@@ -66,3 +66,33 @@
     color: rgb(255, 255, 255);
 }
 
+/* ===== Special Buttons in Navbar ===== */
+.navbar_login .btn-nav {
+  padding: 6px 14px;
+  border-radius: 6px;
+  font-size: 16px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  margin: 0 8px;
+}
+
+/* ปุ่ม Admin / Home */
+.navbar_login .btn-admin {
+  background: #3b82f6;   /* น้ำเงิน */
+  color: #fff;
+}
+.navbar_login .btn-admin:hover {
+  background: #2563eb;   /* น้ำเงินเข้ม */
+  box-shadow: 0 2px 6px rgba(37, 99, 235, 0.4);
+}
+
+/* ปุ่ม Logout */
+.navbar_login .btn-logout {
+  background: #ef4444;   /* แดง */
+  color: #fff;
+}
+.navbar_login .btn-logout:hover {
+  background: #dc2626;   /* แดงเข้ม */
+  box-shadow: 0 2px 6px rgba(220, 38, 38, 0.4);
+}
