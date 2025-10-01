@@ -13,7 +13,14 @@
 
       <form class="searchbar" method="get" action="{{ url_for('admin_users.index') }}">
         <input type="text" name="q" placeholder="รหัส/ชื่อ/อีเมล" value="{{ q or '' }}">
-        <button type="submit">ค้นหา</button>
+        <!-- เพิ่ม class="btn-search" -->
+        <button type="submit" class="btn-search">ค้นหา</button>
+
+        {% if q %}
+          <a href="{{ url_for('admin_users.index') }}" class="btn-clear">
+            <i class="ri-close-line"></i> ล้าง
+          </a>
+        {% endif %}
       </form>
     </div>
 
