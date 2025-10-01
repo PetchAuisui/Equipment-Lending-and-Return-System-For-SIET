@@ -12,6 +12,15 @@
       <span class="user_identity">
         {{ current_user.identity }}
       </span>
+      {% if session.get('role') in ['staff', 'admin'] %}
+        {% if request.path.startswith('/admin') %}
+          <!-- อยู่ในหน้า Admin แล้ว → ให้ปุ่มกลับไป Home -->
+          <a href="{{ url_for('pages.home') }}" class="btn-admin">Home</a>
+        {% else %}
+          <!-- ยังไม่อยู่ในหน้า Admin → ให้ปุ่มไปหน้า Admin -->
+          <a href="{{ url_for('admin.admin_home') }}" class="btn-admin">Admin</a>
+        {% endif %}
+      {% endif %}
       <a href="{{ url_for('auth.logout_action') }}">Logout</a>
       <i class="ri-user-line icon_user"></i>
     {% else %}
