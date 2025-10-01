@@ -37,7 +37,7 @@
   border-radius: 10px;
   outline: none;
 }
-.admin-users .searchbar button {
+.admin-users .searchbar .btn-search {
   padding: 10px 14px;
   border: 0;
   border-radius: 10px;
@@ -46,8 +46,24 @@
   cursor: pointer;
   transition: transform .04s ease, filter .2s ease;
 }
-.admin-users .searchbar button:active { transform: translateY(1px); }
-.admin-users .searchbar button:hover  { filter: brightness(.95); }
+.admin-users .searchbar .btn-search:active { transform: translateY(1px); }
+.admin-users .searchbar .btn-search:hover  { filter: brightness(.95); }
+
+/* ✅ ปุ่มล้างการค้นหา */
+.admin-users .searchbar .btn-clear {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  background: #9ca3af;      /* เทา */
+  color: #fff;
+  text-decoration: none;
+  line-height: 1;
+  transition: transform .04s ease, filter .2s ease;
+}
+.admin-users .searchbar .btn-clear:hover  { filter: brightness(.95); }
+.admin-users .searchbar .btn-clear:active { transform: translateY(1px); }
 
 /* ===== Card/Table ===== */
 .admin-users .card {
@@ -94,7 +110,7 @@
 .admin-users th.col-major,
 .admin-users td.col-major {
   min-width: 190px;
-  width: 10%;         /* ขยายกว้างขึ้น */
+  width: 10%;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -218,22 +234,18 @@
   background: #e0f2fe;  /* ฟ้าอ่อน */
   color: #0369a1;
 }
-
 .admin-users .badge--teacher {
   background: #ede9fe;  /* ม่วงอ่อน */
   color: #5b21b6;
 }
-
 .admin-users .badge--officer {
   background: #dcfce7;  /* เขียวอ่อน */
   color: #166534;
 }
-
 .admin-users .badge--staff {
   background: #fff4e6;  /* ส้มอ่อน */
   color: #b45309;
 }
-
 .admin-users .badge--admin {
   background: #fee2e2;  /* แดงอ่อน */
   color: #b91c1c;
