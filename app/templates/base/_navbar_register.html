@@ -7,20 +7,29 @@
 </head>
 <body>
 <div class="navbar">
-  <div class="navbar_login">
-    {% if current_user.is_authenticated %}
-      <span class="user_identity">
-        {{ current_user.identity }}
-      </span>
-      <a href="{{ url_for('auth.logout_action') }}">Logout</a>
-      <i class="ri-user-line icon_user"></i>
+ <div class="navbar_login">
+  {% if current_user.is_authenticated %}
+    
+  {% if session.get('role') in ['staff', 'admin'] %}
+    {% if request.path.startswith('/admin') %}
+      <a href="{{ url_for('pages.home') }}" class="btn-nav btn-admin">Home</a>
     {% else %}
-      <a href="{{ url_for('auth.login_page') }}">Login</a>
-      <a>|</a>
-      <a href="{{ url_for('auth.register_page') }}">Sign in</a>
-      <i class="ri-user-line icon_user"></i>
+      <a href="{{ url_for('admin.admin_home') }}" class="btn-nav btn-admin">Admin</a>
     {% endif %}
-  </div>
+  {% endif %}
+
+  <a href="{{ url_for('auth.logout_action') }}" class="btn-nav btn-logout">Logout</a>
+  <span class="user_identity">{{ current_user.identity }}</span>
+  <i class="ri-user-line icon_user"></i>
+
+{% else %}
+  <a href="{{ url_for('auth.login_page') }}">Login</a>
+  <a>|</a>
+  <a href="{{ url_for('auth.register_page') }}">Sign in</a>
+  <i class="ri-user-line icon_user"></i>
+{% endif %}
+
+</div>
 </div>
 </body>
 </html>
