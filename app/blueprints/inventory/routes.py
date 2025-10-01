@@ -66,7 +66,12 @@ def admin_equipment_new():
         status = (request.form.get("status") or "").strip()
         buy_date_raw = (request.form.get("buy_date") or "").strip()
 
-        # แปลงวันที่ให้เป็น date
+        # 📌 รับไฟล์จากฟอร์มเพียงครั้งเดียว
+        img = request.files.get("image")
+        current_app.logger.info("UPLOAD_FOLDER = %s", current_app.config['UPLOAD_FOLDER'])
+        current_app.logger.info("IMAGE FIELD = %s", img.filename if img else None)
+
+        # 📌 แปลงวันที่
         buy_date = None
         if buy_date_raw:
             try:
@@ -74,24 +79,22 @@ def admin_equipment_new():
             except ValueError:
                 buy_date = None
 
-        # validate
+        # 📌 ตรวจค่าที่จำเป็น
         if not name or not code:
             flash("กรุณากรอกชื่ออุปกรณ์และรหัส/หมายเลข", "error")
             return render_template("pages_inventory/admin_equipment_new.html")
 
-        # อัปโหลดรูป (อาจเว้นได้)
-        img = request.files.get("image")
+        # 📌 ตรวจสอบชนิดไฟล์ถ้ามีอัปโหลด
         image_path = None
         if img and img.filename:
-            # ตรวจนามสกุลไฟล์
             allowed = current_app.config.get("ALLOWED_IMAGE_EXT", {"jpg","jpeg","png","gif","webp"})
-            if "." not in img.filename or img.filename.rsplit(".",1)[1].lower() not in allowed:
+            if "." not in img.filename or img.filename.rsplit(".", 1)[1].lower() not in allowed:
                 flash("อนุญาตเฉพาะไฟล์ภาพ jpg, jpeg, png, gif, webp", "error")
                 return render_template("pages_inventory/admin_equipment_new.html")
 
         db = SessionLocal()
         try:
-            # 1) บันทึกลง equipments
+            # 📌 1) สร้างอุปกรณ์ใหม่
             new_equipment = Equipment(
                 name=name,
                 code=code,
@@ -106,26 +109,21 @@ def admin_equipment_new():
             )
             db.add(new_equipment)
             db.commit()
-            db.refresh(new_equipment)  # เอา equipment_id ที่เพิ่งสร้าง
+            db.refresh(new_equipment)
 
-            # 2) ถ้ามีรูป → เซฟไฟล์แล้วบันทึกลง equipment_images
+            # 📌 2) ถ้ามีไฟล์ → เซฟและบันทึก path
             if img and img.filename:
                 ext = secure_filename(img.filename).rsplit(".", 1)[1].lower()
                 fname = f"{uuid.uuid4().hex}.{ext}"
-
-                # โฟลเดอร์เก็บรูป
-                upload_dir = current_app.config.get(
-                    "UPLOAD_FOLDER",
-                    os.path.join(current_app.root_path, "static", "uploads", "equipment")
-                )
+                upload_dir = current_app.config['UPLOAD_FOLDER']
                 os.makedirs(upload_dir, exist_ok=True)
 
-                # เซฟไฟล์
-                img.save(os.path.join(upload_dir, fname))
+                save_path = os.path.join(upload_dir, fname)
+                img.save(save_path)
+                current_app.logger.info("SAVE DST = %s", save_path)
+                current_app.logger.info("FILE EXISTS = %s", os.path.exists(save_path))
 
-                # เก็บ path แบบ relative จาก static/
                 image_path = f"uploads/equipment/{fname}"
-
                 img_record = EquipmentImage(
                     equipment_id=new_equipment.equipment_id,
                     image_path=image_path,
@@ -144,8 +142,9 @@ def admin_equipment_new():
         finally:
             db.close()
 
-    # GET → แสดงฟอร์ม
+    # GET
     return render_template("pages_inventory/admin_equipment_new.html")
+
 
 @inventory_bp.route("/admin/equipments/<int:eid>/edit", methods=["GET", "POST"])
 def admin_equipment_edit(eid):
@@ -191,26 +190,43 @@ def admin_equipment_edit(eid):
         item.status = status or item.status
         item.updated_at = datetime.utcnow()
 
-        # แนบรูปใหม่ (เพิ่มแถวใน equipment_images)
         img = request.files.get("image")
         if img and img.filename:
             allowed = current_app.config.get("ALLOWED_IMAGE_EXT", {"jpg","jpeg","png","gif","webp"})
-            if "." in img.filename and img.filename.rsplit(".",1)[1].lower() in allowed:
-                ext = secure_filename(img.filename).rsplit(".", 1)[1].lower()
-                fname = f"{uuid.uuid4().hex}.{ext}"
-                upload_dir = current_app.config.get("UPLOAD_FOLDER", os.path.join("static","uploads","equipment"))
-                os.makedirs(upload_dir, exist_ok=True)
-                img.save(os.path.join(upload_dir, fname))
+            ext = img.filename.rsplit(".", 1)[-1].lower() if "." in img.filename else ""
+            if ext not in allowed:
+                flash("อนุญาตเฉพาะไฟล์ภาพ jpg, jpeg, png, gif, webp", "error")
+                db.close()
+                return render_template("pages_inventory/admin_equipment_edit.html", item=item)
+
+            fname = f"{uuid.uuid4().hex}.{ext}"
+            upload_dir = current_app.config['UPLOAD_FOLDER']
+            os.makedirs(upload_dir, exist_ok=True)
+            dst = os.path.join(upload_dir, fname)
+
+            # ✅ ต้องมี try ครอบ img.save()
+            try:
+                try:
+                    img.stream.seek(0)
+                except Exception:
+                    pass
+
+                img.save(dst)
+                current_app.logger.info("SAVE DST = %s", dst)
+                current_app.logger.info("FILE EXISTS = %s", os.path.exists(dst))
+
+                if not os.path.exists(dst):
+                    raise RuntimeError("save returned but file not found")
+
                 db.add(EquipmentImage(
                     equipment_id=item.equipment_id,
                     image_path=f"uploads/equipment/{fname}",
                     created_at=datetime.utcnow()
                 ))
 
-        db.commit()
-        db.close()
-        flash("บันทึกการแก้ไขแล้ว", "success")
-        return redirect(url_for("inventory.admin_equipment_list"))
+            except Exception as e:
+                current_app.logger.exception("IMAGE SAVE FAILED: %s", e)
+                flash("อัปโหลดรูปไม่สำเร็จ", "error")
 
     # GET
     db.close()
