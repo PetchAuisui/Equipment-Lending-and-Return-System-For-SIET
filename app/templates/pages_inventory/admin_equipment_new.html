@@ -1,102 +1,188 @@
 {% extends 'base/base_admin.html' %}
 {% block title %}เพิ่มอุปกรณ์{% endblock %}
-{% set CATEGORIES = ["กล้อง","สายไฟ","ไมโครคอนโทรลเลอร์","จอภาพ","ไมโครโฟน","อุปกรณ์เครือข่าย","บอร์ดทดลอง","อุปกรณ์วัด"] %}
+{% set CATEGORIES = ["กล้อง","สายไฟ","ไมโครคอนโทรลเลอร์","จอภาพ","ไมโครโฟน","อุปกรณ์เครือข่าย","บอร์ดทดลอง","อุปกรณ์วัด","คอมพิวเตอร์"] %}
 
 {% block content %}
 <style>
+  *, *::before, *::after { box-sizing: border-box; }
+
   .page { margin-left:260px; margin-right:24px; padding:24px; }
   @media (max-width: 992px){ .page{ margin:0 16px; padding:16px; } }
 
-  .panel { background:#d9d9d9; border-radius:10px; padding:28px; }
-  .card  { background:#f6f6f6; border:1px solid #cfcfcf; border-radius:12px; padding:30px; max-width:600px; margin:0 auto; }
+  .panel { background:#f2f2f2; border-radius:14px; padding:24px; }
 
-  .header{ display:flex; align-items:center; gap:10px; justify-content:center; margin-bottom:20px;}
-  .header img{ width:42px; height:42px; }
-  .header h1{ font-size:24px; font-weight:700; margin:0; }
-
-  .row{ display:flex; flex-direction:column; gap:6px; margin-bottom:16px; }
-  .ctrl{
-    padding:10px 12px; border:1px solid #cfcfcf; border-radius:8px; background:#fff; font-size:15px; width:100%;
+  .card {
+    background:#fff;
+    border:1px solid #ddd;
+    border-radius:14px;
+    max-width:640px;
+    width:100%;
+    margin:0 auto;
+    box-shadow:0 2px 8px rgba(0,0,0,.06);
   }
 
-  .btns{ display:flex; justify-content:flex-end; gap:10px; margin-top:24px; }
-  .btn{ padding:10px 18px; border-radius:8px; border:1px solid #cfcfcf; background:#fff; cursor:pointer; }
-  .btn.primary{ background:#4caf50; color:#fff; border-color:#4caf50; font-weight:600; }
-  .btn.primary:hover{ background:#45a049; }
+  .card__header {
+    padding:20px;
+    border-bottom:1px solid #eee;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:10px;
+  }
+  .card__header img { width:40px; height:40px; }
+  .card__header h1 { font-size:22px; font-weight:700; margin:0; }
+
+  .card__body { padding:24px; }
+
+  .row {
+    display:flex;
+    flex-direction:column;
+    gap:6px;
+    margin-bottom:18px;
+  }
+  .row:last-child { margin-bottom:0; }
+
+  .row label {
+    font-size:14px;
+    font-weight:600;
+    color:#333;
+  }
+
+  .ctrl {
+    width:100%;
+    padding:11px 12px;
+    border:1px solid #cfcfcf;
+    border-radius:10px;
+    font-size:15px;
+    background:#fff;
+    transition:border-color .15s, box-shadow .15s;
+  }
+  .ctrl:focus {
+    border-color:#4caf50;
+    box-shadow:0 0 0 3px rgba(76,175,80,.15);
+    outline:none;
+  }
+
+  textarea.ctrl {
+    min-height:96px;
+    resize:vertical;
+  }
+
+  select.ctrl {
+    appearance:none;
+    -webkit-appearance:none;
+    -moz-appearance:none;
+    background-image:
+      linear-gradient(45deg, transparent 50%, #666 50%),
+      linear-gradient(135deg, #666 50%, transparent 50%),
+      linear-gradient(to right, #ddd, #ddd);
+    background-position:
+      calc(100% - 18px) calc(50% - 3px),
+      calc(100% - 12px) calc(50% - 3px),
+      calc(100% - 36px) 50%;
+    background-size:
+      6px 6px,
+      6px 6px,
+      1px 60%;
+    background-repeat:no-repeat;
+    padding-right:44px;
+  }
+
+  .btns {
+    display:flex;
+    justify-content:flex-end;
+    gap:10px;
+    margin-top:20px;
+  }
+  .btn {
+    padding:10px 18px;
+    border-radius:10px;
+    font-size:14px;
+    font-weight:600;
+    cursor:pointer;
+    border:1px solid #ccc;
+    background:#fff;
+    transition: background .2s, transform .05s;
+  }
+  .btn:active { transform:translateY(1px); }
+  .btn.primary {
+    background:#4caf50;
+    color:#fff;
+    border-color:#4caf50;
+  }
+  .btn.primary:hover { background:#45a049; }
 </style>
 
 <div class="page">
   <div class="panel">
-
-    <div class="header">
-      <img src="{{ url_for('static', filename='image/icons/device.png') }}" alt="">
-      <h1>เพิ่มอุปกรณ์</h1>
-    </div>
-
     <div class="card">
-      <form action="{{ url_for('inventory.admin_equipment_new') }}" 
-            method="post" 
-            enctype="multipart/form-data">
-        
-        <div class="row">
-          <label>ชื่ออุปกรณ์ *</label>
-          <input class="ctrl" type="text" name="name" required>
-        </div>
+      <div class="card__header">
+        <img src="{{ url_for('static', filename='image/icons/device.png') }}" alt="">
+        <h1>เพิ่มอุปกรณ์</h1>
+      </div>
 
-        <div class="row">
-          <label>รหัส/หมายเลข *</label>
-          <input class="ctrl" type="text" name="code" required>
-        </div>
+      <div class="card__body">
+        <form action="{{ url_for('inventory.admin_equipment_new') }}" method="post" enctype="multipart/form-data">
 
-        <div class="row">
-          <label>หมวดหมู่</label>
-          <select class="ctrl" name="category">
-            <option value="">— เลือกหมวดหมู่ —</option>
-            {% for c in CATEGORIES %}
-              <option value="{{ c }}">{{ c }}</option>
-            {% endfor %}
-          </select>
-        </div>
+          <div class="row">
+            <label>ชื่ออุปกรณ์ *</label>
+            <input class="ctrl" type="text" name="name" required>
+          </div>
 
-        <div class="row">
-          <label>ยี่ห้อ</label>
-          <input class="ctrl" type="text" name="brand">
-        </div>
+          <div class="row">
+            <label>รหัส/หมายเลข *</label>
+            <input class="ctrl" type="text" name="code" required>
+          </div>
 
-        <div class="row">
-          <label>รายละเอียด</label>
-          <textarea class="ctrl" name="detail" rows="4" style="resize:vertical;"></textarea>
-        </div>
+          <div class="row">
+            <label>หมวดหมู่</label>
+            <select class="ctrl" name="category">
+              <option value="">— เลือกหมวดหมู่ —</option>
+              {% for c in CATEGORIES %}
+                <option value="{{ c }}">{{ c }}</option>
+              {% endfor %}
+            </select>
+          </div>
 
-        <div class="row">
-          <label>วันที่ซื้อ</label>
-          <input class="ctrl" type="date" name="buy_date">
-        </div>
+          <div class="row">
+            <label>ยี่ห้อ</label>
+            <input class="ctrl" type="text" name="brand">
+          </div>
 
-        <div class="row">
-          <label>สถานะ</label>
-          <select class="ctrl" name="status">
-            <option value="">— เลือกสถานะ —</option>
-            <option value="available">Available</option>
-            <option value="in_use">In Use</option>
-            <option value="broken">Broken</option>
-            <option value="lost">Lost</option>
-          </select>
-        </div>
+          <div class="row">
+            <label>รายละเอียด</label>
+            <textarea class="ctrl" name="detail"></textarea>
+          </div>
 
-        <div class="row">
-          <label>แนบรูปภาพ</label>
-          <input class="ctrl" type="file" name="image" accept="image/*">
-        </div>
+          <div class="row">
+            <label>วันที่ซื้อ</label>
+            <input class="ctrl" type="date" name="buy_date">
+          </div>
 
-        <div class="btns">
-          <a class="btn" href="{{ url_for('inventory.admin_equipment_list') }}">ยกเลิก</a>
-          <button type="submit" class="btn primary">บันทึก</button>
-        </div>
+          <div class="row">
+            <label>สถานะ</label>
+            <select class="ctrl" name="status">
+              {% set s = item.status or '' %}
+              <option value="">— เลือกสถานะ —</option>
+              <option value="available" {{ 'selected' if s=='available' else '' }}>พร้อมใช้งาน</option>
+              <option value="in_use"    {{ 'selected' if s=='in_use'    else '' }}>กำลังถูกยืม</option>
+              <option value="broken"    {{ 'selected' if s=='broken'    else '' }}>ชำรุด</option>
+              <option value="lost"      {{ 'selected' if s=='lost'      else '' }}>สูญหาย</option>
+            </select>
 
-      </form>
+          <div class="row">
+            <label>แนบรูปภาพ</label>
+            <input class="ctrl" type="file" name="image" accept="image/*">
+          </div>
+
+          <div class="btns">
+            <a class="btn" href="{{ url_for('inventory.admin_equipment_list') }}">ยกเลิก</a>
+            <button type="submit" class="btn primary">บันทึก</button>
+          </div>
+
+        </form>
+      </div>
     </div>
-
   </div>
 </div>
 {% endblock %}
