@@ -27,16 +27,15 @@ body {
     height: 60px;  /* กำหนดชัดเจน */
 }
 
-.navbar_login a {
-    margin: 0 10px;
+.navbar_login_text {
+    margin-right: 20px;
+}
+
+.navbar_login_text a {
+    margin: 0px 5px;
     text-decoration: none;
     color: #333;
     font-size: 24px;
-}
-
-.icon_user {
-    font-size: 50px;  
-    margin: 10px;
 }
 
 .navbar_menu {
