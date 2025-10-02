@@ -45,18 +45,30 @@
           <div style="font-weight:600;">ยี่ห้อ:</div> <div>{{ item.brand or '-' }}</div>
           <div style="font-weight:600;">วันที่ซื้อ:</div> <div>{{ item.buy_date or '-' }}</div>
 
-          <div style="font-weight:600;">สถานะ:</div> 
-          <div>
+            <div style="font-weight:600;">สถานะ:</div> 
+            <div>
             {% if item.status == "available" %}
-              <span style="background:#d4edda; color:#155724; padding:4px 12px; border-radius:20px; font-weight:600;">พร้อมใช้งาน</span>
+                <span style="background:#d4edda; color:#155724; padding:4px 12px; border-radius:20px; font-weight:600;">
+                พร้อมใช้งาน
+                </span>
             {% elif item.status == "in_use" %}
-              <span style="background:#fff3cd; color:#856404; padding:4px 12px; border-radius:20px; font-weight:600;">กำลังใช้งาน</span>
+                <span style="background:#fff3cd; color:#856404; padding:4px 12px; border-radius:20px; font-weight:600;">
+                กำลังใช้งาน
+                </span>
             {% elif item.status == "broken" %}
-              <span style="background:#f8d7da; color:#721c24; padding:4px 12px; border-radius:20px; font-weight:600;">ชำรุด</span>
+                <span style="background:#f8d7da; color:#721c24; padding:4px 12px; border-radius:20px; font-weight:600;">
+                ชำรุด
+                </span>
+            {% elif item.status == "lost" %}
+                <span style="background:#e2e3e5; color:#383d41; padding:4px 12px; border-radius:20px; font-weight:600;">
+                สูญหาย
+                </span>
             {% else %}
-              <span style="background:#e2e3e5; color:#383d41; padding:4px 12px; border-radius:20px; font-weight:600;">{{ item.status or '-' }}</span>
+                <span style="background:#e2e3e5; color:#383d41; padding:4px 12px; border-radius:20px; font-weight:600;">
+                {{ item.status or '-' }}
+                </span>
             {% endif %}
-          </div>
+            </div>
 
           <div style="font-weight:600; align-self:start;">รายละเอียด:</div>
           <div style="white-space: pre-line;">{{ item.detail or '-' }}</div>
