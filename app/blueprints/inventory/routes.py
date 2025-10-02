@@ -201,12 +201,27 @@ def admin_equipment_edit(eid):
                 db.close()
                 return render_template("pages_inventory/admin_equipment_edit.html", item=item)
 
-            ext = secure_filename(img.filename).rsplit(".", 1)[1].lower()
-            fname = f"{uuid.uuid4().hex}.{ext}"
+            # ✅ ลบรูปเก่าทั้งหมด (ไฟล์ + เรคคอร์ด DB)
             upload_dir = current_app.config['UPLOAD_FOLDER']
             os.makedirs(upload_dir, exist_ok=True)
+
+            for im in list(item.images):
+                try:
+                    old_file = os.path.join(upload_dir, os.path.basename(im.image_path))
+                    if os.path.exists(old_file):
+                        os.remove(old_file)
+                except Exception as e:
+                    current_app.logger.warning("remove old image failed: %s", e)
+                db.delete(im)
+
+            db.flush()  # ล้างข้อมูลเก่าก่อนเพิ่มใหม่
+
+            # ✅ เซฟไฟล์ใหม่
+            ext = secure_filename(img.filename).rsplit(".", 1)[1].lower()
+            fname = f"{uuid.uuid4().hex}.{ext}"
             img.save(os.path.join(upload_dir, fname))
 
+            # ✅ เพิ่มเรคคอร์ดรูปใหม่
             new_img = EquipmentImage(
                 equipment_id=item.equipment_id,
                 image_path=f"uploads/equipment/{fname}",
@@ -214,11 +229,13 @@ def admin_equipment_edit(eid):
             )
             db.add(new_img)
 
-        # ✅ บันทึกและเด้งกลับหน้ารายการ
+        # ✅ อัปเดตเวลาเพื่อกันแคช
+        item.updated_at = datetime.utcnow()
         db.commit()
         db.close()
         flash("บันทึกการแก้ไขแล้ว", "success")
-        return redirect(url_for("inventory.admin_equipment_list"))   # <-- สำคัญมาก! อยู่ใน POST เท่านั้น
+        return redirect(url_for("inventory.admin_equipment_list"))
+
 
     # ✅ ถ้า GET → แสดงฟอร์ม
     db.close()

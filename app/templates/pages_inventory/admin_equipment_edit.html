@@ -154,16 +154,20 @@
             <option value="broken"    {{ 'selected' if s=='broken'    else '' }}>ชำรุด</option>
             <option value="lost"      {{ 'selected' if s=='lost'      else '' }}>สูญหาย</option>
           </select>
+        </div>  {# ✅ ปิด row ให้เรียบร้อย #}
 
+        {# ✅ เลือกรูป "ใหม่สุด" + กันแคชด้วย updated_at #}
         {% if item.images and item.images|length > 0 %}
-        <div class="row">
-          <label>รูปภาพปัจจุบัน</label>
-          <div style="width:150px; height:150px; border:1px solid #ccc; border-radius:8px; overflow:hidden;">
-            <img src="{{ url_for('static', filename=(item.images[0].image_path|replace('\\','/'))) }}"
-                 alt="รูปปัจจุบัน"
-                 style="width:100%; height:100%; object-fit:cover;">
+          {% set latest = (item.images|sort(attribute='created_at', reverse=True))|first %}
+          <div class="row">
+            <label>รูปภาพปัจจุบัน</label>
+            <div style="width:150px; height:150px; border:1px solid #ccc; border-radius:8px; overflow:hidden;">
+              <img
+                src="{{ url_for('static', filename=(latest.image_path|replace('\\','/'))) }}?v={{ (item.updated_at.timestamp() if item.updated_at else 0) }}"
+                alt="รูปปัจจุบัน"
+                style="width:100%; height:100%; object-fit:cover;">
+            </div>
           </div>
-        </div>
         {% endif %}
 
         <div class="row">
