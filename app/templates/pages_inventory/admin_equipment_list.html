@@ -61,7 +61,20 @@
                 <div><strong>หมายเลข:</strong> {{ e.code or '—' }}</div>
                 <div><strong>อุปกรณ์:</strong> {{ e.name or '—' }}</div>
                 <div><strong>ยี่ห้อ:</strong> {{ e.brand or '—' }}</div>
-                <div><strong>สถานะ:</strong> {{ e.status or '—' }}</div>
+                <div style="display:flex; align-items:center; gap:8px;">
+                  <strong>สถานะ:</strong>
+                  {% if e.status == "available" %}
+                    <span style="background:#d4edda; color:#155724; padding:4px 12px; border-radius:20px; font-weight:600;">พร้อมใช้งาน</span>
+                  {% elif e.status == "in_use" %}
+                    <span style="background:#fff3cd; color:#856404; padding:4px 12px; border-radius:20px; font-weight:600;">กำลังใช้งาน</span>
+                  {% elif e.status == "broken" %}
+                    <span style="background:#f8d7da; color:#721c24; padding:4px 12px; border-radius:20px; font-weight:600;">ชำรุด</span>
+                  {% elif e.status == "lost" %}
+                    <span style="background:#e2e3e5; color:#383d41; padding:4px 12px; border-radius:20px; font-weight:600;">สูญหาย</span>
+                  {% else %}
+                    <span style="background:#e2e3e5; color:#383d41; padding:4px 12px; border-radius:20px; font-weight:600;">{{ e.status or '—' }}</span>
+                  {% endif %}
+              </div>
               </div>
             </div>
           </a>
