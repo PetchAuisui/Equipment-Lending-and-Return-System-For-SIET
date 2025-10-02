@@ -8,13 +8,11 @@
 
   </head>
   <body>
-    {% include 'base/_navbar_register.html' %}
-    <main class="container">
-      {% block content2 %}{% endblock %}
     {% include 'base/_navbar_menu.html' %}
-    <main class="container">
-      {% block content %}{% endblock %}
-
+    {% include 'base/_navbar_register.html' %}
+    <main class="container" >
+    {% block content %}{% endblock %}
     </main>
+    
   </body>
 </html>

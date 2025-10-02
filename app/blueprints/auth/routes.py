@@ -82,6 +82,7 @@ def login_action():
     employee_id  = _get(user, "employee_id")
 
     session.update({
+        "user_id": _get(user, "user_id"),
         "user_email": _get(user, "email"),
         "user_name": _get(user, "name") or email.split("@")[0],
         "student_id": student_id,
