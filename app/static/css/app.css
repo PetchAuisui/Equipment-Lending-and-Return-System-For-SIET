@@ -1,3 +1,123 @@
-body { font-family: Arial, sans-serif; margin: 0;}
-.container { padding: 0px;margin-top: 80px;}
+/* ===== Reset & Base ===== */
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; background: #fff; }
 
+/* ฟอนต์หลักของ navbar */
+.navbar, 
+.navbar a, 
+.navbar_login, 
+.navbar_menu {
+  font-family: 'Kanit', 'Poppins', sans-serif;
+}
+
+/* ===== Navbar Container ===== */
+.navbar {
+  display: block;
+  width: 100%;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+/* ===== แถบบน ===== */
+.navbar_login {
+  background: #ffadd0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 20px;  /* ปรับความสูง */
+}
+
+.brand {
+  font-weight: 800;
+  color: #1f2937;
+  text-decoration: none;
+}
+
+.navbar_login .nav-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* ปุ่ม */
+.btn-nav {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-weight: 600;
+  text-decoration: none;
+  border: 1px solid transparent;
+  transition: 0.2s ease;
+}
+.btn-admin { background: #3b82f6; color: #fff; }
+.btn-logout { background: #ef4444; color: #fff; }
+.btn-nav:hover { filter: brightness(0.95); transform: translateY(-1px); }
+
+/* user identity */
+.user_identity {
+  background: #ffd6e8;
+  padding: 4px 10px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  color: #1f2937;
+}
+
+/* ===== แถวล่าง (เมนู + search) ===== */
+.navbar_menu {
+  background: #6b8f6b;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 20px;   /* ลดความสูง bar เขียว */
+}
+
+.navbar_menu .menu-left {
+  display: flex;
+  gap: 22px;
+}
+
+.navbar_menu a {
+  color: #273135;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 16px;
+  padding: 4px 0;
+  transition: color 0.2s;
+}
+.navbar_menu a:hover {
+  color: #111827;
+}
+
+/* Search box */
+.navbar_light {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #fff;
+  padding: 6px 12px;
+  border-radius: 999px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+}
+
+.icon_bell {
+  font-size: 18px;
+  color: #6b7280;
+}
+
+.Search_input {
+  border: none;
+  outline: none;
+  font-size: 15px;
+}
+
+/* ===== Layout Container (main content) ===== */
+.container {
+  max-width: 1100px;
+  margin: 0 auto;
+}

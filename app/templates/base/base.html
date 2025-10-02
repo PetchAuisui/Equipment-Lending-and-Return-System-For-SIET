@@ -1,18 +1,30 @@
 <!doctype html>
-<html>
+<html lang="th">
   <head>
     <meta charset="utf-8" />
     <title>{% block title %}Equipment Lending{% endblock %}</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}">
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link href="https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css" rel="stylesheet">
-
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;600;700&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}">
+    {% block head %}{% endblock %}
   </head>
   <body>
-    {% include 'base/_navbar_menu.html' %}
-    {% include 'base/_navbar_register.html' %}
-    <main class="container" >
-    {% block content %}{% endblock %}
+    {% include 'base/_navbar.html' %}
+
+    <!-- Page frame: ทำให้ทุกหน้ามี layout เหมือนกัน -->
+    <main class="page">
+      {% if self.page_title() %}
+        <header class="page-header">
+          <h1>{% block page_title %}{% endblock %}</h1>
+        </header>
+      {% endif %}
+
+      <section class="page-body">
+        {% block content %}{% endblock %}
+      </section>
     </main>
-    
+
+    {% block scripts %}{% endblock %}
   </body>
 </html>

@@ -1,0 +1,47 @@
+<nav class="navbar">
+  <!-- แถวบน: Brand + ปุ่ม user -->
+  <div class="navbar_login">
+    <div class="nav-left">
+      <a class="brand" href="{{ url_for('pages.home') }}">SEIT Equipment</a>
+    </div>
+
+    <div class="nav-right">
+      {% if current_user.is_authenticated %}
+        {% if session.get('role') in ['staff', 'admin'] %}
+          {% if request.path.startswith('/admin') %}
+            <a href="{{ url_for('pages.home') }}" class="btn-nav btn-admin">Admin</a>
+          {% else %}
+            <a href="{{ url_for('admin.admin_home') }}" class="btn-nav btn-admin">Admin</a>
+          {% endif %}
+        {% endif %}
+        <a href="{{ url_for('auth.logout_action') }}" class="btn-nav btn-logout">Logout</a>
+        <span class="user_identity">
+          {{ current_user.identity }}
+          <i class="ri-user-line"></i>
+        </span>
+      {% else %}
+        <div class="navbar_login_text">
+          <a href="{{ url_for('auth.login_page') }}">Login</a>
+          <span class="divider">|</span>
+          <a href="{{ url_for('auth.register_page') }}">Sign in</a>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- แถวล่าง: เมนูหลัก + Search -->
+  <div class="navbar_menu">
+    <div class="menu-left">
+      <a href="{{ url_for('pages.home') }}">Home</a>
+      <a href="{{ url_for('inventory.lend_device') }}">Equipment</a>
+      <a href="{{ url_for('tracking.track_index') }}">Track Status</a>
+      <a href="{{ url_for('pages.policy') }}">Policy</a>
+      <a href="{{ url_for('pages.about_us') }}">About Us</a>
+    </div>
+
+    <div class="navbar_light">
+      <i class="ri-notification-4-line icon_bell" aria-label="Notifications"></i>
+      <input class="Search_input" type="search" placeholder="Search..." />
+    </div>
+  </div>
+</nav>
