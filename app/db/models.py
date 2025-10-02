@@ -37,7 +37,6 @@ class Subject(Base):
     subject_id   = Column(Integer, primary_key=True, autoincrement=True)
     subject_code = Column(String, nullable=False)
     subject_name = Column(String, nullable=False)
-    subject_section = Column(Integer)
 
     section = relationship("Section", back_populates="subject")
     rents = relationship("Rent", back_populates="subject")
