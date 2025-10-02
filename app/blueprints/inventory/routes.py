@@ -53,7 +53,23 @@ def admin_equipment_list():
     db.close()
     return render_template("pages_inventory/admin_equipment_list.html", items=items)
 
+# 📄 หน้าแสดงรายละเอียดอุปกรณ์ (ใหม่)
+@inventory_bp.route("/admin/equipments/<int:eid>", methods=["GET"], endpoint="admin_equipment_detail")
+def admin_equipment_detail(eid):
+    db = SessionLocal()
+    item = (
+        db.query(Equipment)
+          .options(joinedload(Equipment.images))
+          .filter(Equipment.equipment_id == eid, Equipment.is_active == True)
+          .first()
+    )
+    db.close()
 
+    if not item:
+        abort(404)
+
+    return render_template("pages_inventory/admin_equipment_detail.html", item=item)
+ 
 # ฟอร์มเพิ่มอุปกรณ์
 @inventory_bp.route("/admin/equipments/new", methods=["GET", "POST"])
 def admin_equipment_new():
@@ -146,7 +162,7 @@ def admin_equipment_new():
     return render_template("pages_inventory/admin_equipment_new.html")
 
 
-@inventory_bp.route("/admin/equipments/<int:eid>/edit", methods=["GET", "POST"])
+@inventory_bp.route("/admin/equipments/<int:eid>/edit", methods=["GET", "POST"], endpoint="admin_equipment_edit")
 def admin_equipment_edit(eid):
     db = SessionLocal()
     item = (
@@ -235,8 +251,9 @@ def admin_equipment_edit(eid):
         db.close()
         flash("บันทึกการแก้ไขแล้ว", "success")
         return redirect(url_for("inventory.admin_equipment_list"))
-
+    
+    return render_template("pages_inventory/admin_equipment_edit.html", item=item)
 
     # ✅ ถ้า GET → แสดงฟอร์ม
     db.close()
-    return render_template("pages_inventory/admin_equipment_edit.html", item=item)
+    return render_template("pages_inventory/admin_equipment_detail.html", item=item)
