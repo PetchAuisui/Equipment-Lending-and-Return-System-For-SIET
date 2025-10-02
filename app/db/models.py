@@ -23,33 +23,59 @@ class User(Base):
     created_at    = Column(DateTime, default=datetime.utcnow)
     updated_at    = Column(DateTime, default=datetime.utcnow)
 
-    classes           = relationship("Class", back_populates="owner")
     rents             = relationship("Rent", back_populates="user")
     stock_movements   = relationship("StockMovement", back_populates="actor")
     returns           = relationship("Return", back_populates="receiver")
     notifications     = relationship("Notification", back_populates="user")
     renewals_approved = relationship("Renewal", back_populates="approver")
     audits            = relationship("Audit", back_populates="actor")
+    instructor     = relationship("Instructor", back_populates="user")
 
 # ---------- subjects ----------
 class Subject(Base):
     __tablename__ = "subjects"
     subject_id   = Column(Integer, primary_key=True, autoincrement=True)
-    subject_code = Column(String)
+    subject_code = Column(String, nullable=False)
     subject_name = Column(String, nullable=False)
+    subject_section = Column(Integer)
 
-    classes = relationship("Class", back_populates="subject")
+    section = relationship("Section", back_populates="subject")
+    rents = relationship("Rent", back_populates="subject")
+    instructor = relationship("Instructor", back_populates="subject")
+
+class Section(Base):
+    __tablename__ = "sections"
+    section_id   = Column(Integer, primary_key=True, autoincrement=True)
+    section_name = Column(String, nullable=False)
+    subject_id     = Column(Integer, ForeignKey("subjects.subject_id"))
+    
+
+    subject = relationship("Subject", back_populates="section")
+
+class Instructor(Base):
+    __tablename__ = "instructors"
+    instructors_id   = Column(Integer, primary_key=True, autoincrement=True)
+    subject_id     = Column(Integer, ForeignKey("subjects.subject_id"), nullable=False)
+    user_id     = Column(Integer, ForeignKey("users.user_id"), nullable=False)
+
+    user     = relationship("User", back_populates="instructor")
+    subject = relationship("Subject", back_populates="instructor")
+
+    
 
 # ---------- classes ----------
 class Class(Base):
     __tablename__ = "classes"
-    class_id     = Column(Integer, primary_key=True, autoincrement=True)
-    subject_id   = Column(Integer, ForeignKey("subjects.subject_id"), nullable=False)
-    section_name = Column(String, nullable=False)
 
-    subject = relationship("Subject", back_populates="classes")
-    owner   = relationship("User", back_populates="classes")
-    rents   = relationship("Rent", back_populates="clazz")
+    class_id   = Column(Integer, primary_key=True, autoincrement=True) 
+    class_code = Column(String, nullable=False)
+    class_name  = Column(String, nullable=False) 
+    class_location  = Column(String, nullable=False) 
+    
+
+    # ความสัมพันธ์
+    rents = relationship("Rent", back_populates="clazz")    # รายการยืมที่เกิดในคลาสนี้
+
 
 # ---------- equipments (รุ่น) ----------
 class Equipment(Base):
@@ -125,6 +151,7 @@ class Rent(Base):
     equipment_id = Column(Integer, ForeignKey("equipments.equipment_id"), nullable=False)
     asset_id     = Column(Integer, ForeignKey("equipment_assets.asset_id"))
     user_id      = Column(Integer, ForeignKey("users.user_id"), nullable=False)
+    subject_id     = Column(Integer, ForeignKey("subjects.subject_id"))
     class_id     = Column(Integer, ForeignKey("classes.class_id"))
     start_date   = Column(DateTime, nullable=False)
     due_date     = Column(DateTime, nullable=False)
@@ -132,9 +159,11 @@ class Rent(Base):
     status_id    = Column(Integer, ForeignKey("status_rents.status_id"), nullable=False)
     created_at   = Column(DateTime, default=datetime.utcnow)
 
+
     equipment = relationship("Equipment", back_populates="rents")
     asset     = relationship("EquipmentAsset", back_populates="rents")
     user      = relationship("User", back_populates="rents")
+    subject = relationship("subject", back_populates="subject")
     clazz     = relationship("Class", back_populates="rents")
     status    = relationship("StatusRent", back_populates="rents")
     ret       = relationship("Return", back_populates="rent", uselist=False, cascade="all, delete-orphan")
