@@ -1,0 +1,94 @@
+{% extends 'base/base_admin.html' %}
+{% block title %}รายละเอียดอุปกรณ์{% endblock %}
+
+{% block content %}
+<div style="padding: 24px; max-width: 1200px; margin: 0 auto; ">
+
+  <!-- หัวข้อ -->
+  <div style="display:flex; align-items:center; gap:12px; margin-bottom: 24px;">
+    <img src="{{ url_for('static', filename='image/icons/device.png') }}" style="width:50px; height:50px;">
+    <h1 style="font-size:26px; font-weight:700; margin:0;">รายละเอียดอุปกรณ์</h1>
+  </div>
+
+  <div style="
+    background:#f5f5f5;
+    padding: 28px;
+    border-radius: 16px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+    max-width: 950px;
+    border: 1px solid #ddd;
+  ">
+
+    <!-- กล่องหลัก: ใช้ flex แบ่งซ้าย-ขวา -->
+    <div style="display:flex; gap:40px; align-items:flex-start;">
+      
+      <!-- ซ้าย: รูปภาพ -->
+      <div style="flex:0 0 260px;">
+        {% if item.images and item.images|length > 0 %}
+          {% set latest = (item.images|sort(attribute='created_at', reverse=True))|first %}
+          <img src="{{ url_for('static', filename=(latest.image_path|replace('\\','/'))) }}"
+               alt="ภาพอุปกรณ์"
+               style="width:260px; height:260px; object-fit:cover; border-radius:12px; border:1px solid #ccc;">
+        {% else %}
+          <div style="width:260px; height:260px; background:#e0e0e0; display:flex; align-items:center; justify-content:center; border-radius:12px; border:1px dashed #aaa;">
+            <span style="color:#777;">ไม่มีรูปภาพ</span>
+          </div>
+        {% endif %}
+      </div>
+
+      <!-- ขวา: ข้อมูล -->
+      <div style="flex:1; font-size:16px; line-height:1.8;">
+        <div style="display:grid; grid-template-columns: 160px 1fr; row-gap: 12px;">
+          <div style="font-weight:600;">ชื่ออุปกรณ์:</div> <div>{{ item.name or '-' }}</div>
+          <div style="font-weight:600;">หมายเลข:</div> <div>{{ item.code or '-' }}</div>
+          <div style="font-weight:600;">หมวดหมู่:</div> <div>{{ item.category or '-' }}</div>
+          <div style="font-weight:600;">ยี่ห้อ:</div> <div>{{ item.brand or '-' }}</div>
+          <div style="font-weight:600;">วันที่ซื้อ:</div> <div>{{ item.buy_date or '-' }}</div>
+
+            <div style="font-weight:600;">สถานะ:</div> 
+            <div>
+            {% if item.status == "available" %}
+                <span style="background:#d4edda; color:#155724; padding:4px 12px; border-radius:20px; font-weight:600;">
+                พร้อมใช้งาน
+                </span>
+            {% elif item.status == "in_use" %}
+                <span style="background:#fff3cd; color:#856404; padding:4px 12px; border-radius:20px; font-weight:600;">
+                กำลังใช้งาน
+                </span>
+            {% elif item.status == "broken" %}
+                <span style="background:#f8d7da; color:#721c24; padding:4px 12px; border-radius:20px; font-weight:600;">
+                ชำรุด
+                </span>
+            {% elif item.status == "lost" %}
+                <span style="background:#e2e3e5; color:#383d41; padding:4px 12px; border-radius:20px; font-weight:600;">
+                สูญหาย
+                </span>
+            {% else %}
+                <span style="background:#e2e3e5; color:#383d41; padding:4px 12px; border-radius:20px; font-weight:600;">
+                {{ item.status or '-' }}
+                </span>
+            {% endif %}
+            </div>
+
+          <div style="font-weight:600; align-self:start;">รายละเอียด:</div>
+          <div style="white-space: pre-line;">{{ item.detail or '-' }}</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ปุ่ม -->
+    <div style="margin-top: 32px; display:flex; gap:12px; justify-content: flex-end;">
+      <a href="{{ url_for('inventory.admin_equipment_list') }}"
+         style="padding:12px 24px; background:#bdbdbd; border-radius:8px; text-decoration:none; color:#222; font-weight:600;">
+         ⬅ กลับหน้ารายการ
+      </a>
+
+      <a href="{{ url_for('inventory.admin_equipment_edit', eid=item.equipment_id) }}"
+         style="padding:12px 24px; background:#4caf50; border-radius:8px; text-decoration:none; color:white; font-weight:600;">
+          แก้ไขข้อมูล
+      </a>
+    </div>
+
+  </div>
+</div>
+{% endblock %}
