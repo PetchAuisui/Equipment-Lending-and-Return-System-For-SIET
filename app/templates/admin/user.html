@@ -1,0 +1,146 @@
+{% extends 'base/base_admin.html' %}
+{% block title %}จัดการสมาชิก | Admin{% endblock %}
+{% block content %}
+
+<link rel="stylesheet" href="{{ url_for('static', filename='css/admin_user.css') }}">
+
+<div class="admin-users">
+  <div class="container">
+
+    <!-- Header -->
+    <div class="page-header">
+      <div class="page-title">จัดการสมาชิก</div>
+
+      <form class="searchbar" method="get" action="{{ url_for('admin_users.index') }}">
+        <input type="text" name="q" placeholder="รหัส/ชื่อ/อีเมล" value="{{ q or '' }}">
+        <!-- เพิ่ม class="btn-search" -->
+        <button type="submit" class="btn-search">ค้นหา</button>
+
+        {% if q %}
+          <a href="{{ url_for('admin_users.index') }}" class="btn-clear">
+            <i class="ri-close-line"></i> ล้าง
+          </a>
+        {% endif %}
+      </form>
+    </div>
+
+    <!-- Card -->
+    <section class="card">
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th class="col-code">รหัส</th>
+              <th class="col-name">ชื่อ</th>    
+              <th class="col-role">บทบาท</th>
+              <th class="col-role">ประเภทสมาชิก</th>
+              <th>อีเมล</th>
+              <th class="col-major">ภาควิชา</th>
+              <th class="col-phone">เบอร์โทรศัพท์</th>
+              <th class="col-actions">actions</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            {% if users and users|length %}
+              {% for u in users %}
+              <tr>
+                <!-- รหัส -->
+                <td>{{ u.code or ('U' ~ u.user_id) }}</td>
+
+                <!-- ชื่อ -->
+                <td class="col-name">{{ u.name }}</td>
+
+                <!-- บทบาท -->
+                <td>
+                  {% set role = (u.role or 'member') %}
+                  <span class="badge
+                    {{ 'badge--admin' if role=='admin'
+                       else 'badge--student' if role=='student'
+                       else 'badge--staff' if role=='staff'
+                       else 'badge--default' }}">
+                    {{ role }}
+                  </span>
+                </td>
+
+                <!-- ประเภทสมาชิก -->
+                <td>
+                  {% set mtype = (u.member_type or '-') %}
+                  <span class="badge
+                    {{ 'badge--student' if mtype=='student'
+                       else 'badge--teacher' if mtype=='teacher'
+                       else 'badge--officer' if mtype=='officer'
+                       else 'badge--default' }}">
+                    {{ mtype }}
+                  </span>
+                </td>
+
+                <!-- อีเมล -->
+                <td>{{ u.email }}</td>
+
+                <!-- ภาควิชา -->
+                <td>{{ u.major or '-' }}</td>
+
+                <!-- เบอร์โทร -->
+                <td>{{ u.phone or '-' }}</td>
+
+                <!-- Actions -->
+                <td class="col-actions">
+                    <a class="btn btn--sm btn-edit"
+                      href="{{ url_for('admin_users.edit_user_page', user_id=u.user_id) }}">
+                      แก้ไข
+                    </a>
+
+                    <a href="#" 
+                      class="btn btn--sm btn-delete" 
+                      onclick="return confirmDelete({{ u.user_id }});">
+                      ลบ
+                    </a>                
+                </td>
+              </tr>
+              {% endfor %}
+            {% else %}
+              <tr>
+                <td colspan="8" class="empty">ไม่พบข้อมูล</td>
+              </tr>
+            {% endif %}
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Footer / Pager -->
+      <div class="table-footer">
+        <div class="meta">
+          แสดงหน้า {{ page or 1 }}/{{ total_pages or 1 }} (ทั้งหมด {{ total or 0 }} รายการ)
+        </div>
+
+        {% set base = request.path %}
+        <nav class="pager">
+          {% if page and total_pages and page > 1 %}
+            <a href="{{ base }}?q={{ q or '' }}&page=1&per_page={{ per_page or 10 }}">« หน้าแรก</a>
+            <a href="{{ base }}?q={{ q or '' }}&page={{ page-1 }}&per_page={{ per_page or 10 }}">ก่อนหน้า</a>
+          {% else %}
+            <span class="disabled">« หน้าแรก</span>
+            <span class="disabled">ก่อนหน้า</span>
+          {% endif %}
+
+          <span class="current">หน้า {{ page or 1 }}</span>
+
+          {% if page and total_pages and page < total_pages %}
+            <a href="{{ base }}?q={{ q or '' }}&page={{ page+1 }}&per_page={{ per_page or 10 }}">ถัดไป</a>
+            <a href="{{ base }}?q={{ q or '' }}&page={{ total_pages }}&per_page={{ per_page or 10 }}">หน้าสุดท้าย »</a>
+          {% else %}
+            <span class="disabled">ถัดไป</span>
+            <span class="disabled">หน้าสุดท้าย »</span>
+          {% endif %}
+        </nav>
+      </div>
+    </section>
+
+  </div>
+</div>
+
+<!-- ✅ JS -->
+<script src="{{ url_for('static', filename='js/admin_user.js') }}"></script>
+
+{% endblock %}
