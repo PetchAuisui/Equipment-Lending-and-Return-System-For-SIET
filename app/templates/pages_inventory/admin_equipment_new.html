@@ -159,16 +159,17 @@
             <input class="ctrl" type="date" name="buy_date">
           </div>
 
+          {% set s = request.form.get('status', '') %}
           <div class="row">
             <label>สถานะ</label>
             <select class="ctrl" name="status">
-              {% set s = item.status or '' %}
               <option value="">— เลือกสถานะ —</option>
-              <option value="available" {{ 'selected' if s=='available' else '' }}>พร้อมใช้งาน</option>
-              <option value="in_use"    {{ 'selected' if s=='in_use'    else '' }}>กำลังถูกยืม</option>
-              <option value="broken"    {{ 'selected' if s=='broken'    else '' }}>ชำรุด</option>
-              <option value="lost"      {{ 'selected' if s=='lost'      else '' }}>สูญหาย</option>
+              <option value="available" {{ 'selected' if s == 'available' else '' }}>พร้อมใช้งาน</option>
+              <option value="in_use"    {{ 'selected' if s == 'in_use'    else '' }}>กำลังถูกยืม</option>
+              <option value="broken"    {{ 'selected' if s == 'broken'    else '' }}>ชำรุด</option>
+              <option value="lost"      {{ 'selected' if s == 'lost'      else '' }}>สูญหาย</option>
             </select>
+          </div>
 
           <div class="row">
             <label>แนบรูปภาพ</label>
