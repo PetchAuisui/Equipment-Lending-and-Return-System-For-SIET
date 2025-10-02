@@ -20,13 +20,16 @@
 
   <a href="{{ url_for('auth.logout_action') }}" class="btn-nav btn-logout">Logout</a>
   <span class="user_identity">{{ current_user.identity }}</span>
-  <i class="ri-user-line icon_user"></i>
+  <div class="icon_user">
+  <a href=# class="ri-user-line"></a>
+  </div>
 
 {% else %}
+<div class="navbar_login_text">
   <a href="{{ url_for('auth.login_page') }}">Login</a>
   <a>|</a>
   <a href="{{ url_for('auth.register_page') }}">Sign in</a>
-  <i class="ri-user-line icon_user"></i>
+</div>
 {% endif %}
 
 </div>
