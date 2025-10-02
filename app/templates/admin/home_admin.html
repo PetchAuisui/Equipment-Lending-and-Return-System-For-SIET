@@ -6,8 +6,9 @@
 <div class="dashboard">
   <section class="dashboard__grid" aria-label="เมนูด่วน">
 
-    <a class="card" href="#">
-      <img class="card__icon" src="{{ url_for('static', filename='/images/icons/device.png') }}" alt="">
+    <a class="card" href="{{ url_for('inventory.admin_equipment_list') }}">
+      <img class="card__icon" src="{{ url_for('static', filename='/image/icons/device.png') }}" alt="">
+
       <div class="card__title">จัดการอุปกรณ์</div>
     </a>
 
