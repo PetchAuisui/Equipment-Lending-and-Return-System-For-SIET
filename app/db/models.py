@@ -46,7 +46,6 @@ class Class(Base):
     class_id     = Column(Integer, primary_key=True, autoincrement=True)
     subject_id   = Column(Integer, ForeignKey("subjects.subject_id"), nullable=False)
     section_name = Column(String, nullable=False)
-    user_id      = Column(Integer, ForeignKey("users.user_id"), nullable=False)
 
     subject = relationship("Subject", back_populates="classes")
     owner   = relationship("User", back_populates="classes")
@@ -215,3 +214,4 @@ class Audit(Base):
     created_at = Column(DateTime, default=datetime.utcnow)
 
     actor = relationship("User", back_populates="audits")
+
