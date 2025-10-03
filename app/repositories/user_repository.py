@@ -44,7 +44,6 @@ class UserRepository:
     def _insert_audit(
         self,
         *,
-        entity: str,
         entity_id: int,
         action: str,
         actor_id: Optional[int],
@@ -67,11 +66,10 @@ class UserRepository:
             diff_expr = "CAST(:diff AS JSON)"        # Postgres/DB อื่น ๆ
 
         sql = text(f"""
-            INSERT INTO audits (entity, entity_id, action, actor_id, diff, created_at)
-            VALUES (:entity, :entity_id, :action, :actor_id, {diff_expr}, :ts)
+            INSERT INTO audits (entity_id, action, actor_id, diff, created_at)
+            VALUES (:entity_id, :action, :actor_id, {diff_expr}, :ts)
         """)
         self.session.execute(sql, {
-            "entity": entity,
             "entity_id": entity_id,
             "action": action,
             "actor_id": actor_id,
@@ -112,7 +110,6 @@ class UserRepository:
 
             if audit and new_row:
                 self._insert_audit(
-                    entity="users",
                     entity_id=new_row["user_id"],
                     action="created",
                     actor_id=actor_id,
@@ -151,7 +148,6 @@ class UserRepository:
         after = self._row_to_dict(row)
 
         self._insert_audit(
-            entity="users",
             entity_id=user_id,
             action="updated",
             actor_id=actor_id,
@@ -176,7 +172,6 @@ class UserRepository:
 
         # audit ลบ (after = None)
         self._insert_audit(
-            entity="users",
             entity_id=user_id,
             action="deleted",
             actor_id=actor_id,
