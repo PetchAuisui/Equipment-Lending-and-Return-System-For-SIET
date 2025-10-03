@@ -23,7 +23,7 @@ class User(Base):
     created_at    = Column(DateTime, default=datetime.utcnow)
     updated_at    = Column(DateTime, default=datetime.utcnow)
 
-    classes           = relationship("Class", back_populates="owner")
+    instructor        = relationship("Instructor", back_populates="user", uselist=False)
     rents             = relationship("Rent", back_populates="user")
     stock_movements   = relationship("StockMovement", back_populates="actor")
     returns           = relationship("Return", back_populates="receiver")
@@ -38,18 +38,36 @@ class Subject(Base):
     subject_code = Column(String)
     subject_name = Column(String, nullable=False)
 
-    classes = relationship("Class", back_populates="subject")
+    rent = relationship("Rent", back_populates="subject")
+    section = relationship("Section", back_populates="subject")
+    instructor = relationship("Instructor", back_populates="subject")
+
+class Instructor(Base):
+    __tablename__ = "instructors"
+    instructor_id   = Column(Integer, primary_key=True, autoincrement=True)
+    subject_id      = Column(Integer, ForeignKey("subjects.subject_id"), nullable=False)
+    user_id         = Column(Integer, ForeignKey("users.user_id"), nullable=False)
+
+    subject = relationship("Subject", back_populates="instructor")
+    user    = relationship("User", back_populates="instructor")
+
+class Section(Base):
+    __tablename__ = "sections"
+    section_id   = Column(Integer, primary_key=True, autoincrement=True)
+    section_name = Column(String, nullable=False)
+    subject_id   = Column(Integer, ForeignKey("subjects.subject_id"), nullable=False)
+
+
+    subject = relationship("Section", back_populates="section")
 
 # ---------- classes ----------
 class Class(Base):
     __tablename__ = "classes"
     class_id     = Column(Integer, primary_key=True, autoincrement=True)
-    subject_id   = Column(Integer, ForeignKey("subjects.subject_id"), nullable=False)
-    section_name = Column(String, nullable=False)
-    user_id      = Column(Integer, ForeignKey("users.user_id"), nullable=False)
+    class_no = Column(String, nullable=False)
+    class_name = Column(String)
+    class_location = Column(String)
 
-    subject = relationship("Subject", back_populates="classes")
-    owner   = relationship("User", back_populates="classes")
     rents   = relationship("Rent", back_populates="clazz")
 
 # ---------- equipments (รุ่น) ----------
@@ -110,6 +128,7 @@ class Rent(Base):
     rent_id      = Column(Integer, primary_key=True, autoincrement=True)
     equipment_id = Column(Integer, ForeignKey("equipments.equipment_id"), nullable=False)
     user_id      = Column(Integer, ForeignKey("users.user_id"), nullable=False)
+    subject_id   = Column(Integer, ForeignKey("subjects.subject_id"), nullable=False)
     class_id     = Column(Integer, ForeignKey("classes.class_id"))
     start_date   = Column(DateTime, nullable=False)
     due_date     = Column(DateTime, nullable=False)
@@ -119,6 +138,7 @@ class Rent(Base):
 
     equipment = relationship("Equipment", back_populates="rents")
     user      = relationship("User", back_populates="rents")
+    subject   = relationship("Subject", back_populates="section")
     clazz     = relationship("Class", back_populates="rents")
     status    = relationship("StatusRent", back_populates="rents")
     ret       = relationship("Return", back_populates="rent", uselist=False, cascade="all, delete-orphan")

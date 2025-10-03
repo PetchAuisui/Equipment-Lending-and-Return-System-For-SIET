@@ -1,7 +1,7 @@
 สร้าง database ใช้คำสั่ง python3 -m app.db.init_db แก้ไขไฟล์ app/db/init_db.py ลบ app.db ก่อนแก้
 เพิ่มข้อมูล       ใช้คำสั่ง python3 -m app.db.insert  แก้ไขไฟล์ app/db/inside.py
 
-![alt text](<ER diagarm.png>)
+![alt text](<ER diagarm-1.png>)
 
 str = string
 int = intreger
