@@ -1,6 +1,8 @@
 from app.db.db import SessionLocal
 from app.db.models import Subject, StatusRent
 from datetime import datetime
+from app.db.models import Subject, Section
+
 
 def seed_subjects():
     db = SessionLocal()
@@ -23,7 +25,6 @@ def seed_subjects():
     finally:
         db.close()
 
-
 def seed_status_rents():
     db = SessionLocal()
     try:
@@ -38,6 +39,44 @@ def seed_status_rents():
     except Exception as e:
         db.rollback()
         print("❌ Error inserting status rents:", e)
+    finally:
+        db.close()
+
+def seed_sections():
+    db = SessionLocal()
+    try:
+        # ดึง Subject จาก DB
+        subjects = {subj.subject_code: subj.subject_id for subj in db.query(Subject).all()}
+
+        # สร้าง list ของ Section
+        sections_list = [
+            # ส่วนใหญ่ Section 1
+            Section(section_name="Section 1", subject_id=subjects.get("03206111")),
+            Section(section_name="Section 2", subject_id=subjects.get("03206111")),
+            Section(section_name="Section 1", subject_id=subjects.get("03376124")),
+            Section(section_name="Section 2", subject_id=subjects.get("03376124")),
+            Section(section_name="Section 1", subject_id=subjects.get("03376125")),
+            Section(section_name="Section 2", subject_id=subjects.get("03376125")),
+            Section(section_name="Section 1", subject_id=subjects.get("03376126")),
+            Section(section_name="Section 2", subject_id=subjects.get("03376126")),
+            Section(section_name="Section 1", subject_id=subjects.get("03376150")),
+            Section(section_name="Section 2", subject_id=subjects.get("03376150")),
+            # วิชา 90641009 มีหลาย Section
+            Section(section_name="Section 906", subject_id=subjects.get("90641009")),
+            Section(section_name="Section 907", subject_id=subjects.get("90641009")),
+            Section(section_name="Section 908", subject_id=subjects.get("90641009")),
+            # วิชา 90642208 มีหลาย Section
+            Section(section_name="Section 906", subject_id=subjects.get("90642208")),
+            Section(section_name="Section 907", subject_id=subjects.get("90642208")),
+            Section(section_name="Section 908", subject_id=subjects.get("90642208")),
+        ]
+
+        db.add_all(sections_list)
+        db.commit()
+        print("✅ Sections inserted successfully")
+    except Exception as e:
+        db.rollback()
+        print("❌ Error inserting sections:", e)
     finally:
         db.close()
 

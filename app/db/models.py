@@ -57,8 +57,8 @@ class Section(Base):
     section_name = Column(String, nullable=False)
     subject_id   = Column(Integer, ForeignKey("subjects.subject_id"), nullable=False)
 
+    subject = relationship("Subject", back_populates="section")  # <-- แก้ตรงนี้
 
-    subject = relationship("Section", back_populates="section")
 
 # ---------- classes ----------
 class Class(Base):
@@ -138,7 +138,7 @@ class Rent(Base):
 
     equipment = relationship("Equipment", back_populates="rents")
     user      = relationship("User", back_populates="rents")
-    subject   = relationship("Subject", back_populates="section")
+    subject = relationship("Subject", back_populates="rent")
     clazz     = relationship("Class", back_populates="rents")
     status    = relationship("StatusRent", back_populates="rents")
     ret       = relationship("Return", back_populates="rent", uselist=False, cascade="all, delete-orphan")
@@ -170,20 +170,16 @@ class ItemBroke(Base):
     created_at    = Column(DateTime, default=datetime.utcnow)
 
     ret = relationship("Return", back_populates="item_brokes")
-    itemBroke_image_id = relationship("ItemBroke_images", back_populates="itemBroke")
-
-    __table_args__ = (
-        CheckConstraint("type in ('broke','lost')", name="ck_item_brokes_type_enum"),
-    )
+    itemBroke_images = relationship("ItemBroke_images", back_populates="itemBroke")  # <-- แก้ชื่อ relationship
 
 class ItemBroke_images(Base):
-    __tablename__ = "ItemBroke_images"
+    __tablename__ = "item_broke_images"  # ควรใช้ lowercase ให้ตรง convention
     itemBroke_image_id     = Column(Integer, primary_key=True, autoincrement=True)
     item_broke_id = Column(Integer, ForeignKey("item_brokes.item_broke_id"), nullable=False)
     image_path   = Column(String, nullable=False)
     created_at   = Column(DateTime, default=datetime.utcnow)
 
-    itemBroke = relationship("item_brokes", back_populates="itemBroke_image_id")
+    itemBroke = relationship("ItemBroke", back_populates="itemBroke_images")  # <-- ใช้ class name และ back_populates ตรงกัน
 
 
 # ---------- notifications ----------
