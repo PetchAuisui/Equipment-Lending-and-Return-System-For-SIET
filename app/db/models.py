@@ -82,7 +82,6 @@ class Equipment(Base):
     buy_date     = Column(Date)
     status       = Column(String)                               # available, rented, maintenance
     created_at   = Column(DateTime, default=datetime.utcnow)
-    updated_at   = Column(DateTime, default=datetime.utcnow)
 
     rents       = relationship("Rent", back_populates="equipment")
     stock_moves = relationship("StockMovement", back_populates="equipment")
