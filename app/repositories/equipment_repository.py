@@ -1,23 +1,20 @@
 # repositories/equipment_repository.py
-from app.models.equipment import Equipment
 from app.db.db import SessionLocal
+from app.models import Equipment  # ตรวจให้ชัวร์ว่า path นี้ตรงกับโปรเจกต์ของนาย
 
 class EquipmentRepository:
-    def __init__(self):
-        self.db = SessionLocal()
+    def __init__(self, session=None):
+        self.db = session or SessionLocal()
 
-    def get_all(self):
-        return self.db.query(Equipment).filter(Equipment.is_active == True).all()
+    def get_by_id(self, equipment_id: int):
+        return self.db.get(Equipment, equipment_id)
 
-    def get_by_id(self, equipment_id):
-        return self.db.query(Equipment).get(equipment_id)
-
-    def add(self, equipment):
+    def add(self, equipment: Equipment):
         self.db.add(equipment)
         self.db.commit()
         self.db.refresh(equipment)
         return equipment
 
-    def delete(self, equipment):
+    def delete(self, equipment: Equipment):
         self.db.delete(equipment)
         self.db.commit()
