@@ -12,8 +12,11 @@
     {% include 'base/_navbar_register.html' %}
     <main class="container2">
     <div class="sidebar">
+
     <a href="{{ url_for('admin.admin_home') }}"><i class="ri-home-4-line"></i><span>หน้าหลัก</span></a>
-    <a href="#"><i class="ri-tools-line"></i><span>จัดการอุปกรณ์</span></a>
+    <a href="{{ url_for('inventory.admin_equipment_list') }}"><i class="ri-tools-line"></i><span>จัดการอุปกรณ์</span></a>
+
+
     <a href="#"><i class="ri-arrow-go-back-line"></i><span>คืนอุปกรณ์</span></a>
     <a href="#"><i class="ri-time-line"></i><span>ประวัติยืม-คืน</span></a>
     <a href="#"><i class="ri-alert-line"></i><span>อุปกรณ์สูญหาย/ชำรุด</span></a>
