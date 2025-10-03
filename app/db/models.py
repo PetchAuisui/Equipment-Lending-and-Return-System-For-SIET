@@ -23,58 +23,34 @@ class User(Base):
     created_at    = Column(DateTime, default=datetime.utcnow)
     updated_at    = Column(DateTime, default=datetime.utcnow)
 
+    classes           = relationship("Class", back_populates="owner")
     rents             = relationship("Rent", back_populates="user")
     stock_movements   = relationship("StockMovement", back_populates="actor")
     returns           = relationship("Return", back_populates="receiver")
     notifications     = relationship("Notification", back_populates="user")
     renewals_approved = relationship("Renewal", back_populates="approver")
     audits            = relationship("Audit", back_populates="actor")
-    instructor     = relationship("Instructor", back_populates="user")
 
 # ---------- subjects ----------
 class Subject(Base):
     __tablename__ = "subjects"
     subject_id   = Column(Integer, primary_key=True, autoincrement=True)
-    subject_code = Column(String, nullable=False)
+    subject_code = Column(String)
     subject_name = Column(String, nullable=False)
 
-    section = relationship("Section", back_populates="subject")
-    rents = relationship("Rent", back_populates="subject")
-    instructor = relationship("Instructor", back_populates="subject")
-
-class Section(Base):
-    __tablename__ = "sections"
-    section_id   = Column(Integer, primary_key=True, autoincrement=True)
-    section_name = Column(String, nullable=False)
-    subject_id     = Column(Integer, ForeignKey("subjects.subject_id"))
-    
-
-    subject = relationship("Subject", back_populates="section")
-
-class Instructor(Base):
-    __tablename__ = "instructors"
-    instructors_id   = Column(Integer, primary_key=True, autoincrement=True)
-    subject_id     = Column(Integer, ForeignKey("subjects.subject_id"), nullable=False)
-    user_id     = Column(Integer, ForeignKey("users.user_id"), nullable=False)
-
-    user     = relationship("User", back_populates="instructor")
-    subject = relationship("Subject", back_populates="instructor")
-
-    
+    classes = relationship("Class", back_populates="subject")
 
 # ---------- classes ----------
 class Class(Base):
     __tablename__ = "classes"
+    class_id     = Column(Integer, primary_key=True, autoincrement=True)
+    subject_id   = Column(Integer, ForeignKey("subjects.subject_id"), nullable=False)
+    section_name = Column(String, nullable=False)
+    user_id      = Column(Integer, ForeignKey("users.user_id"), nullable=False)
 
-    class_id   = Column(Integer, primary_key=True, autoincrement=True) 
-    class_code = Column(String, nullable=False)
-    class_name  = Column(String, nullable=False) 
-    class_location  = Column(String, nullable=False) 
-    
-
-    # ความสัมพันธ์
-    rents = relationship("Rent", back_populates="clazz")    # รายการยืมที่เกิดในคลาสนี้
-
+    subject = relationship("Subject", back_populates="classes")
+    owner   = relationship("User", back_populates="classes")
+    rents   = relationship("Rent", back_populates="clazz")
 
 # ---------- equipments (รุ่น) ----------
 class Equipment(Base):
@@ -87,29 +63,25 @@ class Equipment(Base):
     brand        = Column(String)
     buy_date     = Column(Date)
     status       = Column(String)                               # available, rented, maintenance
-    is_active    = Column(Boolean, nullable=False, default=True)
     created_at   = Column(DateTime, default=datetime.utcnow)
     updated_at   = Column(DateTime, default=datetime.utcnow)
 
     rents       = relationship("Rent", back_populates="equipment")
     stock_moves = relationship("StockMovement", back_populates="equipment")
-    images      = relationship("EquipmentImage", back_populates="equipment")
-    assets      = relationship("EquipmentAsset", back_populates="equipment")
+    equipment_Image      = relationship("Equipment_Image", back_populates="equipment")
 
-# ---------- equipment_assets (ตัวเครื่องจริง) ----------
-class EquipmentAsset(Base):
-    __tablename__ = "equipment_assets"
-    asset_id     = Column(Integer, primary_key=True, autoincrement=True)
+
+# ---------- equipment_images ----------
+class Equipment_Image(Base):
+    __tablename__ = "equipment_images"
+    equipment_image_id     = Column(Integer, primary_key=True, autoincrement=True)
     equipment_id = Column(Integer, ForeignKey("equipments.equipment_id"), nullable=False)
-    serial_no    = Column(String)
-    status       = Column(String, nullable=False, default="available")
-    buy_date     = Column(Date)
-    is_active    = Column(Boolean, nullable=False, default=True)
+    image_path   = Column(String, nullable=False)
+    description  = Column(Text)
     created_at   = Column(DateTime, default=datetime.utcnow)
-    updated_at   = Column(DateTime, default=datetime.utcnow)
 
-    equipment = relationship("Equipment", back_populates="assets")
-    rents     = relationship("Rent", back_populates="asset")
+    equipment = relationship("Equipment", back_populates="equipment_Image")
+
 
 # ---------- stock_movements ----------
 class StockMovement(Base):
@@ -122,17 +94,6 @@ class StockMovement(Base):
 
     equipment = relationship("Equipment", back_populates="stock_moves")
     actor     = relationship("User", back_populates="stock_movements")
-
-# ---------- equipment_images ----------
-class EquipmentImage(Base):
-    __tablename__ = "equipment_images"
-    image_id     = Column(Integer, primary_key=True, autoincrement=True)
-    equipment_id = Column(Integer, ForeignKey("equipments.equipment_id"), nullable=False)
-    image_path   = Column(String, nullable=False)
-    description  = Column(Text)
-    created_at   = Column(DateTime, default=datetime.utcnow)
-
-    equipment = relationship("Equipment", back_populates="images")
 
 # ---------- status_rents ----------
 class StatusRent(Base):
@@ -148,9 +109,7 @@ class Rent(Base):
     __tablename__ = "rents"
     rent_id      = Column(Integer, primary_key=True, autoincrement=True)
     equipment_id = Column(Integer, ForeignKey("equipments.equipment_id"), nullable=False)
-    asset_id     = Column(Integer, ForeignKey("equipment_assets.asset_id"))
     user_id      = Column(Integer, ForeignKey("users.user_id"), nullable=False)
-    subject_id     = Column(Integer, ForeignKey("subjects.subject_id"))
     class_id     = Column(Integer, ForeignKey("classes.class_id"))
     start_date   = Column(DateTime, nullable=False)
     due_date     = Column(DateTime, nullable=False)
@@ -158,11 +117,8 @@ class Rent(Base):
     status_id    = Column(Integer, ForeignKey("status_rents.status_id"), nullable=False)
     created_at   = Column(DateTime, default=datetime.utcnow)
 
-
     equipment = relationship("Equipment", back_populates="rents")
-    asset     = relationship("EquipmentAsset", back_populates="rents")
     user      = relationship("User", back_populates="rents")
-    subject = relationship("subject", back_populates="subject")
     clazz     = relationship("Class", back_populates="rents")
     status    = relationship("StatusRent", back_populates="rents")
     ret       = relationship("Return", back_populates="rent", uselist=False, cascade="all, delete-orphan")
@@ -177,7 +133,6 @@ class Return(Base):
     __tablename__ = "returns"
     return_id   = Column(Integer, primary_key=True, autoincrement=True)
     rent_id     = Column(Integer, ForeignKey("rents.rent_id"), nullable=False, unique=True)
-    image_path  = Column(String)
     user_id     = Column(Integer, ForeignKey("users.user_id"), nullable=False)   # receiver
     return_date = Column(DateTime, nullable=False, default=datetime.utcnow)
 
@@ -195,11 +150,20 @@ class ItemBroke(Base):
     created_at    = Column(DateTime, default=datetime.utcnow)
 
     ret = relationship("Return", back_populates="item_brokes")
+    itemBroke_image_id = relationship("ItemBroke_images", back_populates="itemBroke")
 
     __table_args__ = (
         CheckConstraint("type in ('broke','lost')", name="ck_item_brokes_type_enum"),
     )
 
+class ItemBroke_images(Base):
+    __tablename__ = "ItemBroke_images"
+    itemBroke_image_id     = Column(Integer, primary_key=True, autoincrement=True)
+    item_broke_id = Column(Integer, ForeignKey("item_brokes.item_broke_id"), nullable=False)
+    image_path   = Column(String, nullable=False)
+    created_at   = Column(DateTime, default=datetime.utcnow)
+
+    itemBroke = relationship("item_brokes", back_populates="itemBroke_image_id")
 
 
 # ---------- notifications ----------
@@ -234,7 +198,6 @@ class Renewal(Base):
 class Audit(Base):
     __tablename__ = "audits"
     audit_id   = Column(Integer, primary_key=True, autoincrement=True)
-    entity     = Column(String, nullable=False)   # เช่น rents, equipment_assets
     entity_id  = Column(Integer, nullable=False)
     action     = Column(String, nullable=False)   # created, updated, status_change
     actor_id   = Column(Integer, ForeignKey("users.user_id"))
@@ -242,4 +205,3 @@ class Audit(Base):
     created_at = Column(DateTime, default=datetime.utcnow)
 
     actor = relationship("User", back_populates="audits")
-
