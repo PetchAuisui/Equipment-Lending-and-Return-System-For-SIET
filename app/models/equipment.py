@@ -1,31 +1,31 @@
+# app/models/equipment.py
 from datetime import datetime
-from sqlalchemy import Column, Integer, String, Text, Date, Boolean, DateTime
+from sqlalchemy import Column, Integer, String, Text, Date, DateTime
 from sqlalchemy.orm import relationship
 from app.db.db import Base
+
 
 class Equipment(Base):
     __tablename__ = "equipments"
 
     equipment_id = Column(Integer, primary_key=True, autoincrement=True)
-    name         = Column(String(255), nullable=False)
-    code         = Column(String(100), unique=True, nullable=False)
-    category     = Column(String(100))
-    detail       = Column(Text)
-    brand        = Column(String(100))
-    buy_date     = Column(Date)
-    status       = Column(String(50))
-    is_active    = Column(Boolean, default=True)
+    name         = Column(String(255), nullable=False)   # ชื่ออุปกรณ์
+    code         = Column(String(100), unique=True, nullable=False)  # รหัสอุปกรณ์
+    category     = Column(String(100))                   # หมวดหมู่
+    detail       = Column(Text)                          # รายละเอียดเพิ่มเติม
+    brand        = Column(String(100))                   # ยี่ห้อ
+    buy_date     = Column(Date)                          # วันที่ซื้อ
+    status       = Column(String(50))                    # สถานะ เช่น available, borrowed
 
     created_at   = Column(DateTime, default=datetime.utcnow)
-    updated_at   = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
-
-    # 🔗 ผูกกับตารางรูปภาพ (ไม่สร้างคอลัมน์ใหม่ใน DB — แค่บอก ORM)
+    # 🔗 ความสัมพันธ์กับตาราง EquipmentImage
     images = relationship(
         "EquipmentImage",
         back_populates="equipment",
         cascade="all, delete-orphan",
-        lazy="selectin",   # หรือปล่อยให้ joinedload ทำงานใน query ก็ได้
+        lazy="selectin",
+        passive_deletes=True
     )
 
     def __repr__(self):
-        return f"<Equipment {self.code} - {self.name}>"
+        return f"<Equipment id={self.equipment_id} code={self.code} name={self.name}>"
