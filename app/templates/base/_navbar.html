@@ -19,10 +19,11 @@
           {% endif %}
         {% endif %}
         <a href="{{ url_for('auth.logout_action') }}" class="btn-nav btn-logout">Logout</a>
-        <span class="user_identity">
-          {{ current_user.identity }}
-          <i class="ri-user-line"></i>
-        </span>
+      <span class="user_identity">
+        {{ current_user.email | replace('@kmitl.ac.th','') }}
+        <i class="ri-user-line"></i>
+      </span>
+
       {% else %}
         <div class="navbar_login_text">
           <a href="{{ url_for('auth.login_page') }}">Login</a>
