@@ -1,5 +1,5 @@
 <nav class="navbar">
-  <!-- แถวบน: Brand + ปุ่ม user -->
+  <!-- แถวบน: Brand + ปุ่ม user (แถบสีชมพู) -->
   <div class="navbar_login">
     <div class="nav-left">
       <a class="brand" href="{{ url_for('pages.home') }}">SEIT Equipment</a>
@@ -29,7 +29,8 @@
     </div>
   </div>
 
-  <!-- แถวล่าง: เมนูหลัก + Search -->
+  <!-- แถวล่าง: เมนูหลัก + Search (ซ่อนเมื่ออยู่ใน /admin) -->
+  {% if not request.path.startswith('/admin') %}
   <div class="navbar_menu">
     <div class="menu-left">
       <a href="{{ url_for('pages.home') }}">Home</a>
@@ -44,4 +45,5 @@
       <input class="Search_input" type="search" placeholder="Search..." />
     </div>
   </div>
+  {% endif %}
 </nav>
