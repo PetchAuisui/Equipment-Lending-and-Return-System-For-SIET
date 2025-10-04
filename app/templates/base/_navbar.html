@@ -1,15 +1,19 @@
 <nav class="navbar">
   <!-- แถวบน: Brand + ปุ่ม user (แถบสีชมพู) -->
   <div class="navbar_login">
-    <div class="nav-left">
-      <a class="brand" href="{{ url_for('pages.home') }}">SEIT Equipment</a>
-    </div>
+<div class="nav-left">
+  <a class="brand" href="{{ url_for('pages.home') }}">
+    <img src="{{ url_for('static', filename='images/logo.png') }}"
+         alt="SEIT Equipment"
+         style="height: 45px; vertical-align: middle; object-fit: contain;">
+  </a>
+</div>
 
     <div class="nav-right">
       {% if current_user.is_authenticated %}
         {% if session.get('role') in ['staff', 'admin'] %}
           {% if request.path.startswith('/admin') %}
-            <a href="{{ url_for('pages.home') }}" class="btn-nav btn-admin">Admin</a>
+            <a href="{{ url_for('pages.home') }}" class="btn-nav btn-admin">Home</a>
           {% else %}
             <a href="{{ url_for('admin.admin_home') }}" class="btn-nav btn-admin">Admin</a>
           {% endif %}
