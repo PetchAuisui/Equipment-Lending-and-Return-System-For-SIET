@@ -1,14 +1,6 @@
 /* ===== Reset & Base ===== */
 * { box-sizing: border-box; }
-html, body { margin: 0; padding: 0; background: #fff; }
-
-/* ฟอนต์หลักของ navbar */
-.navbar, 
-.navbar a, 
-.navbar_login, 
-.navbar_menu {
-  font-family: 'Kanit', 'Poppins', sans-serif;
-}
+html, body { margin: 0; padding: 0; background: #fff; font-family: 'Kanit','Poppins',sans-serif; }
 
 /* ===== Navbar Container ===== */
 .navbar {
@@ -19,7 +11,7 @@ html, body { margin: 0; padding: 0; background: #fff; }
   z-index: 1000;
 }
 
-/* ===== แถบบน ===== */
+/* ===== แถวบน (ชมพู) ===== */
 .navbar_login {
   background: #ffadd0;
   display: flex;
@@ -28,231 +20,110 @@ html, body { margin: 0; padding: 0; background: #fff; }
   padding: 10px 24px;
 }
 
-.brand {
-  font-weight: 800;
-  color: #1f2937;
-  text-decoration: none;
-  font-size: 22px;
-}
-
-.brand img {
-  height: 48px;
+/* โลโก้ซ้าย */
+.nav-left .brand img {
+  height: 45px;
   object-fit: contain;
   vertical-align: middle;
 }
 
+/* ด้านขวา (ปุ่ม + user) */
 .navbar_login .nav-right {
   display: flex;
   align-items: center;
   gap: 10px;
 }
 
-/* ===== ปุ่มหลักใน Navbar ===== */
+/* ปุ่มทั่วไปใน navbar */
 .btn-nav {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   padding: 8px 14px;
   border-radius: 8px;
+  border: none;
+  cursor: pointer;
   font-weight: 600;
   font-size: 15px;
   text-decoration: none;
-  border: 1px solid transparent;
-  transition: 0.2s ease;
-  cursor: pointer;
+  transition: all 0.2s ease;
+  color: #fff;
 }
-.btn-admin { background: #3b82f6; color: #fff; }
-.btn-logout { background: #ef4444; color: #fff; }
-.btn-nav:hover { filter: brightness(0.95); transform: translateY(-1px); }
+.btn-admin { background: #3b82f6; }
+.btn-logout { background: #ef4444; }
+.btn-nav:hover {
+  filter: brightness(0.95);
+  transform: translateY(-1px);
+}
 
-/* ===== user identity ===== */
+/* Capsule แสดงชื่อผู้ใช้ */
 .user_identity {
-  background: #ffd6e8;
-  padding: 5px 12px;
-  border-radius: 999px;
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  font-size: 15px;
+  background: #ffd6e8;
+  padding: 6px 14px;
+  border-radius: 999px;
   color: #1f2937;
+  font-size: 16px;
   font-weight: 600;
 }
 
-/* ===== แถวล่าง (เมนู + search) ===== */
+/* ===== แถวล่าง (เขียว) ===== */
 .navbar_menu {
   background: #6b8f6b;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 10px 24px;
+  padding: 7px 28px;
 }
 
+/* เมนูด้านซ้าย */
 .navbar_menu .menu-left {
   display: flex;
-  gap: 22px;
+  gap: 28px;
 }
 
 .navbar_menu a {
   color: #273135;
   text-decoration: none;
   font-weight: 600;
-  font-size: 18px;
-  padding: 4px 0;
+  font-size: 20px;      /* ✅ ฟอนต์ใหญ่ขึ้น */
+  padding: 6px 0;
   transition: color 0.2s;
 }
 .navbar_menu a:hover {
   color: #fff;
 }
 
-/* ===== Search box ===== */
-.navbar_light {
-  display: flex;
+/* ===== ปุ่มกระดิ่ง (Notifications) ===== */
+.btn-bell {
+  display: inline-flex;
   align-items: center;
-  gap: 8px;
-  background: #fff;
-  padding: 6px 12px;
-  border-radius: 999px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
-}
-
-.icon_bell {
-  font-size: 20px;
-  color: #6b7280;
-}
-
-.Search_input {
+  justify-content: center;
+  width: 35px;
+  height: 35px;
   border: none;
-  outline: none;
-  font-size: 15px;
-  width: 230px;
-}
-
-/* ===== Layout Container (main content) ===== */
-.container {
-  max-width: 1100px;
-  margin: 0 auto;
-}
-
-/* ===== ปรับขนาดให้คงที่ทุกหน้า (เช่น /admin) ===== */
-.navbar .nav-right { 
-  display: flex; 
-  align-items: center; 
-  gap: 10px; 
-}
-
-/* 🔒 ล็อกขนาดปุ่มใน navbar ให้คงที่ทุกหน้า */
-.navbar .btn-nav {
-  display: inline-flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  padding: 8px 14px !important;
-  min-height: 36px !important;
-  border-radius: 10px !important;
-  font-size: 15px !important;
-  font-weight: 700 !important;
-  line-height: 1 !important;
-  text-decoration: none !important;
-  border: 1px solid transparent !important;
+  border-radius: 50%;
+  background: #fff;
+  color: #6b7280;
+  font-size: 22px;
   cursor: pointer;
-  gap: 6px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+  transition: all 0.2s ease;
+}
+.btn-bell:hover {
+  background: #f3f4f6;
+  color: #111827;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
 }
 
-.navbar .btn-admin { background: #3b82f6 !important; color: #fff !important; }
-.navbar .btn-logout { background: #ef4444 !important; color: #fff !important; }
-.navbar .btn-nav:hover { filter: brightness(0.95); transform: translateY(-1px); }
-
-/* 🔒 รีเซ็ตลูกปุ่ม (เช่น icon ข้างใน) */
-.navbar .btn-nav *, 
-.navbar .user_identity * {
-  line-height: 1 !important;
-  font-size: inherit !important;
+/* ===== Responsive (มือถือ / แท็บเล็ต) ===== */
+@media (max-width: 768px) {
+  .navbar_login { padding: 8px 16px; }
+  .navbar_menu { padding: 8px 16px; }
+  .navbar_menu a { font-size: 17px; gap: 16px; }
+  .btn-bell { width: 38px; height: 38px; font-size: 20px; }
+  .user_identity { font-size: 14px; padding: 4px 10px; }
 }
-
-/* 🔒 แคปซูลชื่อผู้ใช้ให้คงขนาดทุกหน้า */
-.navbar .user_identity {
-  background: #ffd6e8;
-  padding: 5px 12px !important;
-  border-radius: 999px !important;
-  display: inline-flex !important;
-  align-items: center !important;
-  gap: 6px;
-  font-size: 15px !important;
-  font-weight: 600;
-  color: #1f2937;
-  white-space: nowrap;
-}
-
-/* 🔒 กัน global a{} ของหน้า admin มาทับ */
-.navbar .navbar_menu a {
-  font-size: 18px !important;
-  font-weight: 600 !important;
-  padding: 4px 0 !important;
-}
-
-
-  /* user identity */
-  .user_identity {
-    background: #ffd6e8;
-    padding: 9px 14px;   /* ⬅️ เดิม 4x10 → ใหญ่ขึ้นเล็กน้อย */
-    border-radius: 999px;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 18px;     /* ⬅️ เดิม 14px → ใหญ่ขึ้น */
-    color: #1f2937;
-  }
-
-  /* ===== แถวล่าง (เมนู + search) ===== */
-  .navbar_menu {
-    background: #6b8f6b;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 6px 32px;   /* ⬅️ เดิม 6px 20px → ขยายความสูง */
-  }
-
-  .navbar_menu .menu-left {
-    display: flex;
-    gap: 28px;            /* ⬅️ เดิม 22px → เพิ่มช่องว่างระหว่างเมนู */
-  }
-
-  .navbar_menu a {
-    color: #273135;
-    text-decoration: none;
-    font-weight: 600;
-    font-size: 20px;      /* ⬅️ เดิม 16px → ใหญ่ขึ้น */
-    padding: 6px 0;
-    transition: color 0.2s;
-  }
-  .navbar_menu a:hover {
-    color: #fff;          /* เปลี่ยน hover ให้อ่านชัดบนพื้นเขียว */
-  }
-
-  /* Search box */
-  .navbar_light {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    background: #fff;
-    padding: 7px 16px;     /* ⬅️ เดิม 6x12 → เพิ่มขนาด */
-    border-radius: 999px;
-    box-shadow: 0 3px 8px rgba(0,0,0,0.2);
-  }
-
-  .icon_bell {
-    font-size: 22px;       /* ⬅️ เดิม 18px → ขยายให้บาลานซ์กับช่องค้นหา */
-    color: #6b7280;
-  }
-
-  .Search_input {
-    border: none;
-    outline: none;
-    font-size: 17px;       /* ⬅️ เดิม 15px → ใหญ่ขึ้น */
-    width: 260px;          /* ⬅️ เพิ่มความกว้างเล็กน้อย */
-  }
-
-  /* ===== Layout Container (main content) ===== */
-  .container {
-    max-width: 1200px;     /* ⬅️ เดิม 1100px → ขยายเล็กน้อย */
-    margin: 0 auto;
-  }
