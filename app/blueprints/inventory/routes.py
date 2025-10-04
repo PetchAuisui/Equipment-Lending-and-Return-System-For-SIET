@@ -11,7 +11,7 @@ from datetime import datetime
 import os, uuid
 
 
-@inventory_bp.route('/lend_device')
+@inventory_bp.route('/equipments/lend_device')
 def lend_device():
     # 📌 ดึงข้อมูลจาก service
     equipments = lend_device_service.get_equipment_list()
@@ -19,9 +19,9 @@ def lend_device():
     return render_template("pages_inventory/lend_device.html", equipments=equipments)
 
 
-@inventory_bp.route('/lend')
+@inventory_bp.route('/equipments/lend', methods=['GET'])
 def lend():
-    return render_template("pages_inventory/lend.html")
+    return render_template('pages_inventory/lend.html')
 
 
 @inventory_bp.route("/admin/equipments")
