@@ -12,10 +12,10 @@ def get_all_equipments():
 def get_grouped_equipments():
     """
     ดึงอุปกรณ์ทั้งหมดแล้วรวมตามชื่อ
-    - quantity = จำนวนอุปกรณ์ที่ status='available'
-    - เก็บชื่อ, quantity, image_path
+    - amount = จำนวนอุปกรณ์ที่ status='available'
+    - เก็บชื่อ, amount, image_path, category, status_color
     Returns:
-        List ของ dict ที่รวมชื่อ, quantity, image_path
+        List ของ dict ที่รวมชื่อ, amount, image_path, category, status_color
     """
     equipments = lend_device_repository.get_all_equipments_with_images()
 
@@ -25,10 +25,17 @@ def get_grouped_equipments():
         if name not in grouped:
             grouped[name] = {
                 "name": name,
-                "quantity": 0,
-                "image_path": e["image_path"]
+                "amount": 0,
+                "image": e["image_path"],
+                "category": e["category"],  
+                "status_color": ""  # จะกำหนดสีตาม amount
             }
         if e["status"] == "available":
-            grouped[name]["quantity"] += 1
+            grouped[name]["amount"] += 1
+
+    # กำหนดสี status_color หลังจากรวมเสร็จ
+    for item in grouped.values():
+        if item["amount"] == 0:
+            item["status_color"] = "yellow"  # ถ้าไม่มีอุปกรณ์ available ให้สีเหลือง
 
     return list(grouped.values())
