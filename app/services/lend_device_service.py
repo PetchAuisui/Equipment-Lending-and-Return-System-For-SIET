@@ -2,20 +2,20 @@ from app.repositories import lend_device_repository
 
 def get_all_equipments():
     """
-    ดึงข้อมูลอุปกรณ์ทั้งหมดจาก repository
+    ดึงข้อมูลอุปกรณ์ทั้งหมด
     Returns:
-        List ของ dict/objects ทุกแถว
+        List ของ dict ทุกแถว
     """
     return lend_device_repository.get_all_equipments_with_images()
 
-
-def get_grouped_equipments():
+def get_grouped_equipments_separated():
     """
     ดึงอุปกรณ์ทั้งหมดแล้วรวมตามชื่อ
+    - แยกเป็น available / unavailable
     - amount = จำนวนอุปกรณ์ที่ status='available'
     - เก็บชื่อ, amount, image_path, category, status_color
     Returns:
-        List ของ dict ที่รวมชื่อ, amount, image_path, category, status_color
+        dict: {"available": [...], "unavailable": [...]}
     """
     equipments = lend_device_repository.get_all_equipments_with_images()
 
@@ -27,15 +27,24 @@ def get_grouped_equipments():
                 "name": name,
                 "amount": 0,
                 "image": e["image_path"],
-                "category": e["category"],  
-                "status_color": ""  # จะกำหนดสีตาม amount
+                "category": e.get("category", ""),
+                "status_color": ""
             }
         if e["status"] == "available":
             grouped[name]["amount"] += 1
 
-    # กำหนดสี status_color หลังจากรวมเสร็จ
+    available_items = []
+    unavailable_items = []
     for item in grouped.values():
-        if item["amount"] == 0:
-            item["status_color"] = "yellow"  # ถ้าไม่มีอุปกรณ์ available ให้สีเหลือง
+        # กำหนดสี
+        item["status_color"] = "transparent" if item["amount"] > 0 else "yellow"
+        # แยก list
+        if item["amount"] > 0:
+            available_items.append(item)
+        else:
+            unavailable_items.append(item)
 
-    return list(grouped.values())
+    return {
+        "available": available_items,
+        "unavailable": unavailable_items
+    }

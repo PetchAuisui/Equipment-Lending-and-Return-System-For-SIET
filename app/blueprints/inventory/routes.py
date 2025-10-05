@@ -1,6 +1,6 @@
 from flask import render_template, request, redirect, url_for, current_app, flash, abort
 from app.blueprints.inventory import inventory_bp
-from app.services import lend_device_service
+from app.services.lend_device_service import get_grouped_equipments_separated
 from app.db.db import SessionLocal
 from app.models.equipment import Equipment
 from app.models.equipment_images import EquipmentImage
@@ -10,15 +10,17 @@ from werkzeug.utils import secure_filename
 from datetime import datetime
 import os, uuid
 
-
-
-@inventory_bp.route('/lend_device')
+@inventory_bp.route("/lend_device")
 def lend_device():
-    # 📌 ดึงข้อมูลจาก service
-    equipments = lend_device_service.get_grouped_equipments()
-    # ✅ ส่งต่อไปหน้า UI
-    return render_template("pages_inventory/lend_device.html", equipments=equipments)
-
+    """
+    แสดงหน้าระบบยืมอุปกรณ์
+    - ส่ง 2 list: available / unavailable
+    """
+    equipments = get_grouped_equipments_separated()
+    return render_template(
+        "pages_inventory/lend_device.html",
+        equipments=equipments
+    )
 
 @inventory_bp.route('/lend')
 def lend():
