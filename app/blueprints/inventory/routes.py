@@ -14,3 +14,7 @@ def lend_device():
 @inventory_bp.route('/lend')
 def lend():
     return render_template("pages_inventory/lend.html")
+
+@inventory_bp.route('/return_item')
+def return_item():
+    return render_template("pages_inventory/return_item.html")
