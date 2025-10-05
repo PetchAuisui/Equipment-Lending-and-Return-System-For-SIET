@@ -9,18 +9,20 @@
 {% extends 'base/base.html' %}
 {% block content %}
 
-<h1 class="Title">ระบบยืมอุปกรณ์</h1>
-<!-- ช่องค้นหาชื่อ + หมวดหมู่ -->
-<div class="search-container">
-    <input type="text" id="searchInput" placeholder="ค้นหาอุปกรณ์..." onkeyup="filterDevices()">
-    
-    <select id="categoryFilter" onchange="filterDevices()">
-        <option value="">ทุกหมวดหมู่</option>
-        {% set categories = (equipments.available + equipments.unavailable) | map(attribute='category') | unique %}
-        {% for cat in categories %}
-        <option value="{{ cat }}">{{ cat }}</option>
-        {% endfor %}
-    </select>
+<!-- ===== Header Bar ===== -->
+<div class="header-bar">
+  <h1 class="Title">ระบบยืมอุปกรณ์</h1>
+
+  <div class="search-container">
+      <input type="text" id="searchInput" placeholder="ค้นหาอุปกรณ์..." onkeyup="filterDevices()">
+      <select id="categoryFilter" onchange="filterDevices()">
+          <option value="">ทุกหมวดหมู่</option>
+          {% set categories = (equipments.available + equipments.unavailable) | map(attribute='category') | unique %}
+          {% for cat in categories %}
+          <option value="{{ cat }}">{{ cat }}</option>
+          {% endfor %}
+      </select>
+  </div>
 </div>
 
 <div class="device-container">

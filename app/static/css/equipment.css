@@ -4,14 +4,50 @@ body {
   padding: 0;
   background: #fff;
 }
-
-/* ===== Title ===== */
-.Title {
-  font-size: 36px;
-  text-align: center;
-  margin: 30px 0;
+/* ===== Header (Title + Search ในบรรทัดเดียว) ===== */
+.header-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 1200px;
+  margin: 40px auto 30px;
+  padding: 0 20px 20px;
+  border-bottom: 2px solid #929191;
+  box-sizing: border-box;
 }
 
+.Title {
+  font-size: 38px;
+  font-weight: 700;
+  color: #000000;
+  margin: 0;
+}
+
+/* ===== ช่องค้นหา ===== */
+.search-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.search-container input,
+.search-container select {
+  padding: 10px 15px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 16px;
+  background: #fff;
+  transition: all 0.3s;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.search-container input:focus,
+.search-container select:focus {
+  outline: none;
+  border-color: #ffd1e1;
+  box-shadow: 0 0 6px #fab4cc;
+}
 /* ===== Container ของอุปกรณ์ ===== */
 .device-container {
   display: flex;
