@@ -10,9 +10,28 @@
 {% block content %}
 
 <h1 class="Title">ระบบยืมอุปกรณ์</h1>
+
+<!-- ช่องค้นหาชื่อ -->
+<div class="search-container">
+    <input type="text" id="searchInput" placeholder="ค้นหาอุปกรณ์ตามชื่อ..." onkeyup="filterDevices()">
+    
+    <!-- Dropdown หมวดหมู่ -->
+    <select id="categoryFilter" onchange="filterDevices()">
+        <option value="">ทุกหมวดหมู่</option>
+        {% set categories = equipments | map(attribute='category') | unique %}
+        {% for cat in categories %}
+        <option value="{{ cat }}">{{ cat }}</option>
+        {% endfor %}
+    </select>
+</div>
+
 <div class="device-container">
 {% for item in equipments %}
-  <div class="device_box">
+<div class="device_box"
+     data-name="{{ item.name | lower }}"
+     data-category="{{ item.category }}"
+     style="background-color: {{ item.status_color or 'transparent' }}";>
+     
     <!-- แสดงรูป -->
     <img class="image" src="{{ url_for('static', filename=item.image) }}" alt="{{ item.name }}">
     
@@ -28,9 +47,28 @@
       <a href="/equipment/lend" class="btn btn-borrow">ยืม</a>
     </div>
   </div>
- 
 {% endfor %}
- </div>
+</div>
+
+<!-- JS สำหรับกรอง -->
+<script>
+function filterDevices() {
+    const searchValue = document.getElementById('searchInput').value.toLowerCase();
+    const categoryValue = document.getElementById('categoryFilter').value.toLowerCase();
+    const devices = document.querySelectorAll('.device_box');
+
+    devices.forEach(device => {
+        const name = device.dataset.name;
+        const category = device.dataset.category.toLowerCase();
+        if ((name.includes(searchValue)) && (category.includes(categoryValue) || categoryValue === '')) {
+            device.style.display = '';
+        } else {
+            device.style.display = 'none';
+        }
+    });
+}
+</script>
 
 {% endblock %}
+
 </html>
