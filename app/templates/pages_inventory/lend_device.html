@@ -10,15 +10,13 @@
 {% block content %}
 
 <h1 class="Title">ระบบยืมอุปกรณ์</h1>
-
-<!-- ช่องค้นหาชื่อ -->
+<!-- ช่องค้นหาชื่อ + หมวดหมู่ -->
 <div class="search-container">
-    <input type="text" id="searchInput" placeholder="ค้นหาอุปกรณ์ตามชื่อ..." onkeyup="filterDevices()">
+    <input type="text" id="searchInput" placeholder="ค้นหาอุปกรณ์..." onkeyup="filterDevices()">
     
-    <!-- Dropdown หมวดหมู่ -->
     <select id="categoryFilter" onchange="filterDevices()">
         <option value="">ทุกหมวดหมู่</option>
-        {% set categories = equipments | map(attribute='category') | unique %}
+        {% set categories = (equipments.available + equipments.unavailable) | map(attribute='category') | unique %}
         {% for cat in categories %}
         <option value="{{ cat }}">{{ cat }}</option>
         {% endfor %}
@@ -26,31 +24,38 @@
 </div>
 
 <div class="device-container">
-{% for item in equipments %}
-<div class="device_box"
-     data-name="{{ item.name | lower }}"
-     data-category="{{ item.category }}"
-     style="background-color: {{ item.status_color or 'transparent' }}";>
-     
-    <!-- แสดงรูป -->
-    <img class="image" src="{{ url_for('static', filename=item.image) }}" alt="{{ item.name }}">
-    
-    <!-- ข้อมูลอุปกรณ์ -->
-    <div class="device_info">
-      <span class="device_name">{{ item.name }}</span>
-      <span class="amount">จำนวนคงเหลือ : {{ item.amount }}</span>
+    <!-- อุปกรณ์พร้อม -->
+    {% for item in equipments.available %}
+    <div class="device_box" style="background-color: {{ item.status_color }};" 
+         data-name="{{ item.name | lower }}" data-category="{{ item.category | lower }}">
+        <img class="image" src="{{ url_for('static', filename=item.image) }}" alt="{{ item.name }}">
+        <div class="device_info">
+            <span class="device_name">{{ item.name }}</span>
+            <span class="amount">จำนวนคงเหลือ : {{ item.amount }}</span>
+        </div>
+        <div class="button_group">
+            <a href="#" class="btn btn-detail">รายละเอียด</a>
+            <a href="/equipment/lend" class="btn btn-borrow">ยืม</a>
+        </div>
     </div>
+    {% endfor %}
 
-    <!-- ปุ่มกด -->
-    <div class="button_group">
-      <a href="#" class="btn btn-detail">รายละเอียด</a>
-      <a href="/equipment/lend" class="btn btn-borrow">ยืม</a>
+    <!-- อุปกรณ์ไม่พร้อม -->
+    {% for item in equipments.unavailable %}
+    <div class="device_box" style="background-color: {{ item.status_color }};" 
+         data-name="{{ item.name | lower }}" data-category="{{ item.category | lower }}">
+        <img class="image" src="{{ url_for('static', filename=item.image) }}" alt="{{ item.name }}">
+        <div class="device_info">
+            <span class="device_name">{{ item.name }}</span>
+            <span class="amount">ไม่พร้อมสำหรับการยืม</span>
+        </div>
+        <div class="button_group">
+            <a href="#" class="btn btn-detail">รายละเอียด</a>
+        </div>
     </div>
-  </div>
-{% endfor %}
+    {% endfor %}
 </div>
 
-<!-- JS สำหรับกรอง -->
 <script>
 function filterDevices() {
     const searchValue = document.getElementById('searchInput').value.toLowerCase();
@@ -59,8 +64,8 @@ function filterDevices() {
 
     devices.forEach(device => {
         const name = device.dataset.name;
-        const category = device.dataset.category.toLowerCase();
-        if ((name.includes(searchValue)) && (category.includes(categoryValue) || categoryValue === '')) {
+        const category = device.dataset.category;
+        if ((name.includes(searchValue)) && (category.includes(categoryValue) || categoryValue === "")) {
             device.style.display = '';
         } else {
             device.style.display = 'none';
@@ -69,6 +74,6 @@ function filterDevices() {
 }
 </script>
 
-{% endblock %}
 
+{% endblock %}
 </html>
