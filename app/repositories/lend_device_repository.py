@@ -1,27 +1,30 @@
-from collections import defaultdict
 from app.db.db import SessionLocal
-from app.db.models import Equipment
-from app.models.lend_device import device
+from app.models.equipment import Equipment
+from app.models.equipment_images import EquipmentImage
 
-def get_equipment_list():
+def get_all_equipments_with_images():
     db = SessionLocal()
     try:
-        all_eq = db.query(Equipment).all()
-        # สร้าง dict เพื่อรวมชื่อและนับจำนวน
-        equipment_count = defaultdict(int)
-        for eq in all_eq:
-            equipment_count[eq.name] += 1
+        # ดึงอุปกรณ์ทั้งหมด
+        equipments = db.query(Equipment).all()
 
-        equipments = []
-        for name, qty in equipment_count.items():
-            # แปลงเป็น object device ของ UI
-            equipments.append(
-                device(
-                    image_path=f"images/{name.replace(' ', '_')}.jpg",
-                    name=name,
-                    quantity=qty
-                )
-            )
-        return equipments
+        # ดึงรูปทั้งหมด
+        images = db.query(EquipmentImage).all()
+        image_dict = {img.equipment_id: img.image_path for img in images}
+
+        equipment_list = []
+        for e in equipments:
+            equipment_list.append({
+                "equipment_id": e.equipment_id,
+                "name": e.name,
+                "code": e.code,
+                "category": e.category,
+                "detail": e.detail,
+                "brand": e.brand,
+                "buy_date": e.buy_date,
+                "status": e.status,
+                "image_path": image_dict.get(e.equipment_id, None)
+            })
+        return equipment_list
     finally:
         db.close()

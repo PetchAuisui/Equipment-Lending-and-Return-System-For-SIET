@@ -15,7 +15,7 @@ import os, uuid
 @inventory_bp.route('/lend_device')
 def lend_device():
     # 📌 ดึงข้อมูลจาก service
-    equipments = lend_device_service.get_equipment_list()
+    equipments = lend_device_service.get_grouped_equipments()
     # ✅ ส่งต่อไปหน้า UI
     return render_template("pages_inventory/lend_device.html", equipments=equipments)
 
