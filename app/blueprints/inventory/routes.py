@@ -11,6 +11,7 @@ from datetime import datetime
 import os, uuid
 
 
+
 @inventory_bp.route('/lend_device')
 def lend_device():
     # 📌 ดึงข้อมูลจาก service

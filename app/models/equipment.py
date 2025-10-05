@@ -7,6 +7,7 @@ from app.db.db import Base
 
 class Equipment(Base):
     __tablename__ = "equipments"
+    __table_args__ = {"extend_existing": True}  # ถ้า table ชื่อนี้มีอยู่แล้ว ให้ แก้ไข/ปรับปรุง table เดิม แทนที่จะสร้างใหม่
 
     equipment_id = Column(Integer, primary_key=True, autoincrement=True)
     name         = Column(String(255), nullable=False)   # ชื่ออุปกรณ์

@@ -5,6 +5,7 @@ from app.db.db import Base
 
 class EquipmentImage(Base):
     __tablename__ = "equipment_images"
+    __table_args__ = {"extend_existing": True} # ถ้า table ชื่อนี้มีอยู่แล้ว ให้ แก้ไข/ปรับปรุง table เดิม แทนที่จะสร้างใหม่
 
     # PK จริงในตาราง DB = equipment_image_id
     image_id = Column("equipment_image_id", Integer, primary_key=True, autoincrement=True)
