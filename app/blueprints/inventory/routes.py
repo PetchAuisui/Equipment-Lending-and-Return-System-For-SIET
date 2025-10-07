@@ -210,10 +210,21 @@ def admin_equipment_delete(eid):
             flash("❌ ไม่พบอุปกรณ์", "error")
             return redirect(url_for("inventory.admin_equipment_list"))
 
-        # หา actor_id แบบไม่พึ่ง Flask-Login (ถ้าเก็บไว้ใน session ใช้ได้เลย)
-        actor_id = session.get("user_id")  # ถ้าไม่มีระบบ session จะเป็น None
+        # ✅ ลบไฟล์รูปภาพออกจาก static/uploads/equipment/
+        upload_dir = current_app.config['UPLOAD_FOLDER']
+        if item.images:
+            for im in item.images:
+                try:
+                    image_path = os.path.join(upload_dir, os.path.basename(im.image_path))
+                    if os.path.exists(image_path):
+                        os.remove(image_path)
+                        print(f"🗑️ ลบรูป: {image_path}")
+                except Exception as e:
+                    current_app.logger.warning(f"⚠️ ลบรูปไม่สำเร็จ: {e}")
+                db.delete(im)  # ลบ record รูปภาพจาก DB ด้วย
 
-        # บันทึกประวัติ
+        # ✅ เก็บประวัติการลบไว้ใน StockMovement
+        actor_id = session.get("user_id")
         movement = StockMovement(
             equipment_id=item.equipment_id,
             history=f"[DELETED] อุปกรณ์ '{item.name}' (รหัส: {item.code}) ถูกลบออกจากระบบ",
@@ -222,11 +233,12 @@ def admin_equipment_delete(eid):
         )
         db.add(movement)
 
-        # ลบจริง
+        # ✅ ลบข้อมูลอุปกรณ์ออกจากตาราง Equipment
         db.delete(item)
         db.commit()
 
-        flash("🗑️ ลบอุปกรณ์เรียบร้อย (เก็บประวัติแล้ว)", "success")
+        flash("🗑️ ลบอุปกรณ์และรูปภาพเรียบร้อย (บันทึกประวัติแล้ว)", "success")
         return redirect(url_for("inventory.admin_equipment_list"))
+
     finally:
         db.close()
