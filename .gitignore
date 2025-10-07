@@ -28,4 +28,6 @@ ENV/
 Thumbs.db
 
 # datebase
-app.db
+
+.app.db
+

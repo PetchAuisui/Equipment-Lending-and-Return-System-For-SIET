@@ -1,3 +1,129 @@
-body { font-family: Arial, sans-serif; margin: 0;}
-.container { padding: 0px;margin-top: 80px;}
+/* ===== Reset & Base ===== */
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; background: #fff; font-family: 'Kanit','Poppins',sans-serif; }
 
+/* ===== Navbar Container ===== */
+.navbar {
+  display: block;
+  width: 100%;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+/* ===== แถวบน (ชมพู) ===== */
+.navbar_login {
+  background: #ffadd0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 24px;
+}
+
+/* โลโก้ซ้าย */
+.nav-left .brand img {
+  height: 45px;
+  object-fit: contain;
+  vertical-align: middle;
+}
+
+/* ด้านขวา (ปุ่ม + user) */
+.navbar_login .nav-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* ปุ่มทั่วไปใน navbar */
+.btn-nav {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 14px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 15px;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  color: #fff;
+}
+.btn-admin { background: #3b82f6; }
+.btn-logout { background: #ef4444; }
+.btn-nav:hover {
+  filter: brightness(0.95);
+  transform: translateY(-1px);
+}
+
+/* Capsule แสดงชื่อผู้ใช้ */
+.user_identity {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #ffd6e8;
+  padding: 6px 14px;
+  border-radius: 999px;
+  color: #1f2937;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+/* ===== แถวล่าง (เขียว) ===== */
+.navbar_menu {
+  background: #6b8f6b;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 7px 28px;
+}
+
+/* เมนูด้านซ้าย */
+.navbar_menu .menu-left {
+  display: flex;
+  gap: 28px;
+}
+
+.navbar_menu a {
+  color: #273135;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 20px;      /* ✅ ฟอนต์ใหญ่ขึ้น */
+  padding: 6px 0;
+  transition: color 0.2s;
+}
+.navbar_menu a:hover {
+  color: #fff;
+}
+
+/* ===== ปุ่มกระดิ่ง (Notifications) ===== */
+.btn-bell {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 35px;
+  height: 35px;
+  border: none;
+  border-radius: 50%;
+  background: #fff;
+  color: #6b7280;
+  font-size: 22px;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+  transition: all 0.2s ease;
+}
+.btn-bell:hover {
+  background: #f3f4f6;
+  color: #111827;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+}
+
+/* ===== Responsive (มือถือ / แท็บเล็ต) ===== */
+@media (max-width: 768px) {
+  .navbar_login { padding: 8px 16px; }
+  .navbar_menu { padding: 8px 16px; }
+  .navbar_menu a { font-size: 17px; gap: 16px; }
+  .btn-bell { width: 38px; height: 38px; font-size: 20px; }
+  .user_identity { font-size: 14px; padding: 4px 10px; }
+}
