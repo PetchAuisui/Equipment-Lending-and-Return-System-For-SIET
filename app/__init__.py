@@ -1,10 +1,12 @@
 import os
 from flask import Flask
 from .config import Config
+from app.blueprints.inventory.api_equipment import api_equipment_bp
 
 def create_app():
     app = Flask(__name__, template_folder="templates", static_folder="static")
     app.config.from_object(Config)
+    app.register_blueprint(api_equipment_bp)
 
     # ===== Upload config (สำคัญสำหรับให้รูป “มา”) =====
     app.config['UPLOAD_FOLDER'] = os.path.join(app.static_folder, 'uploads', 'equipment')
