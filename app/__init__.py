@@ -18,6 +18,7 @@ def create_app():
     from .blueprints.tracking import tracking_bp
     from .blueprints.admin import admin_users_bp
     from .blueprints.admin import admin_bp                     # root: "/"
+    from .blueprints.overdue import overdue_bp
 
     app.register_blueprint(pages_bp)
     app.register_blueprint(auth_bp, url_prefix="/auth")
@@ -25,5 +26,6 @@ def create_app():
     app.register_blueprint(tracking_bp, url_prefix="/track-status")
     app.register_blueprint(admin_users_bp)
     app.register_blueprint(admin_bp)
+    app.register_blueprint(overdue_bp, url_prefix="/alerts")
 
     return app
