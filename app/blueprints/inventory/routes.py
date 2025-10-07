@@ -12,13 +12,19 @@ from sqlalchemy.sql import exists, and_
 from app.models.stock_movements import StockMovement
 import os, uuid
 
-
-@inventory_bp.route('/equipments/lend_device')
+@inventory_bp.route("/lend_device")
 def lend_device():
-    equipments = lend_device_service.get_equipment_list()
-    return render_template("pages_inventory/lend_device.html", equipments=equipments)
+    """
+    แสดงหน้าระบบยืมอุปกรณ์
+    - ส่ง 2 list: available / unavailable
+    """
+    equipments = get_grouped_equipments_separated()
+    return render_template(
+        "pages_inventory/lend_device.html",
+        equipments=equipments
+    )
 
-@inventory_bp.route('/equipments/lend', methods=['GET'])
+@inventory_bp.route('/lend')
 
 def lend():
     return render_template('pages_inventory/lend.html')
