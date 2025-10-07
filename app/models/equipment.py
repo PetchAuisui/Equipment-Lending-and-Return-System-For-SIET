@@ -18,6 +18,9 @@ class Equipment(Base):
     status       = Column(String(50))                    # สถานะ เช่น available, borrowed
 
     created_at   = Column(DateTime, default=datetime.utcnow)
+
+    movements = relationship("StockMovement", back_populates="equipment", cascade="all, delete-orphan")
+
     # 🔗 ความสัมพันธ์กับตาราง EquipmentImage
     images = relationship(
         "EquipmentImage",
