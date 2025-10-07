@@ -6,6 +6,9 @@ class EquipmentRepository:
     def __init__(self, session=None):
         self.db = session or SessionLocal()
 
+    def get_all(self):
+        return self.db.query(Equipment).all()
+
     def get_by_id(self, equipment_id: int):
         return self.db.get(Equipment, equipment_id)
 
