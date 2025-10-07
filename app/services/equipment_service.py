@@ -1,7 +1,6 @@
 from app.repositories.equipment_repository import EquipmentRepository
 from app.models import Equipment
 
-
 class EquipmentService:
     def __init__(self):
         self.repo = EquipmentRepository()
