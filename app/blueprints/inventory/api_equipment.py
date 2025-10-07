@@ -1,53 +1,67 @@
-from flask import Blueprint, request, jsonify
 from flask.views import MethodView
-from app.services.equipment_service import EquipmentService
+from flask import Blueprint, request, Response
+from app.db.db import SessionLocal
+from app.models.equipment import Equipment
+import json
 
 api_equipment_bp = Blueprint("api_equipment", __name__, url_prefix="/api/equipments")
 
 class EquipmentAPI(MethodView):
-    def __init__(self):
-        self.service = EquipmentService()
-
-    def get(self, equipment_id=None):
-        if equipment_id:
-            eq = self.service.get_equipment(equipment_id)
-            if not eq:
-                return jsonify({"error": "ไม่พบอุปกรณ์"}), 404
-            return jsonify({
-                "id": eq.equipment_id,
-                "name": eq.name,
-                "brand": eq.brand,
-                "category": eq.category,
-                "status": eq.status
-            })
-        all_eq = self.service.get_all_equipment()
-        return jsonify([
+    def get(self):
+        db = SessionLocal()
+        equipments = db.query(Equipment).all()
+        result = [
             {"id": e.equipment_id, "name": e.name, "status": e.status}
-            for e in all_eq
-        ])
+            for e in equipments
+        ]
+        return Response(json.dumps(result, ensure_ascii=False), mimetype='application/json')
 
     def post(self):
+        db = SessionLocal()
         data = request.get_json()
-        eq = self.service.create_equipment(data)
-        return jsonify({"message": "เพิ่มอุปกรณ์สำเร็จ", "id": eq.equipment_id}), 201
+        eq = Equipment(
+            name=data["name"],
+            code=data["code"],
+            status=data.get("status", "available")
+        )
+        db.add(eq)
+        db.commit()
+        db.refresh(eq)
+        return Response(
+            json.dumps({"message": "เพิ่มอุปกรณ์สำเร็จ", "id": eq.equipment_id}, ensure_ascii=False),
+            mimetype='application/json',
+            status=201
+        )
 
     def put(self, equipment_id):
+        db = SessionLocal()
+        eq = db.get(Equipment, equipment_id)
+        if not eq:
+            return Response(json.dumps({"error": "ไม่พบอุปกรณ์"}, ensure_ascii=False),
+                            mimetype='application/json', status=404)
+
         data = request.get_json()
-        updated = self.service.update_equipment(equipment_id, data)
-        if not updated:
-            return jsonify({"error": "ไม่พบอุปกรณ์"}), 404
-        return jsonify({"message": "อัปเดตข้อมูลสำเร็จ"})
+        for key, value in data.items():
+            setattr(eq, key, value)
+        db.commit()
+        db.refresh(eq)
+        return Response(json.dumps({"message": "อัปเดตข้อมูลสำเร็จ"}, ensure_ascii=False),
+                        mimetype='application/json')
 
     def delete(self, equipment_id):
-        deleted = self.service.delete_equipment(equipment_id)
-        if not deleted:
-            return jsonify({"error": "ไม่พบอุปกรณ์"}), 404
-        return jsonify({"message": "ลบอุปกรณ์เรียบร้อยแล้ว"})
+        db = SessionLocal()
+        eq = db.get(Equipment, equipment_id)
+        if not eq:
+            return Response(json.dumps({"error": "ไม่พบอุปกรณ์"}, ensure_ascii=False),
+                            mimetype='application/json', status=404)
 
-# ✅ Register routes
-api_equipment_bp.add_url_rule(
-    "/", view_func=EquipmentAPI.as_view("equipment_list"), methods=["GET", "POST"]
-)
-api_equipment_bp.add_url_rule(
-    "/<int:equipment_id>", view_func=EquipmentAPI.as_view("equipment_detail"), methods=["GET", "PUT", "DELETE"]
-)
+        db.delete(eq)
+        db.commit()
+        return Response(json.dumps({"message": "ลบอุปกรณ์เรียบร้อยแล้ว"}, ensure_ascii=False),
+                        mimetype='application/json')
+
+# ✅ Register route แบบ class (GET, POST)
+api_equipment_bp.add_url_rule("/", view_func=EquipmentAPI.as_view("equipment_api"), methods=["GET", "POST"])
+
+# ✅ Register route สำหรับ PUT / DELETE (ต้องมี parameter id)
+api_equipment_bp.add_url_rule("/<int:equipment_id>", view_func=EquipmentAPI.as_view("equipment_api_detail"), methods=["PUT", "DELETE"])
