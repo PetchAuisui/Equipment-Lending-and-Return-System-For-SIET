@@ -175,13 +175,26 @@
           <input class="ctrl" type="file" name="image" accept="image/*">
         </div>
 
-        <div class="btns">
-          <a class="btn" href="{{ url_for('inventory.admin_equipment_list') }}">ยกเลิก</a>
-          <button type="submit" class="btn primary">บันทึก</button>
+        <div class="btns" style="justify-content: space-between; align-items: center;">
+          <!-- ปุ่มลบ: ใช้ฟอร์มเดียวกัน ยิงไป route ลบ -->
+          <button type="submit"
+                  class="btn"
+                  style="background:#dc3545; color:#fff; border-color:#dc3545; font-weight:600;"
+                  formaction="{{ url_for('inventory.admin_equipment_delete', eid=item.equipment_id) }}"
+                  formmethod="post"
+                  formnovalidate
+                  onclick="return confirm('❌ ต้องการลบอุปกรณ์นี้ออกจากระบบใช่ไหม?');">
+            🗑️ ลบอุปกรณ์นี้
+          </button>
+
+          <!-- ปุ่มยกเลิก + บันทึก -->
+          <div style="display:flex; gap:12px;">
+            <a class="btn" href="{{ url_for('inventory.admin_equipment_list') }}">ยกเลิก</a>
+            <button type="submit" class="btn primary">บันทึก</button>
+          </div>
         </div>
 
-      </form>
-    </div>
+        </form>
   </div>
 </div>
 {% endblock %}

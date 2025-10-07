@@ -1,15 +1,21 @@
-.dashboard {
-  padding: 0 24px;           /* เอา padding-top ออก เพราะเราจะเว้นใน container */
-  margin-left: 80px;          /* กัน sidebar */
-  box-sizing: border-box;
-
-  display: flex;              /* ทำให้ภายในเป็น flex */
-  justify-content: center;    /* จัดแนวนอนกลางพื้นที่ที่เหลือ */
-  align-items: center;        /* จัดแนวตั้งกลางพื้นที่ที่เหลือ */
-  min-height: calc(100vh - 60px); /* ความสูงทั้งหมดลบ 60px */
-
+/* ===== ระบุความสูงรวมของ navbar (เช่น แถวชมพู 60px + แถวเมนู 52px) ===== */
+:root {
+  --navbar-total: 112px; /* ปรับเลขนี้ให้ตรงกับของจริง */
 }
 
+/* ===== Dashboard Wrapper ===== */
+.dashboard {
+  padding: var(--navbar-total) 24px 0;   /* เว้นด้านบนเท่าความสูง navbar */
+  margin-left: 80px;                     /* กัน sidebar */
+  box-sizing: border-box;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: calc(100vh - var(--navbar-total));  /* ไม่ให้โดนบัง */
+}
+
+/* ===== Grid ===== */
 .dashboard__grid {
   max-width: 1100px;
   display: grid;
@@ -18,56 +24,35 @@
   justify-items: center;
 }
 
-
-
 /* ===== Card Style ===== */
 .card {
-  width: 340px;               /* เดิม 280px → ขยาย */
-  height: 180px;              /* เดิม 140px → ขยาย */
+  width: 340px;
+  height: 180px;
   background: #e0e0e0;
   border-radius: 12px;
   box-shadow: 0 2px 4px rgba(0,0,0,0.08);
-
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-
-  text-decoration: none;
-  color: #222;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  text-decoration: none; color: #222;
   transition: transform .2s ease, box-shadow .2s ease;
 }
-
-.card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 6px 12px rgba(0,0,0,0.15);
-}
+.card:hover { transform: translateY(-4px); box-shadow: 0 6px 12px rgba(0,0,0,0.15); }
 
 /* ===== Card Icon & Title ===== */
-.card__icon {
-  width: 80px;                /* เดิม 56px → ให้ใหญ่ขึ้น */
-  height: 80px;
-  object-fit: contain;
-  margin-bottom: 14px;
-}
-
-.card__title {
-  font-size: 22px;            /* เดิม 15px → ใหญ่ขึ้นนิด */
-  font-weight: 600;
-  text-align: center;
-}
+.card__icon { width: 80px; height: 80px; object-fit: contain; margin-bottom: 14px; }
+.card__title { font-size: 22px; font-weight: 600; text-align: center; }
 
 /* ===== Responsive ===== */
 @media (max-width: 1100px) {
-  .dashboard__grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
+  .dashboard__grid { grid-template-columns: repeat(2, 1fr); }
 }
 
 @media (max-width: 640px) {
+  :root { --navbar-total: 120px; } /* ถ้ามือถือ navbar สูงขึ้นเล็กน้อย */
   .dashboard {
-    margin-left: 0;           /* มือถือไม่ต้องเว้น sidebar */
-    padding: 16px;
+    margin-left: 0;                 /* มือถือไม่ต้องเว้น sidebar */
+    padding: var(--navbar-total) 16px 0;
+    min-height: calc(100vh - var(--navbar-total));
   }
   .dashboard__grid {
     grid-template-columns: 1fr;
@@ -75,8 +60,8 @@
   }
   .card {
     width: 100%;
-    max-width: 360px;         /* กันไม่ให้ยืดเกินไป */
+    max-width: 360px;
     margin: 0 auto;
-    height: 200px;            /* ให้สูงขึ้นอีกสำหรับมือถือ */
+    height: 200px;
   }
 }
