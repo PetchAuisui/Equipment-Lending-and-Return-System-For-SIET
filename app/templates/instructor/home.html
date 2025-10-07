@@ -1,0 +1,38 @@
+{% extends 'base/base_teacher.html' %}
+
+{% block title %}Instructor Home{% endblock %}
+
+{% block content %}
+  <h1>Instructor Home</h1>
+  <p>ยินดีต้อนรับสู่หน้าหลักสำหรับอาจารย์</p>
+
+  <!-- ลิงก์ลัด -->
+  <h3>ลิงก์ลัด</h3>
+  <ul>
+    {% for s in shortcuts %}
+      <li><a href="{{ s.href }}">{{ s.label }}</a></li>
+    {% else %}
+      <li>— ยังไม่มีลิงก์ลัด —</li>
+    {% endfor %}
+  </ul>
+
+  <!-- ข่าว/ประกาศ -->
+  <h3>ประกาศและข่าวสาร</h3>
+  <ul>
+    {% for a in announcements %}
+      <li><strong>{{ a.title }}</strong> — {{ a.summary }}</li>
+    {% else %}
+      <li>— ยังไม่มีประกาศ —</li>
+    {% endfor %}
+  </ul>
+
+  <!-- ยอดนิยม -->
+  <h3>ยอดนิยม</h3>
+  <ul>
+    {% for p in popular %}
+      <li>{{ p.name }} {{ p.usage_count }} ครั้ง</li>
+    {% else %}
+      <li>— ยังไม่มีสถิติ —</li>
+    {% endfor %}
+  </ul>
+{% endblock %}

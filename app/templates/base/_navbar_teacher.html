@@ -1,0 +1,20 @@
+<div class="navbar">
+  <div class="navbar_menu">
+    <!-- ให้ Home ไปหน้าอาจารย์ -->
+    <a href="{{ url_for('instructor.teacher_home') }}">Home</a>
+
+    <!-- เมนูอื่นคงเดิม -->
+    <a href="{{ url_for('inventory.lend_device') }}">Equipment</a>
+    <a href="{{ url_for('tracking.track_index') }}">Track Status</a>
+    <a href="{{ url_for('pages.policy') }}">Policy</a>
+    <a href="{{ url_for('pages.about_us') }}">About Us</a>
+
+    <!-- Asking for permission → ของอาจารย์ -->
+    <a href="{{ url_for('instructor.pending') }}">Asking for permission</a>
+
+    <div class="navbar_light">
+      <input class="Search_input" type="text" placeholder="Search...">
+      <i class="ri-notification-4-line icon_bell"></i>
+    </div>
+  </div>
+</div>
