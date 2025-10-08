@@ -15,3 +15,11 @@ class StockMovement(Base):
     actor_id = Column(Integer, nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
     equipment = relationship("Equipment", back_populates="movements", lazy="joined")
+   # ✅ เพิ่ม ForeignKey ที่ชี้ไปยัง users.user_id
+    actor_id = Column(Integer, ForeignKey("users.user_id"))
+
+    # ความสัมพันธ์กลับไปที่ User
+    actor = relationship("User", back_populates="stock_movements")
+
+    def __repr__(self):
+        return f"<StockMovement id={self.id} type={self.movement_type}>"
