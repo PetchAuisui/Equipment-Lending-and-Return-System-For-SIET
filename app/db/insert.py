@@ -243,6 +243,16 @@ def seed_equipments():
                 status="available",
                 created_at=datetime.now(ZoneInfo("Asia/Bangkok"))
             ),
+                        Equipment(
+                name="Projector Epson X123",
+                code="PRJ002",
+                category="Projector",
+                detail="Projector สำหรับห้องเรียน",
+                brand="Epson",
+                buy_date=date(2021, 3, 15),
+                status="available",
+                created_at=datetime.now(ZoneInfo("Asia/Bangkok"))
+            ),
             Equipment(
                 name="Laptop Dell Inspiron 15",
                 code="LAP001",
