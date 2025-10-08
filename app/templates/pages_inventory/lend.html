@@ -102,5 +102,19 @@
   </div>
 </body>
 
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    const borrowInput = document.querySelector('input[type="date"][readonly]'); // วันที่ยืม
+    const returnInput = document.querySelectorAll('input[type="date"]')[1];    // วันที่กำหนดคืน
+
+    if (borrowInput && returnInput) {
+      // เอาวันที่ยืมเป็นค่าวันที่ต่ำสุดของวันที่คืน
+      const borrowDate = borrowInput.value;
+      returnInput.min = borrowDate;
+    }
+  });
+</script>
+
+
 {% endblock %}
 </html>
