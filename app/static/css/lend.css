@@ -166,3 +166,8 @@ textarea {
   margin-top: 30px;         /* เว้นจากฟอร์มด้านบน */
 }
 
+/* ช่อง readonly ทั้งหมด (สีเทาอ่อน) */
+input[readonly], textarea[readonly], select[disabled] {
+  color: #555;               /* สีตัวอักษรอ่อน */
+  cursor: not-allowed;
+}
