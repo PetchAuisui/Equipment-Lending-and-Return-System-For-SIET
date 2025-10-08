@@ -45,11 +45,108 @@
       <a href="{{ url_for('pages.about_us') }}">About Us</a>
     </div>
 
-    <div class="navbar_light">
-      <button class="btn-bell" aria-label="Notifications">
-        <i class="ri-notification-4-line"></i>
-      </button>
-    </div>
+<div class="navbar_light" style="position: relative;">
+  <button class="btn-bell" aria-label="Notifications" style="background:none; border:none; cursor:pointer; position: relative;">
+    <i class="ri-notification-4-line" style="font-size: 22px;"></i>
+  </button>
+
+  <!-- 🔔 กล่องแจ้งเตือน -->
+  <div id="notif-box"
+       style="display:none; position:absolute; right:0; top:40px; 
+              background:white; border:1px solid #ddd;
+              border-radius:10px; width:320px; max-height:350px;
+              overflow-y:auto; box-shadow:0 3px 10px rgba(0,0,0,0.2);
+              z-index:9999;">
+    <ul id="notif-list" style="list-style:none; margin:0; padding:0;">
+      <li style="padding:10px; text-align:center; color:#888;">ไม่มีแจ้งเตือน</li>
+    </ul>
   </div>
+</div>
+
+<!-- ✅ Script ดึงข้อมูลแจ้งเตือน -->
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const bellBtn = document.querySelector(".btn-bell");
+  const notifBox = document.getElementById("notif-box");
+  const notifList = document.getElementById("notif-list");
+
+  // เมื่อคลิกกระดิ่ง
+  bellBtn.addEventListener("click", async () => {
+    notifBox.style.display = notifBox.style.display === "block" ? "none" : "block";
+
+    if (notifBox.style.display === "block") {
+      try {
+        const res = await fetch("/overdue/get-notifications");
+        const data = await res.json();
+        notifList.innerHTML = "";
+
+        // 🟢 ถ้ายังไม่ได้ล็อกอิน (API ส่ง error)
+        if (data.error) {
+          notifList.innerHTML = `
+            <li style="padding:10px; text-align:center; color:#888;">
+              ${data.error}
+            </li>`;
+          return;
+        }
+
+        // 🟢 ถ้าไม่มีแจ้งเตือน
+        if (data.length === 0) {
+          notifList.innerHTML = `
+            <li style="padding:10px; text-align:center; color:#888;">
+              ไม่มีแจ้งเตือน
+            </li>`;
+          return;
+        }
+
+        // 🟢 ถ้ามีข้อมูลแจ้งเตือน
+       data.forEach(n => {
+  // แปลง payload จาก string → object
+  const payload = typeof n.payload === "string" ? JSON.parse(n.payload) : n.payload;
+
+  notifList.innerHTML += `
+    <li style="padding:12px 14px; border-bottom:1px solid #f0f0f0; background:#fff;">
+      <div style="display:flex; gap:10px;">
+        <div style="flex-shrink:0;">
+          <i class="ri-error-warning-line" style="color:#e74c3c; font-size:24px;"></i>
+        </div>
+        <div style="flex:1;">
+          <div style="font-weight:bold; color:#e74c3c; margin-bottom:4px;">
+            อุปกรณ์ยังไม่คืน
+          </div>
+          <div style="font-size:13px; color:#333; line-height:1.4;">
+            คุณยังไม่ได้คืน <b>${payload.equipment_name || '-'}</b><br>
+            (ครบกำหนด ${payload.due_date || '-'})
+          </div>
+          <div style="color:#999; font-size:12px; margin-top:4px;">
+            ${n.created_at}
+          </div>
+        </div>
+      </div>
+    </li>
+  `;
+});
+
+
+
+      } catch (err) {
+        // 🔴 ถ้า fetch ไม่สำเร็จ (เช่น server ล่ม)
+        notifList.innerHTML = `
+          <li style="padding:10px; color:red;">
+            เกิดข้อผิดพลาดในการโหลดข้อมูล
+          </li>`;
+      }
+    }
+  });
+
+  // ปิด popup ถ้าคลิกนอกกระดิ่ง
+  document.addEventListener("click", (e) => {
+    if (!bellBtn.contains(e.target) && !notifBox.contains(e.target)) {
+      notifBox.style.display = "none";
+    }
+  });
+});
+</script>
+
+
   {% endif %}
 </nav>
