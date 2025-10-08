@@ -11,6 +11,8 @@ from datetime import datetime
 from sqlalchemy.sql import exists, and_
 from app.models.stock_movements import StockMovement
 import os, uuid
+from app.utils.decorators import staff_required
+
 
 @inventory_bp.route("/lend_device")
 def lend_device():
@@ -30,6 +32,7 @@ def lend():
     return render_template('pages_inventory/lend.html')
 
 @inventory_bp.route("/admin/equipments", methods=["GET"], endpoint="admin_equipment_list")
+@staff_required
 def admin_equipment_list():
     q = request.args.get("q", "").strip()
     category_filter = request.args.get("category", "").strip()
@@ -63,6 +66,7 @@ def admin_equipment_list():
         db.close()
 
 @inventory_bp.route("/admin/equipments/<int:eid>", methods=["GET"], endpoint="admin_equipment_detail")
+@staff_required
 def admin_equipment_detail(eid):
     db = SessionLocal()
     try:
@@ -87,6 +91,7 @@ def admin_equipment_detail(eid):
         db.close()
 
 @inventory_bp.route("/admin/equipments/new", methods=["GET", "POST"])
+@staff_required
 def admin_equipment_new():
     if request.method == "POST":
         name = (request.form.get("name") or "").strip()
@@ -155,6 +160,7 @@ def admin_equipment_new():
     return render_template("pages_inventory/admin_equipment_new.html")
 
 @inventory_bp.route("/admin/equipments/<int:eid>/edit", methods=["GET", "POST"], endpoint="admin_equipment_edit")
+@staff_required
 def admin_equipment_edit(eid):
     db = SessionLocal()
     try:
@@ -210,6 +216,7 @@ def admin_equipment_edit(eid):
         db.close()
 
 @inventory_bp.route("/admin/equipments/<int:eid>/delete", methods=["POST"])
+@staff_required
 def admin_equipment_delete(eid):
     db = SessionLocal()
     try:
