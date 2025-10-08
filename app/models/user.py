@@ -1,28 +1,40 @@
+# app/models/user.py
 from datetime import datetime
 from sqlalchemy import Column, Integer, String, DateTime
+from sqlalchemy.orm import relationship
 from app.db.db import Base
 
 
 class User(Base):
     __tablename__ = "users"
 
-    user_id      = Column(Integer, primary_key=True, autoincrement=True)
-    student_id   = Column(String, unique=True, nullable=True)
-    employee_id  = Column(String, unique=True, nullable=True)
-    name         = Column(String, nullable=False)
-    major        = Column(String, nullable=True)
-    member_type  = Column(String, nullable=False)   # student | teacher | officer | staff
-    phone        = Column(String, nullable=True)
-    email        = Column(String, unique=True, nullable=False)
-    gender       = Column(String, nullable=True)
+    # -------- Columns --------
+    user_id       = Column(Integer, primary_key=True, autoincrement=True)
+    name          = Column(String, nullable=False)
+    student_id    = Column(String, unique=True, nullable=True)   # สำหรับ student
+    employee_id   = Column(String, unique=True, nullable=True)   # สำหรับบุคลากร
+    email         = Column(String, nullable=False, unique=True)
+    phone         = Column(String, nullable=True)
+    major         = Column(String, nullable=True)
+    member_type   = Column(String, nullable=False)               # student | teacher | officer | staff
+    gender        = Column(String, nullable=True)
     password_hash = Column(String, nullable=False)
-    role         = Column(String, default="member", nullable=False)
-    created_at   = Column(DateTime, default=datetime.utcnow)
-    updated_at   = Column(DateTime, default=datetime.utcnow)
+    role          = Column(String, nullable=False, default="member")
+    created_at    = Column(DateTime, default=datetime.utcnow)
+    updated_at    = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
-    # ---- Helper methods ----
-    def to_dict(self):
-        """ใช้สำหรับ ORM → dict (รวม password_hash)"""
+    # -------- Relationships (สอดคล้องกับตารางที่มีอยู่ในโปรเจกต์) --------
+    classes           = relationship("Class", back_populates="owner")
+    rents             = relationship("Rent", back_populates="user")
+    stock_movements   = relationship("StockMovement", back_populates="actor")
+    returns           = relationship("Return", back_populates="receiver")
+    notifications     = relationship("Notification", back_populates="user")
+    renewals_approved = relationship("Renewal", back_populates="approver")
+    audits            = relationship("Audit", back_populates="actor")
+
+    # -------- Helpers --------
+    def to_dict(self) -> dict:
+        """แปลง ORM instance → dict (รวมฟิลด์ auth/timestamps)"""
         return {
             "user_id": self.user_id,
             "student_id": self.student_id,
@@ -39,8 +51,8 @@ class User(Base):
             "updated_at": self.updated_at,
         }
 
-    def public_dict(self):
-        """ส่งกลับฝั่ง UI (ไม่โชว์ password_hash)"""
+    def public_dict(self) -> dict:
+        """สำหรับส่งกลับ UI/API (ไม่รวม password_hash)"""
         return {
             "user_id": self.user_id,
             "student_id": self.student_id,
@@ -53,3 +65,7 @@ class User(Base):
             "gender": self.gender,
             "role": self.role,
         }
+
+    def __repr__(self) -> str:
+        ident = self.student_id or self.employee_id or "-"
+        return f"<User {self.user_id} {self.email} ({ident})>"
