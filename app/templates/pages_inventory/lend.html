@@ -23,17 +23,27 @@
     <form>
       <!-- รูป + ชื่ออุปกรณ์ + ID -->
       <div class="top-row">
-        <img class="image" src="{{ url_for('static', filename='images/hdmi.jpg') }}" alt="hdmi">
+        <img class="image" src="{{ url_for('static', filename=image) }}" alt="{{ name }}">
 
         <div class="device-info-box">
           <div class="form-group">
             <label>ชื่ออุปกรณ์</label>
-            <input type="text">
+            <input type="text" value="{{ name }}" readonly>
           </div>
           <div class="form-group">
-            <label>ID</label>
-            <input type="text">
+            <label>รหัสอุปกรณ์</label>
+            {% if codes|length > 1 %}
+              <select name="code">
+                {% for c in codes %}
+                  <option value="{{ c }}">{{ c }}</option>
+                {% endfor %}
+              </select>
+              
+            {% else %}
+              <input type="text" value="{{ codes[0] if codes else '' }}" readonly>
+            {% endif %}
           </div>
+
         </div>
       </div>
 
