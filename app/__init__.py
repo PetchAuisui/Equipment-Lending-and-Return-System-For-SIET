@@ -5,6 +5,10 @@ from app.blueprints.inventory.api_equipment import api_equipment_bp
 
 def create_app():
     app = Flask(__name__, template_folder="templates", static_folder="static")
+
+    app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY", "super-secret-key-change-this")
+
+
     app.config.from_object(Config)
     app.register_blueprint(api_equipment_bp)
 

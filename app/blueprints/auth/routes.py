@@ -57,29 +57,15 @@ def login_action():
     svc = _svc()
     ok, err, user = svc.login(email, password)
 
-    # ---- JSON Mode ----
-    if request.is_json:
-        if not ok:
-            return jsonify({"error": err}), 401
-        return jsonify({
-            "ok": True,
-            "user": {
-                "email": _get(user, "email"),
-                "name": _get(user, "name"),
-                "student_id": _get(user, "student_id"),
-                "employee_id": _get(user, "employee_id"),
-                "role": _get(user, "role", "member"),
-                "member_type": _get(user, "member_type"),
-            }
-        }), 200
-
-    # ---- Form Mode ----
     if not ok:
+        # ส่งกลับ error ทั้งสองโหมด
+        if request.is_json:
+            return jsonify({"error": err}), 401
         return render_template("auth/login.html", error=err, old={"email": email}), 401
-    
-    # ---- เก็บ session ----
-    student_id   = _get(user, "student_id")
-    employee_id  = _get(user, "employee_id")
+
+    # ✅ ---- เก็บ session (ทำทั้งสองโหมด) ----
+    student_id = _get(user, "student_id")
+    employee_id = _get(user, "employee_id")
 
     session.update({
         "user_id": _get(user, "user_id"),
@@ -87,12 +73,27 @@ def login_action():
         "user_name": _get(user, "name") or email.split("@")[0],
         "student_id": student_id,
         "employee_id": employee_id,
-        "role": _get(user, "role", "member"),          # เก็บ role (ไม่แสดง)
-        "member_type": _get(user, "member_type"),      # เก็บ member_type (ไม่แสดง)
-        "identity": student_id or employee_id,         # ใช้โชว์รหัสใน navbar
+        "role": _get(user, "role", "member"),
+        "member_type": _get(user, "member_type"),
+        "identity": student_id or employee_id,
         "is_authenticated": True,
     })
 
+    # ✅ ---- JSON Mode ----
+    if request.is_json:
+        return jsonify({
+            "ok": True,
+            "user": {
+                "email": _get(user, "email"),
+                "name": _get(user, "name"),
+                "student_id": student_id,
+                "employee_id": employee_id,
+                "role": _get(user, "role", "member"),
+                "member_type": _get(user, "member_type"),
+            }
+        }), 200
+
+    # ✅ ---- Form Mode ----
     return redirect(url_for("pages.home"))
 
 
@@ -122,3 +123,4 @@ def _get(obj, name: str, default=None):
     if isinstance(obj, dict):
         return obj.get(name, default)
     return getattr(obj, name, default)
+
