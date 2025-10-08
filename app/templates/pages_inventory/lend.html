@@ -73,7 +73,7 @@
 
       <div class="form-group">
           <label>สาขา</label>
-          <input type="text" value="{{ current_user.major }}" readonly>
+          <input type="text">
       </div>
 
       <div class="form-group">
@@ -108,12 +108,24 @@
     const returnInput = document.querySelectorAll('input[type="date"]')[1];    // วันที่กำหนดคืน
 
     if (borrowInput && returnInput) {
-      // เอาวันที่ยืมเป็นค่าวันที่ต่ำสุดของวันที่คืน
-      const borrowDate = borrowInput.value;
-      returnInput.min = borrowDate;
+      // วันที่ยืม
+      const borrowDate = new Date(borrowInput.value);
+
+      // กำหนด min = วันที่ยืม
+      const borrowDateStr = borrowInput.value;
+      returnInput.min = borrowDateStr;
+
+      // กำหนด max = วันที่ยืม + 5 วัน
+      const maxDate = new Date(borrowDate);
+      maxDate.setDate(maxDate.getDate() + 5);
+
+      // แปลงกลับเป็นรูปแบบ yyyy-mm-dd
+      const maxDateStr = maxDate.toISOString().split('T')[0];
+      returnInput.max = maxDateStr;
     }
   });
 </script>
+
 
 
 {% endblock %}
