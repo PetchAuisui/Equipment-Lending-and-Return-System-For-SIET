@@ -73,7 +73,6 @@ form {
 .row {
   display: flex;
   gap: 20px;
-  margin-bottom: 15px;
 }
 
 .form-group {
@@ -152,7 +151,6 @@ textarea {
   text-decoration: none; /* เอาเส้นใต้ลิงก์ออก */
   text-align: center;
 }
-
 
 .btn-submit:hover {
   background: #449d44;
