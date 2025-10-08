@@ -34,7 +34,7 @@ def register_action():
             return jsonify({"error": err}), 400
         return render_template("auth/register.html", error=err, old=payload), 400
 
-    user = svc.register(payload)  # บริการคืน dict พร้อมฟิลด์ผู้ใช้
+    user = svc.register(payload)  # คืน dict พร้อมฟิลด์ผู้ใช้
 
     if request.is_json:
         return jsonify({"user": user}), 201
@@ -58,12 +58,11 @@ def login_action():
     ok, err, user = svc.login(email, password)
 
     if not ok:
-        # ส่งกลับ error ทั้งสองโหมด
         if request.is_json:
             return jsonify({"error": err}), 401
         return render_template("auth/login.html", error=err, old={"email": email}), 401
 
-    # ✅ ---- เก็บ session (ทำทั้งสองโหมด) ----
+    # ✅ ---- เก็บ session ----
     student_id = _get(user, "student_id")
     employee_id = _get(user, "employee_id")
 
@@ -76,6 +75,7 @@ def login_action():
         "role": _get(user, "role", "member"),
         "member_type": _get(user, "member_type"),
         "identity": student_id or employee_id,
+        "phone": _get(user, "phone"),   # ✅ เพิ่มเบอร์โทรศัพท์
         "is_authenticated": True,
     })
 
@@ -90,6 +90,7 @@ def login_action():
                 "employee_id": employee_id,
                 "role": _get(user, "role", "member"),
                 "member_type": _get(user, "member_type"),
+                "phone": _get(user, "phone"), 
             }
         }), 200
 
@@ -107,11 +108,13 @@ def logout_action():
 
 @auth_bp.app_context_processor
 def inject_current_user():
+    """Inject current user info into all templates."""
     return {
         "current_user": {
             "email": session.get("user_email"),
             "name": session.get("user_name"),
-            "identity": session.get("identity"),  # โชว์แค่ identity (student_id / emp_id)
+            "identity": session.get("identity"),
+            "phone": session.get("phone"),   
             "is_authenticated": session.get("is_authenticated", False),
         }
     }
@@ -123,4 +126,3 @@ def _get(obj, name: str, default=None):
     if isinstance(obj, dict):
         return obj.get(name, default)
     return getattr(obj, name, default)
-
