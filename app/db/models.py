@@ -73,6 +73,8 @@ class Class(Base):
 # ---------- equipments (รุ่น) ----------
 class Equipment(Base):
     __tablename__ = "equipments"
+    __table_args__ = {"extend_existing": True} # ถ้า table ชื่อนี้มีอยู่แล้ว ให้ แก้ไข/ปรับปรุง table เดิม แทนที่จะสร้างใหม่
+
     equipment_id = Column(Integer, primary_key=True, autoincrement=True)
     name         = Column(String, nullable=False)
     code         = Column(String, nullable=False, unique=True)
@@ -91,6 +93,8 @@ class Equipment(Base):
 # ---------- equipment_images ----------
 class Equipment_Image(Base):
     __tablename__ = "equipment_images"
+    __table_args__ = {"extend_existing": True} # ถ้า table ชื่อนี้มีอยู่แล้ว ให้ แก้ไข/ปรับปรุง table เดิม แทนที่จะสร้างใหม่
+
     equipment_image_id     = Column(Integer, primary_key=True, autoincrement=True)
     equipment_id = Column(Integer, ForeignKey("equipments.equipment_id"), nullable=False)
     image_path   = Column(String, nullable=False)
@@ -103,6 +107,8 @@ class Equipment_Image(Base):
 # ---------- stock_movements ----------
 class StockMovement(Base):
     __tablename__ = "stock_movements"
+    __table_args__ = {"extend_existing": True} # ถ้า table ชื่อนี้มีอยู่แล้ว ให้ แก้ไข/ปรับปรุง table เดิม แทนที่จะสร้างใหม่
+
     movement_id  = Column(Integer, primary_key=True, autoincrement=True)
     equipment_id = Column(Integer, ForeignKey("equipments.equipment_id"), nullable=False)
     history      = Column(Text, nullable=False)
