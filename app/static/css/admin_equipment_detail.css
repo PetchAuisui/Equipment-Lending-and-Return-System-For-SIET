@@ -1,0 +1,79 @@
+/* === Equipment Detail Page === */
+.page-shell {
+  /* ชิด navbar ขึ้นมา */
+  padding: 8px 24px 24px;
+  max-width: 1200px;
+  /* จัดกลางหลัง sidebar (240px) */
+  margin-left: calc(180px + (100vw - 220px - 1200px) / 2);
+}
+
+/* ให้หัวข้อกับการ์ดกว้างเท่ากันและอยู่ตำแหน่งเดียวกัน */
+.header-row,
+.card-wide {
+  width: min(1100px, 100%);
+  margin-inline: auto;   /* จัดกึ่งกลาง block เหมือนกัน */
+}
+
+/* Header */
+.header-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 0 0 20px;      /* ไม่มี margin-left/transform แล้ว */
+}
+.header-row h1 {
+  font-size: 26px;
+  font-weight: 700;
+  margin: 0;
+}
+
+/* Card */
+.card-wide {
+  background: #f5f5f5;
+  padding: 28px;
+  border-radius: 16px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+  border: 1px solid #ddd;
+}
+
+/* Layout split */
+.split { display: flex; gap: 40px; align-items: flex-start; }
+
+/* Image zone */
+.media { flex: 0 0 300px; }
+.media img, .media .placeholder {
+  width: 300px; height: 300px; object-fit: cover;
+  border-radius: 12px; border: 1px solid #ccc; background: #fff;
+}
+.media .placeholder {
+  background: #e0e0e0; display: flex; align-items: center; justify-content: center;
+  border-style: dashed; border-color: #aaa; color: #777;
+}
+
+/* Detail zone */
+.detail { flex: 1; font-size: 16px; line-height: 1.8; }
+.detail-grid { display: grid; grid-template-columns: 200px 1fr; column-gap: 16px; row-gap: 12px; }
+.label { font-weight: 600; }
+
+/* Badge */
+.badge { display: inline-block; padding: 4px 12px; border-radius: 20px; font-weight: 600; }
+.badge--available { background:#d4edda; color:#155724; }
+.badge--inuse     { background:#fff3cd; color:#856404; }
+.badge--broken    { background:#f8d7da; color:#721c24; }
+.badge--lost      { background:#e2e3e5; color:#383d41; }
+.badge--default   { background:#e2e3e5; color:#383d41; }
+
+/* Buttons */
+.actions { margin-top: 32px; display: flex; gap: 12px; justify-content: flex-end; }
+.btn { padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 600; display: inline-block; }
+.btn--secondary { background:#bdbdbd; color:#222; }
+.btn--primary   { background:#4caf50; color:#fff; }
+
+/* Responsive */
+@media (max-width: 1100px) {
+  .page-shell { margin-left: auto; margin-right: auto; padding: 12px 16px 16px; }
+  .split { flex-direction: column; gap: 24px; }
+  .media { flex: 0 0 auto; }
+  .detail-grid { grid-template-columns: 1fr; }
+  .label { margin-top: 8px; }
+}
