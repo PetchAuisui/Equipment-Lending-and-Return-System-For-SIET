@@ -1,4 +1,4 @@
-from datetime import datetime
+"""from datetime import datetime
 from sqlalchemy import Column, Integer, String, ForeignKey, DateTime, Text
 from sqlalchemy.orm import relationship
 from app.db.db import Base
@@ -24,3 +24,5 @@ class EquipmentImage(Base):
 
     def __repr__(self):
         return f"<EquipmentImage {self.image_path}>"
+"""
+
