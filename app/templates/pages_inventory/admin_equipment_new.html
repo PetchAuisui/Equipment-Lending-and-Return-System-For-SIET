@@ -4,74 +4,48 @@
 
 {% block content %}
 <style>
-  *, *::before, *::after { box-sizing: border-box; }
+  /* ====== SCOPE ทั้งหมดไว้ใต้ .equip-new ====== */
+  .equip-new *, .equip-new *::before, .equip-new *::after { box-sizing: border-box; }
 
-  .page { margin-left:260px; margin-right:24px; padding:24px; }
-  @media (max-width: 992px){ .page{ margin:0 16px; padding:16px; } }
+  .equip-new .page { margin-left:260px; margin-right:24px; padding:24px; }
+  @media (max-width: 992px){
+    .equip-new .page{ margin:0 16px; padding:16px; }
+  }
 
-  .panel { background:#f2f2f2; border-radius:14px; padding:24px; }
+  .equip-new .panel { background:#f2f2f2; border-radius:14px; padding:24px; }
 
-  .card {
-    background:#fff;
-    border:1px solid #ddd;
-    border-radius:14px;
-    max-width:640px;
-    width:100%;
-    margin:0 auto;
+  .equip-new .card {
+    background:#fff; border:1px solid #ddd; border-radius:14px;
+    max-width:640px; width:100%; margin:0 auto;
     box-shadow:0 2px 8px rgba(0,0,0,.06);
   }
 
-  .card__header {
-    padding:20px;
-    border-bottom:1px solid #eee;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    gap:10px;
+  .equip-new .card__header{
+    padding:20px; border-bottom:1px solid #eee;
+    display:flex; align-items:center; justify-content:center; gap:10px;
   }
-  .card__header img { width:40px; height:40px; }
-  .card__header h1 { font-size:22px; font-weight:700; margin:0; }
+  .equip-new .card__header img{ width:40px; height:40px; }
+  .equip-new .card__header h1{ font-size:22px; font-weight:700; margin:0; }
 
-  .card__body { padding:24px; }
+  .equip-new .card__body{ padding:24px; }
 
-  .row {
-    display:flex;
-    flex-direction:column;
-    gap:6px;
-    margin-bottom:18px;
+  .equip-new .row{ display:flex; flex-direction:column; gap:6px; margin-bottom:18px; }
+  .equip-new .row:last-child{ margin-bottom:0; }
+  .equip-new .row label{ font-size:14px; font-weight:600; color:#333; }
+
+  .equip-new .ctrl{
+    width:100%; padding:11px 12px; border:1px solid #cfcfcf; border-radius:10px;
+    font-size:15px; background:#fff; transition:border-color .15s, box-shadow .15s;
   }
-  .row:last-child { margin-bottom:0; }
-
-  .row label {
-    font-size:14px;
-    font-weight:600;
-    color:#333;
+  .equip-new .ctrl:focus{
+    border-color:#4caf50; box-shadow:0 0 0 3px rgba(76,175,80,.15); outline:none;
   }
+  .equip-new textarea.ctrl{ min-height:96px; resize:vertical; }
 
-  .ctrl {
-    width:100%;
-    padding:11px 12px;
-    border:1px solid #cfcfcf;
-    border-radius:10px;
-    font-size:15px;
-    background:#fff;
-    transition:border-color .15s, box-shadow .15s;
-  }
-  .ctrl:focus {
-    border-color:#4caf50;
-    box-shadow:0 0 0 3px rgba(76,175,80,.15);
-    outline:none;
-  }
-
-  textarea.ctrl {
-    min-height:96px;
-    resize:vertical;
-  }
-
-  select.ctrl {
-    appearance:none;
-    -webkit-appearance:none;
-    -moz-appearance:none;
+  /* select: ลูกศรในทุกเบราว์เซอร์แบบไม่ทับ global */
+  .equip-new select.ctrl{
+    appearance:none; -webkit-appearance:none; -moz-appearance:none;
+    background-color:#fff;
     background-image:
       linear-gradient(45deg, transparent 50%, #666 50%),
       linear-gradient(135deg, #666 50%, transparent 50%),
@@ -80,161 +54,135 @@
       calc(100% - 18px) calc(50% - 3px),
       calc(100% - 12px) calc(50% - 3px),
       calc(100% - 36px) 50%;
-    background-size:
-      6px 6px,
-      6px 6px,
-      1px 60%;
+    background-size:6px 6px, 6px 6px, 1px 60%;
     background-repeat:no-repeat;
     padding-right:44px;
   }
 
-  .btns {
+  /* radio group */
+  .equip-new .radio-group {
     display:flex;
-    justify-content:flex-end;
-    gap:10px;
-    margin-top:20px;
+    gap:20px;
+    margin-top:6px;
   }
-  .btn {
-    padding:10px 18px;
-    border-radius:10px;
+  .equip-new .radio-option {
+    display:flex;
+    align-items:center;
+    gap:8px;
     font-size:14px;
-    font-weight:600;
     cursor:pointer;
-    border:1px solid #ccc;
-    background:#fff;
-    transition: background .2s, transform .05s;
   }
-  .btn:active { transform:translateY(1px); }
-  .btn.primary {
-    background:#4caf50;
-    color:#fff;
-    border-color:#4caf50;
+  .equip-new input[type="radio"] {
+    width:16px;
+    height:16px;
+    accent-color:#0d6efd; /* ✅ สีแบบในภาพ (น้ำเงินคลาสสิก) */
+    cursor:pointer;
+    transition:transform .1s ease;
   }
-  .btn.primary:hover { background:#45a049; }
+  .equip-new input[type="radio"]:checked {
+    transform:scale(1.1);
+  }
+
+  .equip-new .btns{ display:flex; justify-content:flex-end; gap:10px; margin-top:20px; }
+  .equip-new .btn{
+    padding:10px 18px; border-radius:10px; font-size:14px; font-weight:600;
+    cursor:pointer; border:1px solid #ccc; background:#fff; transition:background .2s, transform .05s;
+  }
+  .equip-new .btn:active{ transform:translateY(1px); }
+  .equip-new .btn.primary{ background:#4caf50; color:#fff; border-color:#4caf50; }
+  .equip-new .btn.primary:hover{ background:#45a049; }
+
+  /* กันช่องว่างบนสุด */
+  .equip-new .page, .equip-new .panel, .equip-new .card{ margin-top:0; }
 </style>
 
-<!-- ✅ แสดงข้อความ flash (จัดให้อยู่ตรงกลาง) -->
-{% with messages = get_flashed_messages(with_categories=true) %}
-  {% if messages %}
-    <div style="display:flex; justify-content:center; margin-bottom:20px;">
-      <div style="width:100%; max-width:600px;">
-        {% for category, message in messages %}
-          <div style="
-            text-align:center;
-            padding:12px 16px;
-            border-radius:8px;
-            margin-bottom:10px;
-            font-weight:600;
-            {% if category == 'success' %}
-              background-color:#e8f5e9; color:#1b5e20;
-            {% elif category == 'error' %}
-              background-color:#ffebee; color:#b71c1c;
-            {% else %}
-              background-color:#f5f5f5; color:#333;
-            {% endif %}
-          ">
-            {{ message }}
-          </div>
-        {% endfor %}
-      </div>
-    </div>
-  {% endif %}
-{% endwith %}
+<div class="equip-new">
+  <div class="page">
+    <div class="panel">
+      <div class="card">
+        <div class="card__header">
+          <img src="{{ url_for('static', filename='images/icons/device.png') }}" alt="">
+          <h1>เพิ่มอุปกรณ์</h1>
+        </div>
 
-
-<div class="page">
-  <div class="panel">
-    <div class="card">
-      <div class="card__header">
-        <img src="{{ url_for('static', filename='images/icons/device.png') }}" alt="">
-        <h1>เพิ่มอุปกรณ์</h1>
-      </div>
-
-      <div class="card__body">
-        <form action="{{ url_for('inventory.admin_equipment_new') }}" method="post" enctype="multipart/form-data">
-
-          <!-- 🟩 จำเป็น -->
-          <div class="row">
-            <label>ชื่ออุปกรณ์ *</label>
-            <input class="ctrl" type="text" name="name" required>
-          </div>
-
-          <!-- 🟩 จำเป็น -->
-          <div class="row">
-            <label>รหัส/หมายเลข *</label>
-            <input class="ctrl" type="text" name="code" required>
-          </div>
-
-          <!-- 🟩 จำเป็น -->
-          <div class="row">
-            <label>หมวดหมู่ *</label>
-            <select class="ctrl" name="category" required>
-              <option value="">— เลือกหมวดหมู่ —</option>
-              {% for c in CATEGORIES %}
-                <option value="{{ c }}">{{ c }}</option>
-              {% endfor %}
-            </select>
-          </div>
-
-          <!-- 🟩 จำเป็น -->
-          <div class="row">
-            <label>ยี่ห้อ *</label>
-            <input class="ctrl" type="text" name="brand" required>
-          </div>
-
-          <!-- 🟩 จำเป็น -->
-          <div class="row">
-            <label>รายละเอียด *</label>
-            <textarea class="ctrl" name="detail" required></textarea>
-          </div>
-
-          <!-- 🟩 จำเป็น -->
-          <div class="row">
-            <label>วันที่ซื้อ *</label>
-            <input class="ctrl" type="date" name="buy_date" required>
-          </div>
-
-          <!-- 🟩 จำเป็น -->
-          <div class="row">
-            <label>สถานะ *</label>
-            <select class="ctrl" name="status" required>
-              <option value="">— เลือกสถานะ —</option>
-              <option value="available">พร้อมใช้งาน</option>
-              <option value="in_use">กำลังถูกยืม</option>
-              <option value="broken">ชำรุด</option>
-              <option value="lost">สูญหาย</option>
-            </select>
-          </div>
-
-          <!-- ❎ ไม่จำเป็น -->
-          <div class="row">
-            <label style="font-weight:600;">การอนุมัติจากอาจารย์</label>
-            <div style="display:flex; gap:20px; margin-top:6px;">
-              <label style="display:flex; align-items:center; gap:8px;">
-                <input type="radio" name="require_teacher_approval" value="1">
-                ต้องขออนุมัติ
-              </label>
-              <label style="display:flex; align-items:center; gap:8px;">
-                <input type="radio" name="require_teacher_approval" value="0" checked>
-                ไม่ต้องขออนุมัติ
-              </label>
+        <div class="card__body">
+          <form action="{{ url_for('inventory.admin_equipment_new') }}" method="post" enctype="multipart/form-data">
+            <div class="row">
+              <label>ชื่ออุปกรณ์ *</label>
+              <input class="ctrl" type="text" name="name" required>
             </div>
-          </div>
 
-          <!-- ❎ ไม่จำเป็น -->
-          <div class="row">
-            <label>แนบรูปภาพ</label>
-            <input class="ctrl" type="file" name="image" accept="image/*">
-          </div>
+            <div class="row">
+              <label>รหัส/หมายเลข *</label>
+              <input class="ctrl" type="text" name="code" required>
+            </div>
 
-          <div class="btns">
-            <a class="btn" href="{{ url_for('inventory.admin_equipment_list') }}">ยกเลิก</a>
-            <button type="submit" class="btn primary">บันทึก</button>
-          </div>
-        </form>
+            <div class="row">
+              <label>หมวดหมู่</label>
+              <select class="ctrl" name="category">
+                <option value="">— เลือกหมวดหมู่ —</option>
+                {% for c in CATEGORIES %}
+                  <option value="{{ c }}">{{ c }}</option>
+                {% endfor %}
+              </select>
+            </div>
+
+            <div class="row">
+              <label>ยี่ห้อ</label>
+              <input class="ctrl" type="text" name="brand">
+            </div>
+
+            <div class="row">
+              <label>รายละเอียด</label>
+              <textarea class="ctrl" name="detail"></textarea>
+            </div>
+
+            <div class="row">
+              <label>วันที่ซื้อ</label>
+              <input class="ctrl" type="date" name="buy_date">
+            </div>
+
+            {% set s = request.form.get('status', '') %}
+            <div class="row">
+              <label>สถานะ</label>
+              <select class="ctrl" name="status">
+                <option value="">— เลือกสถานะ —</option>
+                <option value="available" {{ 'selected' if s == 'available' else '' }}>พร้อมใช้งาน</option>
+                <option value="in_use"    {{ 'selected' if s == 'in_use'    else '' }}>กำลังถูกยืม</option>
+                <option value="broken"    {{ 'selected' if s == 'broken'    else '' }}>ชำรุด</option>
+                <option value="lost"      {{ 'selected' if s == 'lost'      else '' }}>สูญหาย</option>
+              </select>
+            </div>
+
+            <!-- ✅ การอนุมัติจากอาจารย์ -->
+            <div class="row">
+              <label style="font-weight:600;">การอนุมัติจากอาจารย์</label>
+              <div class="radio-group">
+                <label class="radio-option">
+                  <input type="radio" name="require_teacher_approval" value="1">
+                  ต้องขออนุมัติ
+                </label>
+                <label class="radio-option">
+                  <input type="radio" name="require_teacher_approval" value="0" checked>
+                  ไม่ต้องขออนุมัติ
+                </label>
+              </div>
+            </div>
+
+            <div class="row">
+              <label>แนบรูปภาพ</label>
+              <input class="ctrl" type="file" name="image" accept="image/*">
+            </div>
+
+            <div class="btns">
+              <a class="btn" href="{{ url_for('inventory.admin_equipment_list') }}">ยกเลิก</a>
+              <button type="submit" class="btn primary">บันทึก</button>
+            </div>
+          </form>
+        </div>
+
       </div>
     </div>
   </div>
 </div>
-
 {% endblock %}
