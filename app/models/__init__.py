@@ -1,2 +1,2 @@
 from .equipment import Equipment
-from .equipment_images import EquipmentImage
+from app.db.models import EquipmentImage
