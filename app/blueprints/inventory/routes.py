@@ -27,9 +27,21 @@ def lend_device():
     )
 
 @inventory_bp.route('/lend')
-
 def lend():
-    return render_template('pages_inventory/lend.html')
+    codes_raw = request.args.get("codes", "")
+    name = request.args.get("name", "")
+    image = request.args.get("image", "")
+
+    # แยกรหัสออกเป็น list
+    codes = [c.strip() for c in codes_raw.split(",") if c.strip()]
+
+    return render_template(
+        "pages_inventory/lend.html",
+        name=name,
+        image=image,
+        codes=codes
+    )
+
 
 @inventory_bp.route("/admin/equipments", methods=["GET"], endpoint="admin_equipment_list")
 @staff_required
