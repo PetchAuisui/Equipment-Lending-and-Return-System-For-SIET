@@ -82,7 +82,7 @@ def lend():
 @inventory_bp.route("/lend_submit", methods=["POST"])
 def lend_submit():
     """
-    ✅ รับข้อมูลจากฟอร์ม /lend แล้วส่งให้ lend_service.print_lend_data()
+    ✅ รับข้อมูลจากฟอร์ม /lend แล้วส่งให้ lend_service.lend_data()
     """
     form = request.form
 
@@ -104,10 +104,10 @@ def lend_submit():
     data_list = [data.get(key, None) for key in data]
 
     # ✅ เรียกไปที่ lend_service.py
-    lend_service.print_lend_data(data_list)
+    lend_service.lend_data(data_list)
 
     flash("✅ ส่งข้อมูลไปยัง lend_service แล้ว", "success")
-    return redirect(url_for("inventory.lend_device"))
+    return redirect(url_for("tracking.track_index"))
 
 
 @inventory_bp.route("/admin/equipments", methods=["GET"], endpoint="admin_equipment_list")
