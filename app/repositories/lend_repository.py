@@ -62,14 +62,17 @@ def insert_rent_record(data):
         if not user:
             raise ValueError("❌ ไม่พบผู้ใช้ในระบบ")
 
-        # ✅ สร้าง record RentReturn
+        # ✅ รองรับกรณี subject_id หรือ teacher_confirmed เป็น None
+        subject_val = data.get("subject_id")
+        teacher_val = data.get("teacher_confirmed")
+
         rent_record = RentReturn(
             equipment_id=equipment.equipment_id,
             user_id=user.user_id,
-            subject_id=int(data["subject_id"]),
+            subject_id=int(subject_val) if subject_val else None,   # ✅ ป้องกัน int(None)
             start_date=data["start_date"],
             due_date=datetime.strptime(data["return_date"], "%Y-%m-%d"),
-            teacher_confirmed=int(data["teacher_confirmed"]) if data["teacher_confirmed"] else None,
+            teacher_confirmed=int(teacher_val) if teacher_val else None,
             reason=data.get("reason"),
             status_id=data["status_id"],
             created_at=datetime.utcnow()
@@ -80,7 +83,6 @@ def insert_rent_record(data):
         equipment.status = "unavailable"  # หรือใช้ "borrowed" ตามระบบของคุณ
         db.add(equipment)
 
-        # ✅ Commit การเปลี่ยนแปลงทั้งหมด
         db.commit()
         print(f"✅ บันทึกการยืมและอัปเดตสถานะอุปกรณ์ (ID: {equipment.equipment_id}) เรียบร้อย")
 

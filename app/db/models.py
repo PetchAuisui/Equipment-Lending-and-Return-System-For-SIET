@@ -139,7 +139,7 @@ class RentReturn(Base):
     rent_id      = Column(Integer, primary_key=True, autoincrement=True)
     equipment_id = Column(Integer, ForeignKey("equipments.equipment_id"), nullable=False)
     user_id      = Column(Integer, ForeignKey("users.user_id"), nullable=False)
-    subject_id   = Column(Integer, ForeignKey("subjects.subject_id"), nullable=False)
+    subject_id   = Column(Integer, ForeignKey("subjects.subject_id"))
     start_date   = Column(DateTime, nullable=False)
     due_date     = Column(DateTime, nullable=False)
     teacher_confirmed = Column(Integer, ForeignKey("users.user_id"))
