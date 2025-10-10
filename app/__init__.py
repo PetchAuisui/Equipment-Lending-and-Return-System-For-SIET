@@ -4,7 +4,7 @@ from flask_apscheduler import APScheduler
 from .config import Config
 from app.blueprints.inventory.api_equipment import api_equipment_bp
 from app.services.overdue_checker import check_overdue_rents  # ✅ import service ตรวจแจ้งเตือน
-from .blueprints.overdue import overdue_bp  # ✅ import blueprint แจ้งเตือน
+from app.blueprints.overdue.routes import overdue_bp
 
 scheduler = APScheduler()  # ✅ สร้าง scheduler object
 
@@ -35,12 +35,38 @@ def create_app():
     app.register_blueprint(overdue_bp)
 
     # ===== Scheduler สำหรับตรวจสอบการยืมที่เลยกำหนด =====
-    scheduler.init_app(app)
-    scheduler.start()
+    app.config['SCHEDULER_TIMEZONE'] = 'Asia/Bangkok'
+    app.config['SCHEDULER_JOB_DEFAULTS'] = {
+        'max_instances': 1,
+        'coalesce': True,
+        'misfire_grace_time': 60,
+    }
 
-    # ตั้งเวลาให้รัน check_overdue_rents ทุกวันตอนเที่ยงคืน
-    @scheduler.task('cron', id='check_overdue', hour=0)
-    def scheduled_check():
-        check_overdue_rents()
+    scheduler.init_app(app)
+
+    def start_jobs():
+        # กันซ้ำเวลา reload
+        if scheduler.get_job("check_overdue_interval"):
+            return
+
+        # ✅ รันใน app_context เสมอ (กันปัญหา context/extension)
+        def run_check():
+            with app.app_context():
+                msg = check_overdue_rents()
+                print(f"[APScheduler] {msg}")
+
+        # ทดสอบให้ถี่ก่อน แล้วค่อยปรับเป็น 30 นาทีทีหลัง
+        scheduler.add_job(
+            id="check_overdue_interval",
+            func=run_check,
+            trigger="interval",
+            minutes=1,           
+            replace_existing=True,
+        )
+        scheduler.start()
+
+    # ✅ กันรันสองรอบตอน debug reloader
+    if not app.debug or os.environ.get("WERKZEUG_RUN_MAIN") == "true":
+        start_jobs()
 
     return app
