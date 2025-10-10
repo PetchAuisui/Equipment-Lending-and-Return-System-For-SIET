@@ -30,7 +30,7 @@ def get_all_users():
     }
 
 
-def print_lend_data(data_list):
+def lend_data(data_list):
     """
     ✅ รับข้อมูลจากฟอร์มยืม แล้วบันทึกลงตาราง rent_returns ผ่าน repository
     """
