@@ -1,0 +1,119 @@
+/* =========================
+   Base / Reset (fixed)
+========================= */
+html, body {
+  margin: 0;
+  padding: 0;
+  background: #fff;
+  font-family: 'Kanit','Poppins',sans-serif;
+  overflow-x: hidden;
+}
+.container2 { display: flex; margin: 0; padding: 0; }
+
+/* =========================
+   Navbar (ชมพู) - fixed
+========================= */
+.navbar {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: 86px;                 /* ← ปรับความสูงได้ตามจริง */
+  z-index: 1000;
+}
+.navbar_login {
+  background: #ffadd0;
+  height: 86px;                 /* ให้เท่ากับ .navbar */
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 10px 24px;
+}
+.nav-left .brand img { height: 45px; object-fit: contain; vertical-align: middle; }
+.navbar_login .nav-right { display: flex; align-items: center; gap: 10px; }
+.btn-nav {
+  display: inline-flex; align-items: center; justify-content: center;
+  padding: 8px 14px; border-radius: 8px; border: none; cursor: pointer;
+  font-weight: 600; font-size: 15px; text-decoration: none; transition: .2s;
+  color: #fff;
+}
+.btn-admin{ background:#3b82f6; } .btn-logout{ background:#ef4444; }
+.btn-nav:hover{ filter:brightness(.95); transform:translateY(-1px); }
+.user_identity{
+  display:inline-flex; align-items:center; gap:6px;
+  background:#ffd6e8; padding:6px 14px; border-radius:999px;
+  color:#1f2937; font-size:16px; font-weight:600;
+}
+.navbar_login_text a{ text-decoration:none; color:#3b3b3b; font-weight:600; transition:.2s; }
+.navbar_login_text a:hover{ color:#111; }
+.navbar_login_text .divider{ color:#333; margin:0 6px; }
+
+/* =========================
+   Sidebar (เทา) - fixed
+========================= */
+/* ค่าคงที่: ความกว้าง */
+.sidebar { /* ปกติ */
+  position: fixed;
+  top: 86px;                     /* ← เริ่มใต้ navbar (ต้องเท่ากับความสูง navbar) */
+  bottom: 0;                     /* ← ชนขอบล่างจอ (แทนการใช้ calc) */
+  left: 0;
+  width: 80px;                   /* ← ความกว้างปกติ */
+  background: #dbdada;
+  overflow-y: auto; overflow-x: hidden;
+  padding: 12px 0;               /* ไม่มี padding ซ้าย/ขวาเพื่อไม่ให้เกิดช่อง */
+  border-right: 1px solid rgba(0,0,0,.06);
+  box-shadow: none;
+  z-index: 900;
+  transition: width .3s ease;
+}
+.sidebar:hover { width: 240px; background:#999; }
+
+.sidebar a{
+  display:flex; align-items:center; gap:10px;
+  padding:10px 14px; text-decoration:none; color:#111; font-weight:600;
+  white-space:nowrap; border-radius:8px; transition: background .2s, color .2s;
+}
+.sidebar a i{ font-size:28px; min-width:56px; text-align:center; }
+.sidebar a span{ opacity:0; transition: opacity .25s; }
+.sidebar:hover a span{ opacity:1; }
+.sidebar a:hover{ background:#d19ab0; color:#111; }
+
+/* เส้นปิดรอยต่อขวา (กันอาการ sub-pixel เป็นร่องขาว) */
+.sidebar::after{
+  content:""; position:absolute; top:0; right:-1px; bottom:0; width:1px;
+  background: rgba(0,0,0,.06);
+}
+
+/* =========================
+   Content (ขาว) - fixed
+========================= */
+.admin-content{
+  margin: 0;
+  /* ดันลงจาก navbar แบบคงที่ */
+  padding-top: 102px;            /* = 86 (navbar) + 16 ระยะหายใจ */
+  padding-right: 24px; padding-bottom: 32px;
+  padding-left: 8px;             /* ให้ชิดขวา sidebar (อยากชิดมากตั้ง 0 ได้) */
+  margin-left: 96px;             /* = ความกว้าง sidebar ปกติ */
+  background:#fff;
+  transition: margin-left .3s ease;
+}
+/* ตอน hover ขยาย sidebar ให้ดัน content เท่ากัน */
+.sidebar:hover ~ .admin-content{ margin-left: 240px; }
+
+/* ตัดช่องว่างหัวข้ออัตโนมัติ */
+.admin-content > h1:first-child,
+.admin-content > h2:first-child{ margin-top: 0; }
+
+/* =========================
+   Responsive (กำหนดมือ)
+========================= */
+@media (max-width: 768px){
+  /* กำหนดค่าคงที่ใหม่สำหรับจอเล็ก */
+  .navbar, .navbar_login{ height: 72px; }
+  .sidebar{
+    top: 72px;       /* = ความสูง navbar เวอร์ชันมือถือ */
+    width: 78px;
+  }
+  .sidebar:hover{ width: 210px; }
+  .admin-content{
+    padding-top: 88px;   /* = 72 + 16 */
+    margin-left: 78px;
+  }
+  .sidebar:hover ~ .admin-content{ margin-left: 210px; }
+}
