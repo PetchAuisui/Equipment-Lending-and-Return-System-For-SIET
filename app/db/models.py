@@ -1,113 +1,119 @@
 from datetime import datetime
 from sqlalchemy import (
     Column, Integer, String, Text, Boolean, Date, DateTime,
-    ForeignKey, UniqueConstraint, Index, CheckConstraint, JSON
+    ForeignKey, JSON
 )
 from sqlalchemy.orm import relationship
 from app.db.db import Base
 
+
 # ---------- users ----------
 class User(Base):
     __tablename__ = "users"
+
     user_id       = Column(Integer, primary_key=True, autoincrement=True)
     name          = Column(String, nullable=False)
-    student_id    = Column(String, unique=True)         # null ได้สำหรับ non-student
-    employee_id   = Column(String, unique=True)         # null ได้สำหรับ non-staff
+    student_id    = Column(String, unique=True)
+    employee_id   = Column(String, unique=True)
     email         = Column(String, nullable=False, unique=True)
     phone         = Column(String)
     major         = Column(String)
-    member_type   = Column(String)                      # student, teacher, staff, ...
+    member_type   = Column(String)
     gender        = Column(String)
     password_hash = Column(String, nullable=False)
-    role          = Column(String, nullable=False, default="member")   # ✅ เพิ่มคอลัมน์นี้
+    role          = Column(String, nullable=False, default="member")
     created_at    = Column(DateTime, default=datetime.utcnow)
     updated_at    = Column(DateTime, default=datetime.utcnow)
 
-    instructor        = relationship("Instructor", back_populates="user", uselist=False)
-    rents             = relationship("Rent", back_populates="user")
-    stock_movements   = relationship("StockMovement", back_populates="actor")
-    returns           = relationship("Return", back_populates="receiver")
-    notifications     = relationship("Notification", back_populates="user")
-    renewals_approved = relationship("Renewal", back_populates="approver")
-    audits            = relationship("Audit", back_populates="actor")
+    # relationships
+    instructor          = relationship("Instructor", back_populates="user", uselist=False)
+    rents               = relationship("Rent", back_populates="user")
+    stock_movements     = relationship("StockMovement", back_populates="actor")
+    notifications       = relationship("Notification", back_populates="user")
+    renewals_approved   = relationship("Renewal", back_populates="approver")
+    audits              = relationship("Audit", back_populates="actor")
+    equipments_checked  = relationship("Equipment", back_populates="checker")
+
 
 # ---------- subjects ----------
 class Subject(Base):
     __tablename__ = "subjects"
+
     subject_id   = Column(Integer, primary_key=True, autoincrement=True)
     subject_code = Column(String)
     subject_name = Column(String, nullable=False)
 
-    rent = relationship("Rent", back_populates="subject")
-    section = relationship("Section", back_populates="subject")
-    instructor = relationship("Instructor", back_populates="subject")
+    rents       = relationship("Rent", back_populates="subject")
+    sections    = relationship("Section", back_populates="subject")
+    instructors = relationship("Instructor", back_populates="subject")
 
+
+# ---------- instructors ----------
 class Instructor(Base):
     __tablename__ = "instructors"
-    instructor_id   = Column(Integer, primary_key=True, autoincrement=True)
-    subject_id      = Column(Integer, ForeignKey("subjects.subject_id"), nullable=False)
-    user_id         = Column(Integer, ForeignKey("users.user_id"), nullable=False)
 
-    subject = relationship("Subject", back_populates="instructor")
+    instructor_id = Column(Integer, primary_key=True, autoincrement=True)
+    subject_id    = Column(Integer, ForeignKey("subjects.subject_id"), nullable=False)
+    user_id       = Column(Integer, ForeignKey("users.user_id"), nullable=False)
+
+    subject = relationship("Subject", back_populates="instructors")
     user    = relationship("User", back_populates="instructor")
 
+
+# ---------- sections ----------
 class Section(Base):
     __tablename__ = "sections"
+
     section_id   = Column(Integer, primary_key=True, autoincrement=True)
     section_name = Column(String, nullable=False)
     subject_id   = Column(Integer, ForeignKey("subjects.subject_id"), nullable=False)
 
-    subject = relationship("Subject", back_populates="section")  # <-- แก้ตรงนี้
+    subject = relationship("Subject", back_populates="sections")
 
 
-# ---------- classes ----------
-class Class(Base):
-    __tablename__ = "classes"
-    class_id     = Column(Integer, primary_key=True, autoincrement=True)
-    class_no = Column(String, nullable=False)
-    class_name = Column(String)
-    class_location = Column(String)
-
-    rents   = relationship("Rent", back_populates="clazz")
-
-# ---------- equipments (รุ่น) ----------
+# ---------- equipments ----------
 class Equipment(Base):
     __tablename__ = "equipments"
-    __table_args__ = {"extend_existing": True} # ถ้า table ชื่อนี้มีอยู่แล้ว ให้ แก้ไข/ปรับปรุง table เดิม แทนที่จะสร้างใหม่
+    __table_args__ = {"extend_existing": True}
 
     equipment_id = Column(Integer, primary_key=True, autoincrement=True)
     name         = Column(String, nullable=False)
     code         = Column(String, nullable=False, unique=True)
     category     = Column(String)
+    confirm      = Column(Boolean, default=False)
     detail       = Column(Text)
     brand        = Column(String)
     buy_date     = Column(Date)
-    status       = Column(String)                               # available, rented, maintenance
+    return_date  = Column(Date)
+    check_by     = Column(Integer, ForeignKey("users.user_id"))
+    status       = Column(String)
     created_at   = Column(DateTime, default=datetime.utcnow)
 
-    rents       = relationship("Rent", back_populates="equipment")
-    stock_moves = relationship("StockMovement", back_populates="equipment")
-    equipment_Image      = relationship("Equipment_Image", back_populates="equipment")
+    # relationships
+    rents            = relationship("Rent", back_populates="equipment")
+    stock_movements  = relationship("StockMovement", back_populates="equipment")
+    equipment_images = relationship("EquipmentImage", back_populates="equipment")
+    checker          = relationship("User", back_populates="equipments_checked")
 
 
 # ---------- equipment_images ----------
-class Equipment_Image(Base):
+class EquipmentImage(Base):
     __tablename__ = "equipment_images"
-    __table_args__ = {"extend_existing": True} # ถ้า table ชื่อนี้มีอยู่แล้ว ให้ แก้ไข/ปรับปรุง table เดิม แทนที่จะสร้างใหม่
+    __table_args__ = {"extend_existing": True}
 
-    equipment_image_id     = Column(Integer, primary_key=True, autoincrement=True)
-    equipment_id = Column(Integer, ForeignKey("equipments.equipment_id"), nullable=False)
-    image_path   = Column(String, nullable=False)
-    description  = Column(Text)
-    created_at   = Column(DateTime, default=datetime.utcnow)
+    equipment_image_id = Column(Integer, primary_key=True, autoincrement=True)
+    equipment_id       = Column(Integer, ForeignKey("equipments.equipment_id"), nullable=False)
+    image_path         = Column(String, nullable=False)
+    description        = Column(Text)
+    created_at         = Column(DateTime, default=datetime.utcnow)
 
-    equipment = relationship("Equipment", back_populates="equipment_Image")
+    equipment = relationship("Equipment", back_populates="equipment_images")
 
 
 # ---------- stock_movements ----------
 class StockMovement(Base):
     __tablename__ = "stock_movements"
-    __table_args__ = {"extend_existing": True} # ถ้า table ชื่อนี้มีอยู่แล้ว ให้ แก้ไข/ปรับปรุง table เดิม แทนที่จะสร้างใหม่
+    __table_args__ = {"extend_existing": True}
 
     movement_id  = Column(Integer, primary_key=True, autoincrement=True)
     equipment_id = Column(Integer, ForeignKey("equipments.equipment_id"), nullable=False)
@@ -115,84 +121,75 @@ class StockMovement(Base):
     actor_id     = Column(Integer, ForeignKey("users.user_id"), nullable=False)
     created_at   = Column(DateTime, default=datetime.utcnow)
 
-    equipment = relationship("Equipment", back_populates="stock_moves")
+    equipment = relationship("Equipment", back_populates="stock_movements")
     actor     = relationship("User", back_populates="stock_movements")
+
 
 # ---------- status_rents ----------
 class StatusRent(Base):
     __tablename__ = "status_rents"
+
     status_id  = Column(Integer, primary_key=True, autoincrement=True)
     name       = Column(String, nullable=False, unique=True)
     color_code = Column(String)
 
     rents = relationship("Rent", back_populates="status")
 
+
 # ---------- rents ----------
 class Rent(Base):
     __tablename__ = "rents"
+
     rent_id      = Column(Integer, primary_key=True, autoincrement=True)
     equipment_id = Column(Integer, ForeignKey("equipments.equipment_id"), nullable=False)
     user_id      = Column(Integer, ForeignKey("users.user_id"), nullable=False)
     subject_id   = Column(Integer, ForeignKey("subjects.subject_id"), nullable=False)
-    class_id     = Column(Integer, ForeignKey("classes.class_id"))
     start_date   = Column(DateTime, nullable=False)
     due_date     = Column(DateTime, nullable=False)
     reason       = Column(Text)
     status_id    = Column(Integer, ForeignKey("status_rents.status_id"), nullable=False)
     created_at   = Column(DateTime, default=datetime.utcnow)
 
-    equipment = relationship("Equipment", back_populates="rents")
-    user      = relationship("User", back_populates="rents")
-    subject = relationship("Subject", back_populates="rent")
-    clazz     = relationship("Class", back_populates="rents")
-    status    = relationship("StatusRent", back_populates="rents")
-    ret       = relationship("Return", back_populates="rent", uselist=False, cascade="all, delete-orphan")
-    renewals  = relationship("Renewal", back_populates="rent")
+    equipment   = relationship("Equipment", back_populates="rents")
+    user        = relationship("User", back_populates="rents")
+    subject     = relationship("Subject", back_populates="rents")
+    status      = relationship("StatusRent", back_populates="rents")
+    renewals    = relationship("Renewal", back_populates="rent")
+    item_brokes = relationship("ItemBroke", back_populates="rent")
 
-    __table_args__ = (
-        Index("ix_rents_equipment_start", "equipment_id", "start_date"),
-    )
-
-# ---------- returns ----------
-class Return(Base):
-    __tablename__ = "returns"
-    return_id   = Column(Integer, primary_key=True, autoincrement=True)
-    rent_id     = Column(Integer, ForeignKey("rents.rent_id"), nullable=False, unique=True)
-    user_id     = Column(Integer, ForeignKey("users.user_id"), nullable=False)   # receiver
-    return_date = Column(DateTime, nullable=False, default=datetime.utcnow)
-
-    rent        = relationship("Rent", back_populates="ret")
-    receiver    = relationship("User", back_populates="returns")
-    item_brokes = relationship("ItemBroke", back_populates="ret", cascade="all, delete-orphan")
 
 # ---------- item_brokes ----------
 class ItemBroke(Base):
     __tablename__ = "item_brokes"
+
     item_broke_id = Column(Integer, primary_key=True, autoincrement=True)
-    return_id     = Column(Integer, ForeignKey("returns.return_id"), nullable=False)
-    type          = Column(String, nullable=False)   # enum: broke/lost
+    rent_id       = Column(Integer, ForeignKey("rents.rent_id"), nullable=False)
+    type          = Column(String, nullable=False)
     detail        = Column(Text)
     created_at    = Column(DateTime, default=datetime.utcnow)
 
-    ret = relationship("Return", back_populates="item_brokes")
-    itemBroke_images = relationship("ItemBroke_images", back_populates="itemBroke")  # <-- แก้ชื่อ relationship
+    rent              = relationship("Rent", back_populates="item_brokes")
+    item_broke_images = relationship("ItemBrokeImage", back_populates="item_broke")
 
-class ItemBroke_images(Base):
-    __tablename__ = "item_broke_images"  # ควรใช้ lowercase ให้ตรง convention
-    itemBroke_image_id     = Column(Integer, primary_key=True, autoincrement=True)
-    item_broke_id = Column(Integer, ForeignKey("item_brokes.item_broke_id"), nullable=False)
-    image_path   = Column(String, nullable=False)
-    created_at   = Column(DateTime, default=datetime.utcnow)
 
-    itemBroke = relationship("ItemBroke", back_populates="itemBroke_images")  # <-- ใช้ class name และ back_populates ตรงกัน
+class ItemBrokeImage(Base):
+    __tablename__ = "item_broke_images"
+
+    item_broke_image_id = Column(Integer, primary_key=True, autoincrement=True)
+    item_broke_id       = Column(Integer, ForeignKey("item_brokes.item_broke_id"), nullable=False)
+    image_path          = Column(String, nullable=False)
+    created_at          = Column(DateTime, default=datetime.utcnow)
+
+    item_broke = relationship("ItemBroke", back_populates="item_broke_images")
 
 
 # ---------- notifications ----------
 class Notification(Base):
     __tablename__ = "notifications"
+
     notification_id = Column(Integer, primary_key=True, autoincrement=True)
     user_id         = Column(Integer, ForeignKey("users.user_id"), nullable=False)
-    channel         = Column(String, nullable=False)   # email, line, sms
+    channel         = Column(String, nullable=False)
     template        = Column(String)
     payload         = Column(JSON)
     send_at         = Column(DateTime, nullable=False)
@@ -201,9 +198,11 @@ class Notification(Base):
 
     user = relationship("User", back_populates="notifications")
 
+
 # ---------- renewals ----------
 class Renewal(Base):
     __tablename__ = "renewals"
+
     renewal_id  = Column(Integer, primary_key=True, autoincrement=True)
     rent_id     = Column(Integer, ForeignKey("rents.rent_id"), nullable=False)
     old_due     = Column(DateTime, nullable=False)
@@ -215,12 +214,14 @@ class Renewal(Base):
     rent     = relationship("Rent", back_populates="renewals")
     approver = relationship("User", back_populates="renewals_approved")
 
+
 # ---------- audits ----------
 class Audit(Base):
     __tablename__ = "audits"
+
     audit_id   = Column(Integer, primary_key=True, autoincrement=True)
     entity_id  = Column(Integer, nullable=False)
-    action     = Column(String, nullable=False)   # created, updated, status_change
+    action     = Column(String, nullable=False)
     actor_id   = Column(Integer, ForeignKey("users.user_id"))
     diff       = Column(JSON)
     created_at = Column(DateTime, default=datetime.utcnow)

@@ -1,6 +1,6 @@
 from app.db.db import SessionLocal
 from app.models.equipment import Equipment
-from app.models.equipment_images import EquipmentImage
+from app.db.models import EquipmentImage
 
 def get_all_equipments_with_images():
     db = SessionLocal()
