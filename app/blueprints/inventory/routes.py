@@ -1,6 +1,7 @@
 from flask import render_template, request, redirect, url_for, current_app, flash, abort, session
 from app.blueprints.inventory import inventory_bp
 from app.services.lend_device_service import get_grouped_equipments_separated
+from app.services import lend_service
 from app.db.db import SessionLocal
 from app.models.equipment import Equipment
 from app.db.models import EquipmentImage
@@ -12,6 +13,9 @@ from sqlalchemy.sql import exists, and_
 from app.models.stock_movements import StockMovement
 import os, uuid
 from app.utils.decorators import staff_required
+
+
+
 
 
 @inventory_bp.route("/lend_device")
@@ -35,11 +39,18 @@ def lend():
     # แยกรหัสออกเป็น list
     codes = [c.strip() for c in codes_raw.split(",") if c.strip()]
 
+    # ✅ ดึงข้อมูลวิชาและอาจารย์จาก service
+    subjects = lend_service.get_all_subjects()
+    teachers_data = lend_service.get_all_users()
+    teachers = teachers_data["teachers"]
+
     return render_template(
         "pages_inventory/lend.html",
         name=name,
         image=image,
-        codes=codes
+        codes=codes,
+        subjects=subjects,
+        teachers=teachers
     )
 
 
