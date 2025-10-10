@@ -1,30 +1,39 @@
+from sqlalchemy.orm import joinedload
+from sqlalchemy.sql import exists, and_
 from app.db.db import SessionLocal
-from app.models.equipment import Equipment
-from app.db.models import EquipmentImage
+from app.db.models import Equipment, StockMovement
 
-def get_all_equipments_with_images():
-    db = SessionLocal()
-    try:
-        # ดึงอุปกรณ์ทั้งหมด
-        equipments = db.query(Equipment).all()
+class LendDeviceRepository:
+    def __init__(self):
+        self.db = SessionLocal()
 
-        # ดึงรูปทั้งหมด
-        images = db.query(EquipmentImage).all()
-        image_dict = {img.equipment_id: img.image_path for img in images}
+    def get_all_equipments_with_images(self):
+        results = (
+            self.db.query(Equipment)
+            .options(joinedload(Equipment.equipment_images))  # หรือ .images
+            .filter(
+                ~exists().where(
+                    and_(
+                        StockMovement.equipment_id == Equipment.equipment_id,
+                        StockMovement.history.ilike("%[DELETED]%")
+                    )
+                )
+            )
+            .all()
+        )
 
-        equipment_list = []
-        for e in equipments:
-            equipment_list.append({
+        data = []
+        for e in results:
+            data.append({
                 "equipment_id": e.equipment_id,
                 "name": e.name,
-                "code": e.code,
                 "category": e.category,
-                "detail": e.detail,
-                "brand": e.brand,
-                "buy_date": e.buy_date,
                 "status": e.status,
-                "image_path": image_dict.get(e.equipment_id, None)
+                "image_path": (
+                    e.equipment_images[0].image_path if getattr(e, "equipment_images", []) else "images/placeholder.png"
+                ),
             })
-        return equipment_list
-    finally:
-        db.close()
+        return data
+
+    def close(self):
+        self.db.close()
