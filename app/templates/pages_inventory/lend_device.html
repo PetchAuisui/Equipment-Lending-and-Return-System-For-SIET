@@ -28,6 +28,7 @@
 
 <div class="device-container">
     <!-- อุปกรณ์พร้อม -->
+     
     {% for item in equipments.available %}
     <div class="device_box" style="background-color: {{ item.status_color }};" 
          data-name="{{ item.name | lower }}" data-category="{{ item.category | lower }}">
@@ -38,7 +39,11 @@
         </div>
         <div class="button_group">
             <a href="#" class="btn btn-detail">รายละเอียด</a>
-            <a href="/lend" class="btn btn-borrow">ยืม</a>
+<a href="{{ url_for('inventory.lend', codes=item.codes|join(','), name=item.name, image=item.image) }}" 
+   class="btn btn-borrow">ยืม</a>
+
+
+
         </div>
     </div>
     {% endfor %}

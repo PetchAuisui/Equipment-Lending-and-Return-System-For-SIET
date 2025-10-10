@@ -73,7 +73,6 @@ form {
 .row {
   display: flex;
   gap: 20px;
-  margin-bottom: 15px;
 }
 
 .form-group {
@@ -88,14 +87,33 @@ label {
   font-size: 14px;
 }
 
-input, textarea {
+input, textarea, select {
   padding: 10px;
   border: 1px solid #aaa;
   border-radius: 5px;
   font-size: 14px;
   width: 100%;
   box-sizing: border-box;
+  background-color: #fff;
 }
+
+/* เพิ่มสไตล์พิเศษของ select ให้ดูเหมือน input */
+select {
+  appearance: none;           /* เอาลูกศรของ browser ออก */
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-image: url("data:image/svg+xml;utf8,<svg fill='gray' height='16' viewBox='0 0 24 24' width='16' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  background-size: 16px;
+  cursor: pointer;
+}
+
+select:focus {
+  outline: none;
+  box-shadow: 0 0 3px ;
+}
+
 
 textarea {
   resize: none;
@@ -134,7 +152,6 @@ textarea {
   text-align: center;
 }
 
-
 .btn-submit:hover {
   background: #449d44;
 }
@@ -147,4 +164,8 @@ textarea {
   margin-top: 30px;         /* เว้นจากฟอร์มด้านบน */
 }
 
-
+/* ช่อง readonly ทั้งหมด (สีเทาอ่อน) */
+input[readonly], textarea[readonly], select[disabled] {
+  color: #555;               /* สีตัวอักษรอ่อน */
+  cursor: not-allowed;
+}
