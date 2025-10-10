@@ -55,7 +55,7 @@
         </div>
         <div class="form-group">
           <label>วันที่กำหนดคืน</label>
-          <input type="date" name="return_date" />
+          <input type="date" name="return_date" required />
         </div>
       </div>
 
@@ -124,21 +124,21 @@
         </select>
       </div>
 
-<!-- อาจารย์ -->
-<div class="form-group">
-  <label>อาจารย์ประจำวิชา</label>
-  <select id="teacherSelect" name="teacher" class="auth__input" required>
-    <option value="">เลือกอาจารย์</option>
-    {% for t in teachers %}
-      <option value="{{ t.user_id }}">{{ t.name }}</option>
-    {% endfor %}
-  </select>
-</div>
+      <!-- อาจารย์ -->
+      <div class="form-group">
+        <label>อาจารย์ประจำวิชา</label>
+        <select id="teacherSelect" name="teacher" class="auth__input" required>
+          <option value="">เลือกอาจารย์</option>
+          {% for t in teachers %}
+            <option value="{{ t.user_id }}">{{ t.name }}</option>
+          {% endfor %}
+        </select>
+      </div>
 
-
+      <!-- เหตุผล -->
       <div class="form-group">
         <label>เหตุผลในการยืม</label>
-        <textarea name="reason" rows="3"></textarea>
+        <textarea name="reason" rows="3" required></textarea>
       </div>
 
       <div class="button-group">
@@ -183,7 +183,7 @@
         </div>
         <div class="form-group">
           <label>วันที่กำหนดคืน</label>
-          <input type="date" name="return_date" />
+          <input type="date" name="return_date" required />
         </div>
       </div>
 
@@ -199,7 +199,7 @@
 
       <div class="form-group">
         <label>เหตุผลในการยืม</label>
-        <textarea name="reason" rows="3"></textarea>
+        <textarea name="reason" rows="3" required></textarea>
       </div>
 
       <div class="button-group">
