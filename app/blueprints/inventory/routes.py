@@ -14,6 +14,7 @@ from app.models.stock_movements import StockMovement
 import os, uuid
 from app.utils.decorators import staff_required
 
+
 @inventory_bp.route("/lend_device")
 def lend_device():
     """
@@ -26,8 +27,37 @@ def lend_device():
         equipments=equipments
     )
 
+
 @inventory_bp.route('/lend')
 def lend():
+    codes_raw = request.args.get("codes", "")
+    name = request.args.get("name", "")
+    image = request.args.get("image", "")
+
+    # แยกรหัสออกเป็น list
+    codes = [c.strip() for c in codes_raw.split(",") if c.strip()]
+
+    # ✅ ดึงข้อมูลวิชาและอาจารย์จาก service
+    subjects = lend_service.get_all_subjects()
+    teachers_data = lend_service.get_all_users()
+    teachers = teachers_data["teachers"]
+
+    # ✅ print log ไปที่ console (ตามที่คุณขอ)
+    print("\n--- Teachers Data ---")
+    for t in teachers:
+        print(f"ID: {t['user_id']}, Name: {t['name']}")
+    print("---------------------\n")
+
+    # ✅ ส่งข้อมูลไป render
+    return render_template(
+        "pages_inventory/lend.html",
+        name=name,
+        image=image,
+        codes=codes,
+        subjects=subjects,
+        teachers=teachers
+    )
+
     codes_raw = request.args.get("codes", "")
     name = request.args.get("name", "")
     image = request.args.get("image", "")
@@ -48,6 +78,36 @@ def lend():
         subjects=subjects,
         teachers=teachers
     )
+
+@inventory_bp.route("/lend_submit", methods=["POST"])
+def lend_submit():
+    """
+    ✅ รับข้อมูลจากฟอร์ม /lend แล้วส่งให้ lend_service.print_lend_data()
+    """
+    form = request.form
+
+    # เก็บข้อมูลจากฟอร์มทั้งหมด
+    data = {
+        "device_name": form.get("device_name") or None,
+        "code": form.get("code") or None,
+        "borrow_date": form.get("borrow_date") or None,
+        "return_date": form.get("return_date") or None,
+        "borrower_name": form.get("borrower_name") or None,
+        "phone": form.get("phone") or None,
+        "major": form.get("major") or None,
+        "subject": form.get("subject") or None,
+        "teacher": form.get("teacher") or None,
+        "reason": form.get("reason") or None,
+    }
+
+    # แปลงเป็น list
+    data_list = [data.get(key, None) for key in data]
+
+    # ✅ เรียกไปที่ lend_service.py
+    lend_service.print_lend_data(data_list)
+
+    flash("✅ ส่งข้อมูลไปยัง lend_service แล้ว", "success")
+    return redirect(url_for("inventory.lend_device"))
 
 
 @inventory_bp.route("/admin/equipments", methods=["GET"], endpoint="admin_equipment_list")

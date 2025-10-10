@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/lend.css') }}">
-    <title>Document</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/lend.css') }}" />
+  <title>ยืมอุปกรณ์</title>
 </head>
 
 {% extends 'base/base.html' %}
@@ -19,18 +19,19 @@
   </div>
 
 {% if current_user.member_type == 'student' %}
-  <!-- Form -->
+  <!-- Form สำหรับนักศึกษา -->
   <div class="form-container">
-    <form>
+    <form action="{{ url_for('inventory.lend_submit') }}" method="POST">
       <!-- รูป + ชื่ออุปกรณ์ + ID -->
       <div class="top-row">
-        <img class="image" src="{{ url_for('static', filename=image) }}" alt="{{ name }}">
+        <img class="image" src="{{ url_for('static', filename=image) }}" alt="{{ name }}" />
 
         <div class="device-info-box">
           <div class="form-group">
             <label>ชื่ออุปกรณ์</label>
-            <input type="text" value="{{ name }}" readonly>
+            <input type="text" name="device_name" value="{{ name }}" readonly />
           </div>
+
           <div class="form-group">
             <label>รหัสอุปกรณ์</label>
             {% if codes|length > 1 %}
@@ -39,12 +40,10 @@
                   <option value="{{ c }}">{{ c }}</option>
                 {% endfor %}
               </select>
-              
             {% else %}
-              <input type="text" value="{{ codes[0] if codes else '' }}" readonly>
+              <input type="text" name="code" value="{{ codes[0] if codes else '' }}" readonly />
             {% endif %}
           </div>
-
         </div>
       </div>
 
@@ -52,94 +51,86 @@
       <div class="row">
         <div class="form-group">
           <label>วันที่ยืม</label>
-          <!-- ✅ ใช้ now() จาก context processor -->
-          <input type="date" value="{{ now().strftime('%Y-%m-%d') }}" readonly>
+          <input type="date" name="borrow_date" value="{{ now().strftime('%Y-%m-%d') }}" readonly />
         </div>
         <div class="form-group">
           <label>วันที่กำหนดคืน</label>
-          <input type="date">
+          <input type="date" name="return_date" />
         </div>
       </div>
 
-      <!-- ✅ ข้อมูลผู้ยืม -->
+      <!-- ข้อมูลผู้ยืม -->
       <div class="form-group">
         <label>ชื่อ-นามสกุล</label>
-        <input type="text" value="{{ current_user.name }}" readonly>
+        <input type="text" name="borrower_name" value="{{ current_user.name }}" readonly />
       </div>
 
       <div class="form-group">
         <label>เบอร์โทร</label>
-        <input type="text" value="{{ current_user.phone }}" readonly>
+        <input type="text" name="phone" value="{{ current_user.phone }}" readonly />
       </div>
 
-<div class="form-group">
-  <label>สาขาวิชา</label>
-  <select name="major" required>
-    <option value="">กรุณาเลือกสาขา</option>
+      <!-- สาขาวิชา -->
+      <div class="form-group">
+        <label>สาขาวิชา</label>
+        <select name="major" required>
+          <option value="">กรุณาเลือกสาขา</option>
+          <optgroup label="ครุศาสตร์สถาปัตยกรรม">
+            <option value="ครุศาสตร์สถาปัตยกรรม">ครุศาสตร์สถาปัตยกรรม</option>
+            <option value="ครุศาสตร์การออกแบบ (หลักสูตร 5 ปี)">ครุศาสตร์การออกแบบ (หลักสูตร 5 ปี)</option>
+            <option value="สถาปัตยกรรม (หลักสูตร 5 ปี)">สถาปัตยกรรม (หลักสูตร 5 ปี)</option>
+            <option value="การออกแบบสภาพแวดล้อมภายใน (หลักสูตร 5 ปี)">การออกแบบสภาพแวดล้อมภายใน (หลักสูตร 5 ปี)</option>
+            <option value="ครุศาสตร์การออกแบบ (หลักสูตร 4 ปี)">ครุศาสตร์การออกแบบ (หลักสูตร 4 ปี)</option>
+            <option value="นวัตกรรมและเทคโนโลยีการออกแบบ">นวัตกรรมและเทคโนโลยีการออกแบบ</option>
+          </optgroup>
 
-    <optgroup label="ครุศาสตร์สถาปัตยกรรม">
-      <option value="ครุศาสตร์สถาปัตยกรรม">ครุศาสตร์สถาปัตยกรรม</option>
-      <option value="ครุศาสตร์การออกแบบ (หลักสูตร 5 ปี)">ครุศาสตร์การออกแบบ (หลักสูตร 5 ปี)</option>
-      <option value="สถาปัตยกรรม (หลักสูตร 5 ปี)">สถาปัตยกรรม (หลักสูตร 5 ปี)</option>
-      <option value="การออกแบบสภาพแวดล้อมภายใน (หลักสูตร 5 ปี)">การออกแบบสภาพแวดล้อมภายใน (หลักสูตร 5 ปี)</option>
-      <option value="ครุศาสตร์การออกแบบ (หลักสูตร 4 ปี)">ครุศาสตร์การออกแบบ (หลักสูตร 4 ปี)</option>
-      <option value="นวัตกรรมและเทคโนโลยีการออกแบบ">นวัตกรรมและเทคโนโลยีการออกแบบ</option>
-    </optgroup>
+          <optgroup label="ครุศาสตร์อุตสาหกรรม">
+            <option value="ครุศาสตร์อุตสาหกรรม">ครุศาสตร์อุตสาหกรรม</option>
+            <option value="วิทยาการจัดการเรียนรู้">วิทยาการจัดการเรียนรู้</option>
+          </optgroup>
 
-    <optgroup label="ครุศาสตร์อุตสาหกรรม">
-      <option value="ครุศาสตร์อุตสาหกรรม">ครุศาสตร์อุตสาหกรรม</option>
-      <option value="วิทยาการจัดการเรียนรู้">วิทยาการจัดการเรียนรู้</option>
-    </optgroup>
+          <optgroup label="ครุศาสตร์วิศวกรรม">
+            <option value="ครุศาสตร์วิศวกรรม">ครุศาสตร์วิศวกรรม</option>
+            <option value="ครุศาสตร์วิศวกรรม (หลักสูตร 5 ปี)">ครุศาสตร์วิศวกรรม (หลักสูตร 5 ปี)</option>
+            <option value="เทคโนโลยีอิเล็กทรอนิกส์ (ต่อเนื่อง)">เทคโนโลยีอิเล็กทรอนิกส์ (ต่อเนื่อง)</option>
+            <option value="ครุศาสตร์วิศวกรรม (หลักสูตร 4 ปี)">ครุศาสตร์วิศวกรรม (หลักสูตร 4 ปี)</option>
+            <option value="เทคโนโลยีคอมพิวเตอร์">เทคโนโลยีคอมพิวเตอร์</option>
+            <option value="อิเล็กทรอนิกส์และโทรคมนาคม">อิเล็กทรอนิกส์และโทรคมนาคม</option>
+          </optgroup>
 
-    <optgroup label="ครุศาสตร์วิศวกรรม">
-      <option value="ครุศาสตร์วิศวกรรม">ครุศาสตร์วิศวกรรม</option>
-      <option value="ครุศาสตร์วิศวกรรม (หลักสูตร 5 ปี)">ครุศาสตร์วิศวกรรม (หลักสูตร 5 ปี)</option>
-      <option value="เทคโนโลยีอิเล็กทรอนิกส์ (ต่อเนื่อง)">เทคโนโลยีอิเล็กทรอนิกส์ (ต่อเนื่อง)</option>
-      <option value="ครุศาสตร์วิศวกรรม (หลักสูตร 4 ปี)">ครุศาสตร์วิศวกรรม (หลักสูตร 4 ปี)</option>
-      <option value="เทคโนโลยีคอมพิวเตอร์">เทคโนโลยีคอมพิวเตอร์</option>
-      <option value="อิเล็กทรอนิกส์และโทรคมนาคม">อิเล็กทรอนิกส์และโทรคมนาคม</option>
-    </optgroup>
+          <optgroup label="ครุศาสตร์เกษตร">
+            <option value="ครุศาสตร์เกษตร">ครุศาสตร์เกษตร</option>
+            <option value="ครุศาสตร์เกษตร (หลักสูตร 5 ปี)">ครุศาสตร์เกษตร (หลักสูตร 5 ปี)</option>
+            <option value="เทคโนโลยีชีวภาพทางการเกษตร (ต่อเนื่อง)">เทคโนโลยีชีวภาพทางการเกษตร (ต่อเนื่อง)</option>
+            <option value="ครุศาสตร์เกษตร (หลักสูตร 4 ปี)">ครุศาสตร์เกษตร (หลักสูตร 4 ปี)</option>
+          </optgroup>
 
-    <optgroup label="ครุศาสตร์เกษตร">
-      <option value="ครุศาสตร์เกษตร">ครุศาสตร์เกษตร</option>
-      <option value="ครุศาสตร์เกษตร (หลักสูตร 5 ปี)">ครุศาสตร์เกษตร (หลักสูตร 5 ปี)</option>
-      <option value="เทคโนโลยีชีวภาพทางการเกษตร (ต่อเนื่อง)">เทคโนโลยีชีวภาพทางการเกษตร (ต่อเนื่อง)</option>
-      <option value="ครุศาสตร์เกษตร (หลักสูตร 4 ปี)">ครุศาสตร์เกษตร (หลักสูตร 4 ปี)</option>
-    </optgroup>
+          <optgroup label="หมวดอื่น ๆ">
+            <option value="ภาษาและสังคม">ภาษาและสังคม</option>
+            <option value="สำนักงานมาตราฐานครุศาสตร์อุตสาหกรรมและเทคโนโลยี">สำนักงานมาตราฐานครุศาสตร์อุตสาหกรรมและเทคโนโลยี</option>
+            <option value="เทคโนโลยีบัณฑิต (บูรณาการนวัตกรรมเพื่อสินค้าและบริการ)">เทคโนโลยีบัณฑิต (บูรณาการนวัตกรรมเพื่อสินค้าและบริการ)</option>
+          </optgroup>
+        </select>
+      </div>
 
-    <optgroup label="หมวดอื่น ๆ">
-      <option value="ภาษาและสังคม">ภาษาและสังคม</option>
-      <option value="สำนักงานมาตราฐานครุศาสตร์อุตสาหกรรมและเทคโนโลยี">
-        สำนักงานมาตราฐานครุศาสตร์อุตสาหกรรมและเทคโนโลยี
-      </option>
-      <option value="เทคโนโลยีบัณฑิต (บูรณาการนวัตกรรมเพื่อสินค้าและบริการ)">
-        เทคโนโลยีบัณฑิต (บูรณาการนวัตกรรมเพื่อสินค้าและบริการ)
-      </option>
-    </optgroup>
-  </select>
-</div>
+      <!-- วิชา -->
+      <div class="form-group">
+        <label>วิชา</label>
+        <select id="subjectSelect" name="subject" class="auth__input" required>
+          <option value="">เลือกวิชา</option>
+          {% for subj in subjects %}
+            <option value="{{ subj.subject_id }}">{{ subj.subject_name }} ({{ subj.subject_code }})</option>
+          {% endfor %}
+        </select>
+      </div>
 
-
-<!-- ✅ วิชา -->
-<div class="form-group">
-  <label>วิชา</label>
-  <select id="subjectSelect" name="subject" class="auth__input" required>
-    <option value="">เลือกวิชา</option>
-    {% for subj in subjects %}
-      <option value="{{ subj.subject_id }}">
-        {{ subj.subject_name }} ({{ subj.subject_code }})
-      </option>
-    {% endfor %}
-  </select>
-</div>
-
-<!-- ✅ อาจารย์ -->
+<!-- อาจารย์ -->
 <div class="form-group">
   <label>อาจารย์ประจำวิชา</label>
   <select id="teacherSelect" name="teacher" class="auth__input" required>
     <option value="">เลือกอาจารย์</option>
-    {% for name in teachers %}
-      <option value="{{ name }}">{{ name }}</option>
+    {% for t in teachers %}
+      <option value="{{ t.user_id }}">{{ t.name }}</option>
     {% endfor %}
   </select>
 </div>
@@ -147,30 +138,28 @@
 
       <div class="form-group">
         <label>เหตุผลในการยืม</label>
-        <textarea rows="3"></textarea>
+        <textarea name="reason" rows="3"></textarea>
       </div>
 
       <div class="button-group">
         <a href="{{ url_for('inventory.lend_device') }}" type="button" class="btn btn-cancel">ยกเลิก</a>
-        <a href="#" type="submit" class="btn btn-submit">ยืนยันการยืม</a>
+        <button type="submit" class="btn btn-submit">ยืนยันการยืม</button>
       </div>
     </form>
-
-    <!-- กล่องล่างสุด -->
     <div class="footer-box"></div>
   </div>
 
-  {% else %}
+{% else %}
+  <!-- Form สำหรับบุคลากร -->
   <div class="form-container">
-    <form>
-      <!-- รูป + ชื่ออุปกรณ์ + ID -->
+    <form action="{{ url_for('inventory.lend_submit') }}" method="POST">
       <div class="top-row">
-        <img class="image" src="{{ url_for('static', filename=image) }}" alt="{{ name }}">
+        <img class="image" src="{{ url_for('static', filename=image) }}" alt="{{ name }}" />
 
         <div class="device-info-box">
           <div class="form-group">
             <label>ชื่ออุปกรณ์</label>
-            <input type="text" value="{{ name }}" readonly>
+            <input type="text" name="device_name" value="{{ name }}" readonly />
           </div>
           <div class="form-group">
             <label>รหัสอุปกรณ์</label>
@@ -180,117 +169,77 @@
                   <option value="{{ c }}">{{ c }}</option>
                 {% endfor %}
               </select>
-              
             {% else %}
-              <input type="text" value="{{ codes[0] if codes else '' }}" readonly>
+              <input type="text" name="code" value="{{ codes[0] if codes else '' }}" readonly />
             {% endif %}
           </div>
-
         </div>
       </div>
 
-      <!-- วันที่ยืม + กำหนดคืน -->
       <div class="row">
         <div class="form-group">
           <label>วันที่ยืม</label>
-          <!-- ✅ ใช้ now() จาก context processor -->
-          <input type="date" value="{{ now().strftime('%Y-%m-%d') }}" readonly>
+          <input type="date" name="borrow_date" value="{{ now().strftime('%Y-%m-%d') }}" readonly />
         </div>
         <div class="form-group">
           <label>วันที่กำหนดคืน</label>
-          <input type="date">
+          <input type="date" name="return_date" />
         </div>
       </div>
 
-      <!-- ✅ ข้อมูลผู้ยืม -->
       <div class="form-group">
         <label>ชื่อ-นามสกุล</label>
-        <input type="text" value="{{ current_user.name }}" readonly>
+        <input type="text" name="borrower_name" value="{{ current_user.name }}" readonly />
       </div>
 
       <div class="form-group">
         <label>เบอร์โทร</label>
-        <input type="text" value="{{ current_user.phone }}" readonly>
+        <input type="text" name="phone" value="{{ current_user.phone }}" readonly />
       </div>
-            <div class="form-group">
+
+      <div class="form-group">
         <label>เหตุผลในการยืม</label>
-        <textarea rows="3"></textarea>
+        <textarea name="reason" rows="3"></textarea>
       </div>
 
       <div class="button-group">
         <a href="{{ url_for('inventory.lend_device') }}" type="button" class="btn btn-cancel">ยกเลิก</a>
-        <a href="#" type="submit" class="btn btn-submit">ยืนยันการยืม</a>
+        <button type="submit" class="btn btn-submit">ยืนยันการยืม</button>
       </div>
     </form>
-
-    <!-- กล่องล่างสุด -->
     <div class="footer-box2"></div>
   </div>
-    </form>
-  {% endif %}
+{% endif %}
 </body>
+
+<!-- JS ควบคุมวันที่ -->
 <script>
   document.addEventListener("DOMContentLoaded", function() {
-    const borrowInput = document.querySelector('input[type="date"][readonly]'); // วันที่ยืม
-    const returnInput = document.querySelectorAll('input[type="date"]')[1];    // วันที่กำหนดคืน
+    const borrowInput = document.querySelector('input[name="borrow_date"]');
+    const returnInput = document.querySelector('input[name="return_date"]');
 
     if (borrowInput && returnInput) {
-      // วันที่ยืม
       const borrowDate = new Date(borrowInput.value);
+      returnInput.min = borrowInput.value;
 
-      // กำหนด min = วันที่ยืม
-      const borrowDateStr = borrowInput.value;
-      returnInput.min = borrowDateStr;
-
-      // กำหนด max = วันที่ยืม + 5 วัน
       const maxDate = new Date(borrowDate);
       maxDate.setDate(maxDate.getDate() + 5);
-
-      // แปลงกลับเป็นรูปแบบ yyyy-mm-dd
-      const maxDateStr = maxDate.toISOString().split('T')[0];
-      returnInput.max = maxDateStr;
+      returnInput.max = maxDate.toISOString().split('T')[0];
     }
   });
 </script>
 
-<!-- ✅ ใส่ script สำหรับ select2 -->
+<!-- select2 -->
 <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
 <script>
 $(document).ready(function() {
-  // เปิดให้ค้นหาได้
-  $('#subjectSelect').select2({
-    placeholder: "ค้นหาวิชา...",
-    allowClear: true
-  });
-
-  $('#teacherSelect').select2({
-    placeholder: "ค้นหาอาจารย์...",
-    allowClear: true
-  });
+  $('#subjectSelect').select2({ placeholder: "ค้นหาวิชา...", allowClear: false, width: '100%' });
+  $('#teacherSelect').select2({ placeholder: "ค้นหาอาจารย์...", allowClear: false, width: '100%' });
 });
 </script>
-
-<script>
-$(document).ready(function() {
-  // ทำให้ช่องดูเหมือน input ปกติ
-  $('#subjectSelect').select2({
-    placeholder: "ค้นหาวิชา...",
-    allowClear: false, //เอาปุ่ม clearออก
-    width: '100%' // ✅ ทำให้ขนาดเต็ม
-  });
-
-  $('#teacherSelect').select2({
-    placeholder: "ค้นหาอาจารย์...",
-    allowClear: false,
-    width: '100%' // ✅ ทำให้ขนาดเต็ม
-  });
-});
-</script>
-
-
 
 {% endblock %}
 </html>
