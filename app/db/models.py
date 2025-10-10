@@ -18,18 +18,20 @@ class User(Base):
     email         = Column(String, nullable=False, unique=True)
     phone         = Column(String)
     major         = Column(String)
-    member_type   = Column(String)
+    member_type   = Column(String)  # student | teacher | officer | staff
     gender        = Column(String)
     password_hash = Column(String, nullable=False)
     role          = Column(String, nullable=False, default="member")
     created_at    = Column(DateTime, default=datetime.utcnow)
-    updated_at    = Column(DateTime, default=datetime.utcnow)
+    updated_at    = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
 
     instructors        = relationship("Instructor", back_populates="user")
-    stock_movements    = relationship("StockMovement", back_populates="actor")
+    stock_movements    = relationship("StockMovement",back_populates="actor",foreign_keys="StockMovement.actor_id")
     notifications      = relationship("Notification", back_populates="user")
-    rent_checked       = relationship("RentReturn", back_populates="checker")
-    rent_requests      = relationship("RentReturn", back_populates="user")
+    rent_checked       = relationship("RentReturn", back_populates="checker", foreign_keys="RentReturn.check_by")
+    rent_requests      = relationship("RentReturn", back_populates="user",    foreign_keys="RentReturn.user_id")
+    teacher_approvals  = relationship("RentReturn", back_populates="teacher_user", foreign_keys="RentReturn.teacher")
     renewals_approved  = relationship("Renewal", back_populates="approver")
     audits             = relationship("Audit", back_populates="actor")
 
@@ -42,8 +44,8 @@ class Subject(Base):
     subject_code = Column(String)
     subject_name = Column(String, nullable=False)
 
-    instructors = relationship("Instructor", back_populates="subject")
-    sections    = relationship("Section", back_populates="subject")
+    instructors  = relationship("Instructor", back_populates="subject")
+    sections     = relationship("Section", back_populates="subject")
     rent_returns = relationship("RentReturn", back_populates="subject")
 
 
@@ -80,7 +82,7 @@ class Equipment(Base):
     category     = Column(String)
     confirm      = Column(Boolean, default=False)
     detail       = Column(Text)
-    confrom      = Column(Boolean)  # คงตาม DBML ที่สะกดผิด
+    confirm      = Column(Boolean)  
     brand        = Column(String)
     buy_date     = Column(Date)
     status       = Column(String)
@@ -135,22 +137,25 @@ class RentReturn(Base):
 
     rent_id      = Column(Integer, primary_key=True, autoincrement=True)
     equipment_id = Column(Integer, ForeignKey("equipments.equipment_id"), nullable=False)
-    user_id      = Column(Integer, ForeignKey("users.user_id"), nullable=False)
+    user_id      = Column(Integer, ForeignKey("users.user_id"), nullable=False)     # ผู้ยืม
     subject_id   = Column(Integer, ForeignKey("subjects.subject_id"), nullable=False)
     start_date   = Column(DateTime, nullable=False)
     due_date     = Column(DateTime, nullable=False)
     reason       = Column(Text)
     return_date  = Column(DateTime)
-    check_by     = Column(Integer, ForeignKey("users.user_id"))
+    check_by     = Column(Integer, ForeignKey("users.user_id"))                     # ผู้รับคืน/ผู้ตรวจ
     status_id    = Column(Integer, ForeignKey("status_rents.status_id"), nullable=False)
     created_at   = Column(DateTime, default=datetime.utcnow)
+    teacher      = Column(Integer, ForeignKey("users.user_id"))                     # อาจารย์ผู้อนุมัติ/ยืนยัน
 
-    equipment = relationship("Equipment", back_populates="rent_returns")
-    user      = relationship("User", foreign_keys=[user_id], back_populates="rent_requests")
-    checker   = relationship("User", foreign_keys=[check_by], back_populates="rent_checked")
-    subject   = relationship("Subject", back_populates="rent_returns")
-    status    = relationship("StatusRent", back_populates="rent_returns")
-    item_brokes = relationship("ItemBroke", back_populates="rent_return")
+    # --- relationships ---
+    equipment    = relationship("Equipment", back_populates="rent_returns")
+    user         = relationship("User", foreign_keys=[user_id],  back_populates="rent_requests")
+    checker      = relationship("User", foreign_keys=[check_by], back_populates="rent_checked")
+    teacher_user = relationship("User", foreign_keys=[teacher],  back_populates="teacher_approvals")
+    subject      = relationship("Subject", back_populates="rent_returns")
+    status       = relationship("StatusRent", back_populates="rent_returns")
+    item_brokes  = relationship("ItemBroke", back_populates="rent_return", cascade="all, delete-orphan")
 
 
 # ---------- item_brokes ----------
@@ -159,12 +164,12 @@ class ItemBroke(Base):
 
     item_broke_id = Column(Integer, primary_key=True, autoincrement=True)
     rent_id       = Column(Integer, ForeignKey("rent_returns.rent_id"), nullable=False)
-    type          = Column(String, nullable=False)
+    type          = Column(String, nullable=False)  # e.g., broke / lost
     detail        = Column(Text)
     created_at    = Column(DateTime, default=datetime.utcnow)
 
-    rent_return        = relationship("RentReturn", back_populates="item_brokes")
-    item_broke_images  = relationship("ItemBrokeImage", back_populates="item_broke")
+    rent_return       = relationship("RentReturn", back_populates="item_brokes")
+    item_broke_images = relationship("ItemBrokeImage", back_populates="item_broke", cascade="all, delete-orphan")
 
 
 # ---------- item_broke_images ----------
@@ -185,7 +190,7 @@ class Notification(Base):
 
     notification_id = Column(Integer, primary_key=True, autoincrement=True)
     user_id         = Column(Integer, ForeignKey("users.user_id"), nullable=False)
-    channel         = Column(String, nullable=False)
+    channel         = Column(String, nullable=False)  # email / line / sms
     template        = Column(String)
     payload         = Column(JSON)
     send_at         = Column(DateTime, nullable=False)
