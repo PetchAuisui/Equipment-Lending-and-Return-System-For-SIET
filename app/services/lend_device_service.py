@@ -16,15 +16,14 @@ def get_grouped_equipments_separated():
                 "image": e["image_path"],
                 "category": e.get("category", ""),
                 "status_color": "",
-                "codes": []     # ✅ เพิ่มบรรทัดนี้ (เตรียม list เก็บรหัส)
+                "codes": []
             }
 
-        # ✅ เพิ่มบรรทัดนี้ (เก็บ code จากแต่ละอุปกรณ์)
-        if e.get("code"):
+        # ✅ เก็บเฉพาะ code ที่ status == available เท่านั้น
+        if e["status"] == "available" and e.get("code"):
             grouped[name]["codes"].append(e["code"])
-
-        if e["status"] == "available":
             grouped[name]["amount"] += 1
+
 
     available_items = []
     unavailable_items = []
