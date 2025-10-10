@@ -87,6 +87,7 @@ class Equipment(Base):
     buy_date     = Column(Date)
     status       = Column(String)
     created_at   = Column(DateTime, default=datetime.utcnow)
+    require_teacher_approval = Column(Boolean, default=False)
 
     equipment_images = relationship("EquipmentImage", back_populates="equipment")
     stock_movements  = relationship("StockMovement", back_populates="equipment")

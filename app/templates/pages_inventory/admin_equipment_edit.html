@@ -6,7 +6,6 @@
 <style>
   * { box-sizing: border-box; }
 
-  /* พื้นหลังหลัก (ไม่มีแผงเทา) */
   .page {
     padding: 40px;
     background: #f5f5f5;
@@ -16,21 +15,8 @@
     align-items: flex-start;
   }
 
-  /* กล่องฟอร์มขนาดพอดี */
-  .container {
-    width: 100%;
-    max-width: 900px;
-    margin: 0 auto;
-  }
-
-  .header {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    margin-bottom: 24px;
-    justify-content: center;
-  }
-
+  .container { width: 100%; max-width: 900px; margin: 0 auto; }
+  .header { display: flex; align-items: center; gap: 14px; margin-bottom: 24px; justify-content: center; }
   .header img { width: 48px; height: 48px; }
   .header h1 { font-size: 26px; font-weight: 700; margin: 0; }
 
@@ -43,18 +29,8 @@
     box-shadow: 0 2px 6px rgba(0,0,0,0.06);
   }
 
-  .row {
-    display: flex;
-    flex-direction: column;
-    margin-bottom: 20px;
-  }
-
-  .row label {
-    font-size: 15px;
-    font-weight: 600;
-    margin-bottom: 6px;
-  }
-
+  .row { display: flex; flex-direction: column; margin-bottom: 20px; }
+  .row label { font-size: 15px; font-weight: 600; margin-bottom: 6px; }
   .ctrl {
     padding: 10px 14px;
     border: 1px solid #cfcfcf;
@@ -63,22 +39,10 @@
     font-size: 15px;
     width: 100%;
   }
-
-  textarea.ctrl {
-    resize: vertical;
-    min-height: 100px;
-    line-height: 1.5;
-  }
-
+  textarea.ctrl { resize: vertical; min-height: 100px; line-height: 1.5; }
   select.ctrl, input.ctrl, textarea.ctrl { display: block; }
 
-  .btns {
-    display: flex;
-    justify-content: flex-end;
-    gap: 12px;
-    margin-top: 28px;
-  }
-
+  .btns { display: flex; justify-content: flex-end; gap: 12px; margin-top: 28px; }
   .btn {
     padding: 10px 20px;
     border-radius: 8px;
@@ -87,15 +51,47 @@
     cursor: pointer;
     font-size: 15px;
   }
-
   .btn.primary {
     background: #4caf50;
     color: #fff;
     border-color: #4caf50;
     font-weight: 600;
   }
-
   .btn.primary:hover { background: #45a049; }
+
+  /* 🟩 Toggle Switch Style */
+  .switch {
+    position: relative;
+    display: inline-block;
+    width: 52px;
+    height: 28px;
+  }
+  .switch input { opacity: 0; width: 0; height: 0; }
+  .slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-color: #ccc;
+    transition: .4s;
+    border-radius: 34px;
+  }
+  .slider:before {
+    position: absolute;
+    content: "";
+    height: 22px;
+    width: 22px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    transition: .4s;
+    border-radius: 50%;
+  }
+  input:checked + .slider {
+    background-color: #4caf50;
+  }
+  input:checked + .slider:before {
+    transform: translateX(24px);
+  }
 </style>
 
 <div class="page">
@@ -154,9 +150,17 @@
             <option value="broken"    {{ 'selected' if s=='broken'    else '' }}>ชำรุด</option>
             <option value="lost"      {{ 'selected' if s=='lost'      else '' }}>สูญหาย</option>
           </select>
-        </div>  {# ✅ ปิด row ให้เรียบร้อย #}
+        </div>
 
-        {# ✅ เลือกรูป "ใหม่สุด" + กันแคชด้วย updated_at #}
+        <!-- ✅ Toggle Switch: ต้องให้อาจารย์อนุมัติ -->
+        <div class="form-group" style="margin-top:16px; margin-bottom:20px; display:flex; align-items:center; gap:12px;">
+          <label class="switch">
+            <input type="checkbox" name="require_teacher_approval" {% if item.require_teacher_approval %}checked{% endif %}>
+            <span class="slider"></span>
+          </label>
+          <span style="font-weight:600;">อุปกรณ์นี้ต้องให้อาจารย์อนุมัติการยืม</span>
+        </div>
+
         {% if item.images and item.images|length > 0 %}
           {% set latest = (item.images|sort(attribute='created_at', reverse=True))|first %}
           <div class="row">
@@ -176,7 +180,6 @@
         </div>
 
         <div class="btns" style="justify-content: space-between; align-items: center;">
-          <!-- ปุ่มลบ: ใช้ฟอร์มเดียวกัน ยิงไป route ลบ -->
           <button type="submit"
                   class="btn"
                   style="background:#dc3545; color:#fff; border-color:#dc3545; font-weight:600;"
@@ -187,14 +190,13 @@
             🗑️ ลบอุปกรณ์นี้
           </button>
 
-          <!-- ปุ่มยกเลิก + บันทึก -->
           <div style="display:flex; gap:12px;">
             <a class="btn" href="{{ url_for('inventory.admin_equipment_list') }}">ยกเลิก</a>
             <button type="submit" class="btn primary">บันทึก</button>
           </div>
         </div>
-
-        </form>
+      </form>
+    </div>
   </div>
 </div>
 {% endblock %}
