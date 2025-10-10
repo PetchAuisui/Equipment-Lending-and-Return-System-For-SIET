@@ -24,7 +24,7 @@ class User(Base):
     role          = Column(String, nullable=False, default="member")
     created_at    = Column(DateTime, default=datetime.utcnow)
     updated_at    = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
-
+    
 
     instructors        = relationship("Instructor", back_populates="user")
     stock_movements    = relationship("StockMovement",back_populates="actor",foreign_keys="StockMovement.actor_id")
@@ -34,6 +34,7 @@ class User(Base):
     teacher_approvals  = relationship("RentReturn", back_populates="teacher_user", foreign_keys="RentReturn.teacher")
     renewals_approved  = relationship("Renewal", back_populates="approver")
     audits             = relationship("Audit", back_populates="actor")
+    rend_log_approved  = relationship("RendLog", back_populates="approver")
 
 
 # ---------- subjects ----------
@@ -156,6 +157,7 @@ class RentReturn(Base):
     subject      = relationship("Subject", back_populates="rent_returns")
     status       = relationship("StatusRent", back_populates="rent_returns")
     item_brokes  = relationship("ItemBroke", back_populates="rent_return", cascade="all, delete-orphan")
+    rend_logs    = relationship("RendLog", back_populates="rent_return")
 
 
 # ---------- item_brokes ----------
@@ -201,19 +203,17 @@ class Notification(Base):
 
 
 # ---------- renewals ----------
-class Renewal(Base):
-    __tablename__ = "renewals"
+class RendLog(Base):
+    __tablename__ = "Rend_Log"
 
     renewal_id  = Column(Integer, primary_key=True, autoincrement=True)
     rent_id     = Column(Integer, ForeignKey("rent_returns.rent_id"), nullable=False)
-    old_due     = Column(DateTime, nullable=False)
-    new_due     = Column(DateTime, nullable=False)
+    history     = Column(Text, nullable=False)
     approved_by = Column(Integer, ForeignKey("users.user_id"))
     created_at  = Column(DateTime, default=datetime.utcnow)
-    note        = Column(Text)
 
-    rent_return = relationship("RentReturn")
-    approver    = relationship("User", back_populates="renewals_approved")
+    rent_return = relationship("RentReturn", back_populates="rend_logs")
+    approver    = relationship("User", back_populates="rend_log_approved")
 
 
 # ---------- audits ----------
