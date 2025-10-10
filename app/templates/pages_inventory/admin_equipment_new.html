@@ -113,6 +113,35 @@
   .btn.primary:hover { background:#45a049; }
 </style>
 
+<!-- ✅ แสดงข้อความ flash (จัดให้อยู่ตรงกลาง) -->
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    <div style="display:flex; justify-content:center; margin-bottom:20px;">
+      <div style="width:100%; max-width:600px;">
+        {% for category, message in messages %}
+          <div style="
+            text-align:center;
+            padding:12px 16px;
+            border-radius:8px;
+            margin-bottom:10px;
+            font-weight:600;
+            {% if category == 'success' %}
+              background-color:#e8f5e9; color:#1b5e20;
+            {% elif category == 'error' %}
+              background-color:#ffebee; color:#b71c1c;
+            {% else %}
+              background-color:#f5f5f5; color:#333;
+            {% endif %}
+          ">
+            {{ message }}
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  {% endif %}
+{% endwith %}
+
+
 <div class="page">
   <div class="panel">
     <div class="card">
@@ -124,19 +153,22 @@
       <div class="card__body">
         <form action="{{ url_for('inventory.admin_equipment_new') }}" method="post" enctype="multipart/form-data">
 
+          <!-- 🟩 จำเป็น -->
           <div class="row">
             <label>ชื่ออุปกรณ์ *</label>
             <input class="ctrl" type="text" name="name" required>
           </div>
 
+          <!-- 🟩 จำเป็น -->
           <div class="row">
             <label>รหัส/หมายเลข *</label>
             <input class="ctrl" type="text" name="code" required>
           </div>
 
+          <!-- 🟩 จำเป็น -->
           <div class="row">
-            <label>หมวดหมู่</label>
-            <select class="ctrl" name="category">
+            <label>หมวดหมู่ *</label>
+            <select class="ctrl" name="category" required>
               <option value="">— เลือกหมวดหมู่ —</option>
               {% for c in CATEGORIES %}
                 <option value="{{ c }}">{{ c }}</option>
@@ -144,41 +176,44 @@
             </select>
           </div>
 
+          <!-- 🟩 จำเป็น -->
           <div class="row">
-            <label>ยี่ห้อ</label>
-            <input class="ctrl" type="text" name="brand">
+            <label>ยี่ห้อ *</label>
+            <input class="ctrl" type="text" name="brand" required>
           </div>
 
+          <!-- 🟩 จำเป็น -->
           <div class="row">
-            <label>รายละเอียด</label>
-            <textarea class="ctrl" name="detail"></textarea>
+            <label>รายละเอียด *</label>
+            <textarea class="ctrl" name="detail" required></textarea>
           </div>
 
+          <!-- 🟩 จำเป็น -->
           <div class="row">
-            <label>วันที่ซื้อ</label>
-            <input class="ctrl" type="date" name="buy_date">
+            <label>วันที่ซื้อ *</label>
+            <input class="ctrl" type="date" name="buy_date" required>
           </div>
 
-          {% set s = request.form.get('status', '') %}
+          <!-- 🟩 จำเป็น -->
           <div class="row">
-            <label>สถานะ</label>
-            <select class="ctrl" name="status">
+            <label>สถานะ *</label>
+            <select class="ctrl" name="status" required>
               <option value="">— เลือกสถานะ —</option>
-              <option value="available" {{ 'selected' if s == 'available' else '' }}>พร้อมใช้งาน</option>
-              <option value="in_use"    {{ 'selected' if s == 'in_use'    else '' }}>กำลังถูกยืม</option>
-              <option value="broken"    {{ 'selected' if s == 'broken'    else '' }}>ชำรุด</option>
-              <option value="lost"      {{ 'selected' if s == 'lost'      else '' }}>สูญหาย</option>
+              <option value="available">พร้อมใช้งาน</option>
+              <option value="in_use">กำลังถูกยืม</option>
+              <option value="broken">ชำรุด</option>
+              <option value="lost">สูญหาย</option>
             </select>
           </div>
 
+          <!-- ❎ ไม่จำเป็น -->
           <div class="row">
             <label style="font-weight:600;">การอนุมัติจากอาจารย์</label>
             <div style="display:flex; gap:20px; margin-top:6px;">
               <label style="display:flex; align-items:center; gap:8px;">
                 <input type="radio" name="require_teacher_approval" value="1">
-                ต้องขออนุมัติอนุมัติ
+                ต้องขออนุมัติ
               </label>
-
               <label style="display:flex; align-items:center; gap:8px;">
                 <input type="radio" name="require_teacher_approval" value="0" checked>
                 ไม่ต้องขออนุมัติ
@@ -186,6 +221,7 @@
             </div>
           </div>
 
+          <!-- ❎ ไม่จำเป็น -->
           <div class="row">
             <label>แนบรูปภาพ</label>
             <input class="ctrl" type="file" name="image" accept="image/*">
@@ -195,10 +231,10 @@
             <a class="btn" href="{{ url_for('inventory.admin_equipment_list') }}">ยกเลิก</a>
             <button type="submit" class="btn primary">บันทึก</button>
           </div>
-
         </form>
       </div>
     </div>
   </div>
 </div>
+
 {% endblock %}

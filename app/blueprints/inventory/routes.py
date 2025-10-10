@@ -2,7 +2,6 @@ from flask import render_template, request, redirect, url_for, current_app, flas
 from app.blueprints.inventory import inventory_bp
 from app.services.lend_device_service import get_grouped_equipments_separated
 from app.db.db import SessionLocal
-from app.db.models import Equipment
 from app.db.models import Equipment, EquipmentImage
 from sqlalchemy.orm import joinedload
 from sqlalchemy.exc import IntegrityError
@@ -26,10 +25,11 @@ def lend_device():
         equipments=equipments
     )
 
-@inventory_bp.route('/lend')
 
+@inventory_bp.route('/lend')
 def lend():
     return render_template('pages_inventory/lend.html')
+
 
 @inventory_bp.route("/admin/equipments", methods=["GET"], endpoint="admin_equipment_list")
 @staff_required
@@ -65,6 +65,7 @@ def admin_equipment_list():
     finally:
         db.close()
 
+
 @inventory_bp.route("/admin/equipments/<int:eid>", methods=["GET"], endpoint="admin_equipment_detail")
 @staff_required
 def admin_equipment_detail(eid):
@@ -87,9 +88,7 @@ def admin_equipment_detail(eid):
         if not item:
             abort(404)
 
-        # ✅ alias เพื่อให้ template ใช้ได้ทั้ง item / equipment
         equipment = item
-
         return render_template(
             "pages_inventory/admin_equipment_detail.html",
             item=item,
@@ -101,73 +100,78 @@ def admin_equipment_detail(eid):
 @inventory_bp.route("/admin/equipments/new", methods=["GET", "POST"])
 @staff_required
 def admin_equipment_new():
-    if request.method == "POST":
-        name = (request.form.get("name") or "").strip()
-        code = (request.form.get("code") or "").strip()
-        category = (request.form.get("category") or "").strip()
-        detail = (request.form.get("detail") or "").strip()
-        brand = (request.form.get("brand") or "").strip()
-        status = (request.form.get("status") or "").strip()
-        buy_date_raw = (request.form.get("buy_date") or "").strip()
-        img = request.files.get("image")
-        require_teacher_approval = request.form.get("require_teacher_approval") == "1"
+    db = SessionLocal()
+    try:
+        if request.method == "POST":
+            # รับค่าจากฟอร์ม
+            name = request.form.get("name", "").strip()
+            code = request.form.get("code", "").strip()
+            category = request.form.get("category")
+            brand = request.form.get("brand")
+            detail = request.form.get("detail")
+            buy_date_str = request.form.get("buy_date")
+            status = request.form.get("status") or "available"
+            confirm = request.form.get("require_teacher_approval") == "1"
 
-        buy_date = None
-        if buy_date_raw:
-            try:
-                buy_date = datetime.strptime(buy_date_raw, "%Y-%m-%d").date()
-            except ValueError:
-                buy_date = None
+            # ✅ ตรวจชื่อ/รหัสว่าง
+            if not name or not code:
+                flash("⚠️ กรุณากรอกชื่อและรหัสอุปกรณ์", "error")
+                return render_template("pages_inventory/admin_equipment_new.html")
 
-        if not name or not code:
-            flash("กรุณากรอกชื่ออุปกรณ์และรหัส/หมายเลข", "error")
-            return render_template("pages_inventory/admin_equipment_new.html")
+            # ✅ ตรวจรหัสซ้ำ
+            exists = db.query(Equipment).filter(Equipment.code == code).first()
+            if exists:
+                flash(f"⚠️ รหัสอุปกรณ์ '{code}' ถูกใช้ไปแล้ว กรุณาใช้รหัสอื่น", "error")
+                return render_template("pages_inventory/admin_equipment_new.html")
 
-        db = SessionLocal()
-        try:
-            now = datetime.utcnow()
-            new_equipment = Equipment(
+            # ✅ แปลงวันที่ซื้อ
+            buy_date = None
+            if buy_date_str:
+                try:
+                    buy_date = datetime.strptime(buy_date_str, "%Y-%m-%d")
+                except ValueError:
+                    flash("⚠️ รูปแบบวันที่ไม่ถูกต้อง", "error")
+                    return render_template("pages_inventory/admin_equipment_new.html")
+
+            # ✅ เพิ่มอุปกรณ์ใหม่
+            new_item = Equipment(
                 name=name,
                 code=code,
                 category=category,
-                detail=detail,
                 brand=brand,
+                detail=detail,
                 buy_date=buy_date,
-                status=status or "available",
-                require_teacher_approval=require_teacher_approval,
-                created_at=now,
+                status=status,
+                confirm=confirm,
+                created_at=datetime.utcnow()
             )
-            db.add(new_equipment)
+            db.add(new_item)
             db.commit()
-            db.refresh(new_equipment)
 
-            if img and img.filename:
-                ext = secure_filename(img.filename).rsplit(".", 1)[1].lower()
-                fname = f"{uuid.uuid4().hex}.{ext}"
-                upload_dir = current_app.config['UPLOAD_FOLDER']
-                os.makedirs(upload_dir, exist_ok=True)
-                img.save(os.path.join(upload_dir, fname))
+            # ✅ บันทึกประวัติใน StockMovement
+            actor_id = session.get("user_id")
+            movement = StockMovement(
+                equipment_id=new_item.equipment_id,
+                history=f"[ADDED] เพิ่มอุปกรณ์ '{name}' (รหัส: {code})",
+                actor_id=actor_id,
+                created_at=datetime.utcnow()
+            )
+            db.add(movement)
+            db.commit()
 
-                image_path = f"uploads/equipment/{fname}"
-                img_record = EquipmentImage(
-                    equipment_id=new_equipment.equipment_id,
-                    image_path=image_path,
-                    created_at=datetime.utcnow()
-                )
-                db.add(img_record)
-                db.commit()
-
-            flash("เพิ่มอุปกรณ์เรียบร้อย", "success")
+            flash("✅ เพิ่มอุปกรณ์ใหม่เรียบร้อยแล้ว!", "success")
             return redirect(url_for("inventory.admin_equipment_list"))
 
-        except IntegrityError:
-            db.rollback()
-            flash("รหัส/หมายเลขนี้ถูกใช้แล้ว", "error")
-            return render_template("pages_inventory/admin_equipment_new.html")
-        finally:
-            db.close()
+        # ถ้าเป็น GET
+        return render_template("pages_inventory/admin_equipment_new.html")
 
-    return render_template("pages_inventory/admin_equipment_new.html")
+    except Exception as e:
+        db.rollback()
+        flash(f"❌ เกิดข้อผิดพลาด: {str(e)}", "error")
+        return render_template("pages_inventory/admin_equipment_new.html")
+
+    finally:
+        db.close()
 
 @inventory_bp.route("/admin/equipments/<int:eid>/edit", methods=["GET", "POST"], endpoint="admin_equipment_edit")
 @staff_required
@@ -185,7 +189,7 @@ def admin_equipment_edit(eid):
             item.detail = (request.form.get("detail") or "").strip()
             item.brand = (request.form.get("brand") or "").strip()
             item.status = (request.form.get("status") or "").strip() or item.status
-            item.require_teacher_approval = bool(request.form.get("require_teacher_approval"))
+            item.confirm = bool(request.form.get("confirm"))
 
             buy_date_raw = (request.form.get("buy_date") or "").strip()
             if buy_date_raw:
@@ -237,20 +241,28 @@ def admin_equipment_delete(eid):
             flash("❌ ไม่พบอุปกรณ์", "error")
             return redirect(url_for("inventory.admin_equipment_list"))
 
-        # ✅ ลบไฟล์รูปภาพออกจาก static/uploads/equipment/
         upload_dir = current_app.config['UPLOAD_FOLDER']
-        if item.images:
-            for im in item.images:
-                try:
-                    image_path = os.path.join(upload_dir, os.path.basename(im.image_path))
-                    if os.path.exists(image_path):
-                        os.remove(image_path)
-                        print(f"🗑️ ลบรูป: {image_path}")
-                except Exception as e:
-                    current_app.logger.warning(f"⚠️ ลบรูปไม่สำเร็จ: {e}")
-                db.delete(im)  # ลบ record รูปภาพจาก DB ด้วย
 
-        # ✅ เก็บประวัติการลบไว้ใน StockMovement
+        # ✅ ลบรูปภาพในโฟลเดอร์และ DB ก่อน
+        images = db.query(EquipmentImage).filter_by(equipment_id=eid).all()
+        for im in images:
+            try:
+                if im.image_path.startswith("uploads/"):
+                    image_path = os.path.join("static", im.image_path.replace("/", os.sep))
+                else:
+                    image_path = os.path.join(upload_dir, os.path.basename(im.image_path))
+
+                if os.path.exists(image_path):
+                    os.remove(image_path)
+                    print(f"🗑️ ลบรูป: {image_path}")
+                else:
+                    print(f"⚠️ ไม่พบไฟล์รูป: {image_path}")
+
+                db.delete(im)
+            except Exception as e:
+                current_app.logger.warning(f"⚠️ ลบรูปไม่สำเร็จ: {e}")
+
+        # ✅ เก็บประวัติการลบไว้ใน StockMovement (ก่อนลบอุปกรณ์)
         actor_id = session.get("user_id")
         movement = StockMovement(
             equipment_id=item.equipment_id,
@@ -259,8 +271,9 @@ def admin_equipment_delete(eid):
             created_at=datetime.utcnow()
         )
         db.add(movement)
+        db.flush()
 
-        # ✅ ลบข้อมูลอุปกรณ์ออกจากตาราง Equipment
+        # ✅ ลบเรคคอร์ดของอุปกรณ์เอง
         db.delete(item)
         db.commit()
 
@@ -269,6 +282,7 @@ def admin_equipment_delete(eid):
 
     finally:
         db.close()
+
 @inventory_bp.route("/equipments/<int:eid>/toggle_teacher_approval", methods=["POST"])
 def toggle_teacher_approval(eid):
     db = SessionLocal()
@@ -278,12 +292,12 @@ def toggle_teacher_approval(eid):
             flash("ไม่พบอุปกรณ์", "error")
             return redirect(url_for("inventory.admin_equipment_list"))
 
-        eq.require_teacher_approval = not eq.require_teacher_approval
+        eq.confirm = not eq.confirm
         db.commit()
 
         msg = (
             f"เปิดโหมด 'ต้องให้อาจารย์อนุมัติ' สำหรับ {eq.name}"
-            if eq.require_teacher_approval
+            if eq.confirm
             else f"ปิดโหมดอนุมัติอาจารย์สำหรับ {eq.name}"
         )
         flash(msg, "info")

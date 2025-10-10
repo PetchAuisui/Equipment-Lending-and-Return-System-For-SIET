@@ -19,14 +19,14 @@
     border: 1px solid #ddd;
   ">
 
-    <!-- กล่องหลัก: ใช้ flex แบ่งซ้าย-ขวา -->
+    <!-- กล่องหลัก -->
     <div style="display:flex; gap:40px; align-items:flex-start;">
       
       <!-- ซ้าย: รูปภาพ -->
       <div style="flex:0 0 260px;">
-        {% if item.images and item.images|length > 0 %}
+        {% if item.equipment_images and item.equipment_images|length > 0 %}
           {% set latest = (item.equipment_images|sort(attribute='created_at', reverse=True))|first %}
-          <img src="{{ url_for('static', filename=(latest.image_path|replace('\\','/'))) }}"
+          <img src="{{ url_for('static', filename=latest.image_path.replace('static/', '')) }}"
                alt="ภาพอุปกรณ์"
                style="width:260px; height:260px; object-fit:cover; border-radius:12px; border:1px solid #ccc;">
         {% else %}
@@ -45,44 +45,30 @@
           <div style="font-weight:600;">ยี่ห้อ:</div> <div>{{ item.brand or '-' }}</div>
           <div style="font-weight:600;">วันที่ซื้อ:</div> <div>{{ item.buy_date or '-' }}</div>
 
-            <div style="font-weight:600;">สถานะ:</div> 
-            <div>
+          <div style="font-weight:600;">สถานะ:</div> 
+          <div>
             {% if item.status == "available" %}
-                <span style="background:#d4edda; color:#155724; padding:4px 12px; border-radius:20px; font-weight:600;">
-                พร้อมใช้งาน
-                </span>
+              พร้อมใช้งาน
             {% elif item.status == "in_use" %}
-                <span style="background:#fff3cd; color:#856404; padding:4px 12px; border-radius:20px; font-weight:600;">
-                กำลังใช้งาน
-                </span>
+              กำลังใช้งาน
             {% elif item.status == "broken" %}
-                <span style="background:#f8d7da; color:#721c24; padding:4px 12px; border-radius:20px; font-weight:600;">
-                ชำรุด
-                </span>
+              ชำรุด
             {% elif item.status == "lost" %}
-                <span style="background:#e2e3e5; color:#383d41; padding:4px 12px; border-radius:20px; font-weight:600;">
-                สูญหาย
-                </span>
+              สูญหาย
             {% else %}
-                <span style="background:#e2e3e5; color:#383d41; padding:4px 12px; border-radius:20px; font-weight:600;">
-                {{ item.status or '-' }}
-                </span>
+              {{ item.status or '-' }}
             {% endif %}
-            </div>
+          </div>
 
-                     <!-- ✅ การอนุมัติจากอาจารย์ -->
-            <div style="font-weight:600;">การอนุมัติจากอาจารย์:</div>
-            <div>
-              {% if item.require_teacher_approval %}
-                <span style="background:#fde2e2; color:#b71c1c; padding:4px 12px; border-radius:20px; font-weight:600;">
-                  ต้องได้รับการอนุมัติจากอาจารย์ก่อนยืม
-                </span>
-              {% else %}
-                <span style="background:#e8f5e9; color:#1b5e20; padding:4px 12px; border-radius:20px; font-weight:600;">
-                  ไม่ต้องให้อาจารย์อนุมัติ
-                </span>
-              {% endif %}
-            </div>
+          <!-- ✅ การอนุมัติจากอาจารย์ (ข้อความธรรมดา ไม่มีสีพื้น) -->
+          <div style="font-weight:600;">การอนุมัติจากอาจารย์:</div>
+          <div>
+            {% if item.confirm %}
+              ต้องขออนุมัติ
+            {% else %}
+              ไม่ต้องขออนุมัติ
+            {% endif %}
+          </div>
 
           <div style="font-weight:600; align-self:start;">รายละเอียด:</div>
           <div style="white-space: pre-line;">{{ item.detail or '-' }}</div>
