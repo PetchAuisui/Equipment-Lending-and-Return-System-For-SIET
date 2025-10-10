@@ -1,0 +1,273 @@
+/* ===============================
+   📦 Admin Equipment Management Page (Final)
+   by ChatGPT Layout Fix 2025
+================================= */
+
+/* พื้นที่หลักภายใน .admin-content */
+.admin-content .page-wrap {
+  width: 100%;
+  max-width: 1280px;       /* ✅ ความกว้างรวมของหน้า (อยู่กลางพอดี) */
+  margin: 0 auto;          /* ✅ จัดหน้าให้อยู่กลาง */
+  padding: 24px 28px 40px;
+  box-sizing: border-box;
+}
+
+/* ===== Header (Title + Search) ===== */
+.admin-content .page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.admin-content .page-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.admin-content .page-title .title-icon {
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
+}
+.admin-content .page-title h1 {
+  font-size: 26px;
+  font-weight: 800;
+  margin: 0;
+  line-height: 1.2;
+}
+
+/* ===== Search Box ===== */
+.admin-content .search-form {
+  display: flex;
+  width: 360px;
+  max-width: min(42vw, 420px);
+  border: 1px solid #d1d5db;
+  border-radius: 20px;
+  overflow: hidden;
+  background: #fff;
+  flex: 0 0 auto;
+}
+.admin-content .search-input {
+  flex: 1;
+  padding: 10px 14px;
+  border: none;
+  outline: none;
+  font-size: 15px;
+}
+.admin-content .search-btn {
+  padding: 10px 16px;
+  border: none;
+  background: #f3f4f6;
+  cursor: pointer;
+  font-weight: 600;
+  color: #333;
+  transition: background 0.2s;
+}
+.admin-content .search-btn:hover {
+  background: #e5e7eb;
+}
+
+/* ===== กล่องเทาพื้นหลังรายการ ===== */
+.admin-content .panel {
+  position: relative;
+  background: #f5f5f5;
+  border-radius: 12px;
+  padding: 24px 24px 88px; /* เผื่อพื้นที่ให้ปุ่มเพิ่ม */
+  min-height: 360px;
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.04);
+  max-width: 1280px;      /* ✅ ให้เท่ากับ page-wrap */
+  margin-left: auto;      /* ✅ จัดให้อยู่กลาง */
+  margin-right: auto;
+}
+
+/* ===== Grid ของการ์ด ===== */
+.admin-content .equip-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+  gap: 20px;
+  align-items: start;
+  justify-content: center; /* ✅ จัดกริดให้อยู่ตรงกลาง */
+}
+
+/* ===== การ์ดอุปกรณ์ ===== */
+.admin-content .equip-card {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  text-decoration: none;
+  color: inherit;
+  background: #fff;
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+.admin-content .equip-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+
+/* ===== รูปอุปกรณ์ ===== */
+.admin-content .equip-thumb {
+  width: 88px;
+  height: 88px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: #e5e5e5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 88px;
+}
+.admin-content .equip-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.admin-content .no-image {
+  color: #9ca3af;
+  font-size: 12px;
+}
+
+/* ===== ข้อมูลภายในการ์ด ===== */
+.admin-content .equip-info {
+  flex: 1;
+  font-size: 15px;
+  line-height: 1.7;
+}
+.admin-content .equip-info strong {
+  font-weight: 700;
+}
+
+/* ===== สถานะ ===== */
+.admin-content .equip-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 2px;
+}
+.admin-content .badge {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-weight: 700;
+  font-size: 13px;
+  white-space: nowrap;
+}
+.admin-content .badge-ok {
+  background: #d4edda;
+  color: #155724;
+}
+.admin-content .badge-warn {
+  background: #fff3cd;
+  color: #856404;
+}
+.admin-content .badge-error {
+  background: #f8d7da;
+  color: #721c24;
+}
+.admin-content .badge-dim {
+  background: #e2e3e5;
+  color: #383d41;
+}
+
+/* ===== ปุ่มเพิ่มอุปกรณ์ (Floating Button) ===== */
+.admin-content .fab-add {
+  position: absolute;
+  right: 24px;
+  bottom: 24px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #4caf50;
+  color: #fff;
+  text-decoration: none;
+  padding: 12px 20px;
+  font-size: 16px;
+  font-weight: 600;
+  border-radius: 10px;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
+  transition: transform 0.18s ease, background 0.18s ease;
+}
+.admin-content .fab-add:hover {
+  background: #45a049;
+  transform: translateY(-2px);
+}
+
+/* ===== กรณีไม่มีข้อมูล ===== */
+.admin-content .empty-hint {
+  height: 220px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #6b7280;
+  font-size: 16px;
+}
+
+/* ===== Responsive ===== */
+@media (min-width: 1024px) {
+  .admin-content .equip-grid {
+    grid-template-columns: repeat(2, minmax(360px, 1fr));
+  }
+}
+@media (min-width: 1440px) {
+  .admin-content .equip-grid {
+    grid-template-columns: repeat(3, minmax(360px, 1fr));
+  }
+}
+@media (max-width: 920px) {
+  .admin-content .equip-grid {
+    grid-template-columns: 1fr;
+  }
+  .admin-content .search-form {
+    width: 100%;
+    max-width: none;
+  }
+}
+@media (max-width: 560px) {
+  .admin-content .page-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+  .admin-content .page-title h1 {
+    font-size: 22px;
+  }
+  .admin-content .search-form {
+    width: 100%;
+    max-width: none;
+  }
+  .admin-content .equip-thumb {
+    width: 76px;
+    height: 76px;
+    flex-basis: 76px;
+  }
+}
+
+/* ===== เพิ่มระยะห่างจาก Sidebar ===== */
+:root{
+  /* ถ้าใช้ค่ากว้าง sidebar เดิม 96 / 240 ให้ประกาศไว้ด้วย */
+  --sb: 96px;          /* ความกว้าง sidebar ปกติ */
+  --sb-hover: 240px;   /* ความกว้าง sidebar ตอน hover */
+  --sb-gap: 60px;      /* ✅ ช่องว่างเพิ่มจาก sidebar (ปรับได้ 16–40px) */
+}
+
+/* ดันเนื้อหาออกจาก sidebar เพิ่มอีก sb-gap */
+.admin-content{
+  margin-left: calc(var(--sb) + var(--sb-gap)) !important;
+}
+
+/* ตอน hover ให้คงช่องว่างเท่าเดิม */
+.sidebar:hover ~ .admin-content{
+  margin-left: calc(var(--sb-hover) + var(--sb-gap)) !important;
+}
+
+/* มือถือ/จอแคบ – ลดช่องว่างลงหน่อยให้ไม่เสียพื้นที่อ่าน */
+@media (max-width: 920px){
+  :root{ --sb-gap: 12px; }
+}
