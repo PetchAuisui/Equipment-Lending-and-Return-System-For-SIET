@@ -1,4 +1,4 @@
-# app/models/equipment.py
+"""# app/models/equipment.py
 from datetime import datetime
 from sqlalchemy import Column, Integer, String, Text, Date, DateTime
 from sqlalchemy.orm import relationship
@@ -33,3 +33,9 @@ class Equipment(Base):
 
     def __repr__(self):
         return f"<Equipment id={self.equipment_id} code={self.code} name={self.name}>"
+"""
+# app/models/equipment.py
+"""
+Shortcut: import Equipment model from central location
+"""
+from app.db.models import Equipment

@@ -3,7 +3,7 @@ from app.blueprints.inventory import inventory_bp
 from app.services.lend_device_service import get_grouped_equipments_separated
 from app.db.db import SessionLocal
 from app.models.equipment import Equipment
-from app.models.equipment_images import EquipmentImage
+from app.db.models import EquipmentImage
 from sqlalchemy.orm import joinedload
 from sqlalchemy.exc import IntegrityError
 from werkzeug.utils import secure_filename
