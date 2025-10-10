@@ -32,7 +32,7 @@ class User(Base):
     # ✅ เพิ่ม foreign_keys ให้ชัดเจนทั้งสองด้าน
     rent_checked       = relationship("RentReturn", back_populates="checker", foreign_keys="RentReturn.check_by")
     rent_requests      = relationship("RentReturn", back_populates="user", foreign_keys="RentReturn.user_id")
-
+    teacher_confirmed  = relationship("RentReturn", back_populates="user", foreign_keys="RentReturn.teacher_confirmed")
     renewals_approved  = relationship("Renewal", back_populates="approver")
     audits             = relationship("Audit", back_populates="actor")
 
@@ -142,6 +142,7 @@ class RentReturn(Base):
     subject_id   = Column(Integer, ForeignKey("subjects.subject_id"), nullable=False)
     start_date   = Column(DateTime, nullable=False)
     due_date     = Column(DateTime, nullable=False)
+    teacher_confirmed = Column(Integer, ForeignKey("users.user_id"))
     reason       = Column(Text)
     return_date  = Column(DateTime)
     check_by     = Column(Integer, ForeignKey("users.user_id"))
@@ -150,6 +151,7 @@ class RentReturn(Base):
 
     equipment = relationship("Equipment", back_populates="rent_returns")
     user      = relationship("User", foreign_keys=[user_id], back_populates="rent_requests")
+    teacher_confirm = relationship("User", foreign_keys=[teacher_confirmed], back_populates="teacher_confirmed")
     checker   = relationship("User", foreign_keys=[check_by], back_populates="rent_checked")
     subject   = relationship("Subject", back_populates="rent_returns")
     status    = relationship("StatusRent", back_populates="rent_returns")
