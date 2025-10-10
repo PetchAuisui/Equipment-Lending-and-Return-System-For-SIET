@@ -14,10 +14,6 @@ from app.models.stock_movements import StockMovement
 import os, uuid
 from app.utils.decorators import staff_required
 
-
-
-
-
 @inventory_bp.route("/lend_device")
 def lend_device():
     """

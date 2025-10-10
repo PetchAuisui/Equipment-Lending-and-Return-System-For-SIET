@@ -18,6 +18,7 @@
     <span>บันทึกการ “ยืม” อุปกรณ์</span>
   </div>
 
+{% if current_user.member_type == 'student' %}
   <!-- Form -->
   <div class="form-container">
     <form>
@@ -158,8 +159,76 @@
     <!-- กล่องล่างสุด -->
     <div class="footer-box"></div>
   </div>
-</body>
 
+  {% else %}
+  <div class="form-container">
+    <form>
+      <!-- รูป + ชื่ออุปกรณ์ + ID -->
+      <div class="top-row">
+        <img class="image" src="{{ url_for('static', filename=image) }}" alt="{{ name }}">
+
+        <div class="device-info-box">
+          <div class="form-group">
+            <label>ชื่ออุปกรณ์</label>
+            <input type="text" value="{{ name }}" readonly>
+          </div>
+          <div class="form-group">
+            <label>รหัสอุปกรณ์</label>
+            {% if codes|length > 1 %}
+              <select name="code">
+                {% for c in codes %}
+                  <option value="{{ c }}">{{ c }}</option>
+                {% endfor %}
+              </select>
+              
+            {% else %}
+              <input type="text" value="{{ codes[0] if codes else '' }}" readonly>
+            {% endif %}
+          </div>
+
+        </div>
+      </div>
+
+      <!-- วันที่ยืม + กำหนดคืน -->
+      <div class="row">
+        <div class="form-group">
+          <label>วันที่ยืม</label>
+          <!-- ✅ ใช้ now() จาก context processor -->
+          <input type="date" value="{{ now().strftime('%Y-%m-%d') }}" readonly>
+        </div>
+        <div class="form-group">
+          <label>วันที่กำหนดคืน</label>
+          <input type="date">
+        </div>
+      </div>
+
+      <!-- ✅ ข้อมูลผู้ยืม -->
+      <div class="form-group">
+        <label>ชื่อ-นามสกุล</label>
+        <input type="text" value="{{ current_user.name }}" readonly>
+      </div>
+
+      <div class="form-group">
+        <label>เบอร์โทร</label>
+        <input type="text" value="{{ current_user.phone }}" readonly>
+      </div>
+            <div class="form-group">
+        <label>เหตุผลในการยืม</label>
+        <textarea rows="3"></textarea>
+      </div>
+
+      <div class="button-group">
+        <a href="{{ url_for('inventory.lend_device') }}" type="button" class="btn btn-cancel">ยกเลิก</a>
+        <a href="#" type="submit" class="btn btn-submit">ยืนยันการยืม</a>
+      </div>
+    </form>
+
+    <!-- กล่องล่างสุด -->
+    <div class="footer-box2"></div>
+  </div>
+    </form>
+  {% endif %}
+</body>
 <script>
   document.addEventListener("DOMContentLoaded", function() {
     const borrowInput = document.querySelector('input[type="date"][readonly]'); // วันที่ยืม

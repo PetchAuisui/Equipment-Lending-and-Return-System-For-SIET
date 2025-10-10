@@ -164,6 +164,14 @@ textarea {
   margin-top: 30px;         /* เว้นจากฟอร์มด้านบน */
 }
 
+.footer-box2 {
+  width: 100%;              /* กว้างเต็มหน้าจอ */
+  height: 70px;
+  background: rgb(255, 166, 204);        /* พื้นหลังชมพู */
+  border-radius: 0;         /* ไม่เอาขอบโค้ง */
+  margin-top: 50px;         /* เว้นจากฟอร์มด้านบน */
+}
+
 /* ช่อง readonly ทั้งหมด (สีเทาอ่อน) */
 input[readonly], textarea[readonly], select[disabled] {
   color: #555;               /* สีตัวอักษรอ่อน */
