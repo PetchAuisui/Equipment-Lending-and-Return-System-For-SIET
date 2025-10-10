@@ -4,7 +4,7 @@
   padding: 8px 24px 24px;
   max-width: 1200px;
   /* จัดกลางหลัง sidebar (240px) */
-  margin-left: calc(180px + (100vw - 220px - 1200px) / 2);
+  margin-left: calc(160px + (100vw - 220px - 1200px) / 2);
 }
 
 /* ให้หัวข้อกับการ์ดกว้างเท่ากันและอยู่ตำแหน่งเดียวกัน */
