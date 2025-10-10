@@ -23,38 +23,38 @@
     </form>
   </div>
 
-  <!-- กล่องหลัก: ทำให้เป็นตำแหน่งอ้างอิงเพื่อยึดปุ่มที่มุมล่างขวา -->
+  <!-- กล่องหลัก -->
   <div style="
       position: relative;
       background:#f5f5f5;
       border-radius:12px;
-      padding: 24px 24px 88px;   /* เผื่อพื้นที่ด้านล่างให้ปุ่ม */
+      padding: 24px 24px 88px;
       min-height: 360px;
     ">
 
     {% if items and items|length > 0 %}
-      <!-- รายการการ์ด: ให้ responsive สมส่วน -->
+      <!-- รายการอุปกรณ์ -->
       <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(420px, 1fr)); gap:20px;">
         {% for e in items %}
           <a href="{{ url_for('inventory.admin_equipment_detail', eid=e.equipment_id) }}"
-            style="text-decoration:none; color:inherit;">
+             style="text-decoration:none; color:inherit;">
             <div style="background:white; border-radius:12px; padding:18px; display:flex; align-items:center; gap:20px;
                         box-shadow:0 2px 6px rgba(0,0,0,0.08); transition:.2s; cursor:pointer;"
                 onmouseover="this.style.transform='translateY(-3px)'; this.style.boxShadow='0 4px 10px rgba(0,0,0,0.12)';"
                 onmouseout="this.style.transform='none'; this.style.boxShadow='0 2px 6px rgba(0,0,0,0.08)';">
                 
-              <!-- รูปภาพ -->
-                <div style="width:100px; height:100px; border-radius:50%; overflow:hidden; background:#e5e5e5;
-                            display:flex; align-items:center; justify-content:center; flex:0 0 100px;">
-                  {% if e.images and e.images|length > 0 %}
-                      {% set latest = (e.equipment_images|sort(attribute='created_at', reverse=True))|first %}
-                    <img src="{{ url_for('static', filename=(latest.image_path|replace('\\','/'))) }}?v={{ (e.updated_at.timestamp() if e.updated_at else 0) }}"
-                        alt="ภาพอุปกรณ์"
-                        style="display:block; width:100%; height:100%; object-fit:cover;">
-                  {% else %}
+              <!-- รูปภาพอุปกรณ์ -->
+              <div style="width:100px; height:100px; border-radius:50%; overflow:hidden; background:#e5e5e5;
+                          display:flex; align-items:center; justify-content:center; flex:0 0 100px;">
+                {% if e.equipment_images and e.equipment_images|length > 0 %}
+                    {% set latest = (e.equipment_images|sort(attribute='created_at', reverse=True))|first %}
+                    <img src="{{ url_for('static', filename=latest.image_path.replace('static/', '')) }}"
+                         alt="ภาพอุปกรณ์"
+                         style="display:block; width:100%; height:100%; object-fit:cover;">
+                {% else %}
                     <span style="color:#aaa; font-size:12px;">ไม่มีรูป</span>
-                  {% endif %}
-                </div>
+                {% endif %}
+              </div>
 
               <!-- รายละเอียด -->
               <div style="flex:1; font-size:15px; line-height:1.8;">
@@ -74,7 +74,7 @@
                   {% else %}
                     <span style="background:#e2e3e5; color:#383d41; padding:4px 12px; border-radius:20px; font-weight:600;">{{ e.status or '—' }}</span>
                   {% endif %}
-              </div>
+                </div>
               </div>
             </div>
           </a>
@@ -82,13 +82,13 @@
       </div>
 
     {% else %}
-      <!-- ข้อความว่าง: จัดกลาง สัดส่วนสวย ไม่เบี้ยว -->
+      <!-- ถ้าไม่มีข้อมูล -->
       <div style="height:220px; display:flex; align-items:center; justify-content:center; color:#777; font-size:17px;">
         — ยังไม่มีอุปกรณ์ในระบบ —
       </div>
     {% endif %}
 
-    <!-- ปุ่มเพิ่มอุปกรณ์: ยึดมุมล่างขวาของกล่องเทาเสมอ -->
+    <!-- ปุ่มเพิ่มอุปกรณ์ -->
     <a href="{{ url_for('inventory.admin_equipment_new') }}"
        style="
           position:absolute; right:24px; bottom:24px;

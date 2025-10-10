@@ -152,14 +152,20 @@
           </select>
         </div>
 
-        <!-- ✅ Toggle Switch: ต้องให้อาจารย์อนุมัติ -->
-        <div class="form-group" style="margin-top:16px; margin-bottom:20px; display:flex; align-items:center; gap:12px;">
-          <label class="switch">
-            <input type="checkbox" name="require_teacher_approval" {% if item.require_teacher_approval %}checked{% endif %}>
-            <span class="slider"></span>
-          </label>
-          <span style="font-weight:600;">อุปกรณ์นี้ต้องให้อาจารย์อนุมัติการยืม</span>
-        </div>
+          <div class="row">
+            <label style="font-weight:600;">การอนุมัติจากอาจารย์</label>
+            <div style="display:flex; gap:20px; margin-top:6px;">
+              <label style="display:flex; align-items:center; gap:8px;">
+                <input type="radio" name="require_teacher_approval" value="1">
+                ต้องขออนุมัติอนุมัติ
+              </label>
+
+              <label style="display:flex; align-items:center; gap:8px;">
+                <input type="radio" name="require_teacher_approval" value="0" checked>
+                ไม่ต้องขออนุมัติ
+              </label>
+            </div>
+          </div>
 
         {% if item.images and item.images|length > 0 %}
           {% set latest = (item.images|sort(attribute='created_at', reverse=True))|first %}
