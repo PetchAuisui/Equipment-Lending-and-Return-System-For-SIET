@@ -29,58 +29,58 @@
     {% block scripts %}{% endblock %}
 
 
-<script>
-document.addEventListener("DOMContentLoaded", () => {
-  if (localStorage.getItem("showLoginAlert") === "1") {
-    localStorage.removeItem("showLoginAlert");
+    <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      if (localStorage.getItem("showLoginAlert") === "1") {
+        localStorage.removeItem("showLoginAlert");
 
-    Swal.fire({
-      position: 'top',
-      icon: 'warning',
-      title: 'กรุณาเข้าสู่ระบบก่อนทำการยืมอุปกรณ์', // ✅ บรรทัดเดียว
-      toast: true,
-      showConfirmButton: false,
-      timer: 3000,             // ✅ หายหลัง 3 วิ
-      timerProgressBar: true,  // ✅ แถบเวลา
-      background: '#fffbe6',
-      color: '#444',
-      width: 'auto',           // ✅ ให้ขนาดพอดีข้อความ
-      padding: '10px 20px',
-      customClass: {
-        popup: 'login-toast'
-      },
-      didOpen: (popup) => {
-        popup.style.animation = "fadeDown 0.5s ease, fadeOut 0.8s ease 2.2s"; // ✅ ลง + ค่อยๆ หาย
+        Swal.fire({
+          position: 'top',
+          icon: 'warning',
+          title: 'กรุณาเข้าสู่ระบบก่อนทำการยืมอุปกรณ์', // ✅ บรรทัดเดียว
+          toast: true,
+          showConfirmButton: false,
+          timer: 3000,             // ✅ หายหลัง 3 วิ
+          timerProgressBar: true,  // ✅ แถบเวลา
+          background: '#fffbe6',
+          color: '#444',
+          width: 'auto',           // ✅ ให้ขนาดพอดีข้อความ
+          padding: '10px 20px',
+          customClass: {
+            popup: 'login-toast'
+          },
+          didOpen: (popup) => {
+            popup.style.animation = "fadeDown 0.5s ease, fadeOut 0.8s ease 2.2s"; // ✅ ลง + ค่อยๆ หาย
+          }
+        });
       }
     });
-  }
-});
 
-// ✅ เพิ่ม animation fadeDown (เข้า) + fadeOut (ออก)
-const style = document.createElement("style");
-style.textContent = `
-@keyframes fadeDown {
-  from { opacity: 0; transform: translateY(-20px); }
-  to { opacity: 1; transform: translateY(0); }
-}
+    // ✅ เพิ่ม animation fadeDown (เข้า) + fadeOut (ออก)
+    const style = document.createElement("style");
+    style.textContent = `
+    @keyframes fadeDown {
+      from { opacity: 0; transform: translateY(-20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
 
-@keyframes fadeOut {
-  from { opacity: 1; transform: translateY(0); }
-  to { opacity: 0; transform: translateY(-10px); }
-}
+    @keyframes fadeOut {
+      from { opacity: 1; transform: translateY(0); }
+      to { opacity: 0; transform: translateY(-10px); }
+    }
 
-/* ✅ ปรับให้ข้อความไม่ตัดบรรทัด + ดูพอดี */
-.login-toast {
-  white-space: nowrap !important;
-  text-align: center !important;
-  font-size: 14px !important;
-  border: 1px solid #ffd966 !important;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-  border-radius: 8px !important;
-}
-`;
-document.head.appendChild(style);
-</script>
+    /* ✅ ปรับให้ข้อความไม่ตัดบรรทัด + ดูพอดี */
+    .login-toast {
+      white-space: nowrap !important;
+      text-align: center !important;
+      font-size: 14px !important;
+      border: 1px solid #ffd966 !important;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+      border-radius: 8px !important;
+    }
+    `;
+    document.head.appendChild(style);
+    </script>
 
 
   </body>
