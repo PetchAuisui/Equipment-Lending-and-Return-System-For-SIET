@@ -32,7 +32,12 @@
     {% for item in equipments.available %}
     <div class="device_box" style="background-color: {{ item.status_color }};" 
          data-name="{{ item.name | lower }}" data-category="{{ item.category | lower }}">
+        {% if item.image %}
         <img class="image" src="{{ url_for('static', filename=item.image) }}" alt="{{ item.name }}">
+        {% else %}
+        <img class="image" src="{{ url_for('static', filename='img/default.png') }}" alt="{{ item.name }}">
+        {% endif %}
+        <!-- สำหรับรูปที่อาจจะไม่มี-->
         <div class="device_info">
             <span class="device_name">{{ item.name }}</span>
             <span class="amount">จำนวนคงเหลือ : {{ item.amount }}</span>
