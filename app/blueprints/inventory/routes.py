@@ -41,7 +41,7 @@ def admin_equipment_list():
     try:
         query = (
             db.query(Equipment)
-              .options(joinedload(Equipment.images))
+              .options(joinedload(Equipment.equipment_images))
               .filter(
                   ~exists().where(
                       and_(
@@ -72,7 +72,7 @@ def admin_equipment_detail(eid):
     try:
         item = (
             db.query(Equipment)
-              .options(joinedload(Equipment.images))
+              .options(joinedload(Equipment.equipment_images))
               .filter(
                   Equipment.equipment_id == eid,
                   ~exists().where(
@@ -86,7 +86,15 @@ def admin_equipment_detail(eid):
         )
         if not item:
             abort(404)
-        return render_template("pages_inventory/admin_equipment_detail.html", item=item)
+
+        # ✅ alias เพื่อให้ template ใช้ได้ทั้ง item / equipment
+        equipment = item
+
+        return render_template(
+            "pages_inventory/admin_equipment_detail.html",
+            item=item,
+            equipment=equipment
+        )
     finally:
         db.close()
 
@@ -102,6 +110,7 @@ def admin_equipment_new():
         status = (request.form.get("status") or "").strip()
         buy_date_raw = (request.form.get("buy_date") or "").strip()
         img = request.files.get("image")
+        require_teacher_approval = request.form.get("require_teacher_approval") == "1"
 
         buy_date = None
         if buy_date_raw:
@@ -125,6 +134,7 @@ def admin_equipment_new():
                 brand=brand,
                 buy_date=buy_date,
                 status=status or "available",
+                require_teacher_approval=require_teacher_approval,
                 created_at=now,
             )
             db.add(new_equipment)
@@ -164,7 +174,7 @@ def admin_equipment_new():
 def admin_equipment_edit(eid):
     db = SessionLocal()
     try:
-        item = db.query(Equipment).options(joinedload(Equipment.images)).filter(Equipment.equipment_id == eid).first()
+        item = db.query(Equipment).options(joinedload(Equipment.equipment_images)).filter(Equipment.equipment_id == eid).first()
         if not item:
             abort(404)
 
@@ -175,6 +185,7 @@ def admin_equipment_edit(eid):
             item.detail = (request.form.get("detail") or "").strip()
             item.brand = (request.form.get("brand") or "").strip()
             item.status = (request.form.get("status") or "").strip() or item.status
+            item.require_teacher_approval = bool(request.form.get("require_teacher_approval"))
 
             buy_date_raw = (request.form.get("buy_date") or "").strip()
             if buy_date_raw:
@@ -187,7 +198,7 @@ def admin_equipment_edit(eid):
             if img and img.filename:
                 upload_dir = current_app.config['UPLOAD_FOLDER']
                 os.makedirs(upload_dir, exist_ok=True)
-                for im in list(item.images):
+                for im in list(item.equipment_images):
                     try:
                         old_file = os.path.join(upload_dir, os.path.basename(im.image_path))
                         if os.path.exists(old_file):
@@ -212,6 +223,7 @@ def admin_equipment_edit(eid):
             return redirect(url_for("inventory.admin_equipment_list"))
 
         return render_template("pages_inventory/admin_equipment_edit.html", item=item)
+
     finally:
         db.close()
 
@@ -255,5 +267,27 @@ def admin_equipment_delete(eid):
         flash("🗑️ ลบอุปกรณ์และรูปภาพเรียบร้อย (บันทึกประวัติแล้ว)", "success")
         return redirect(url_for("inventory.admin_equipment_list"))
 
+    finally:
+        db.close()
+@inventory_bp.route("/equipments/<int:eid>/toggle_teacher_approval", methods=["POST"])
+def toggle_teacher_approval(eid):
+    db = SessionLocal()
+    try:
+        eq = db.query(Equipment).filter_by(equipment_id=eid).first()
+        if not eq:
+            flash("ไม่พบอุปกรณ์", "error")
+            return redirect(url_for("inventory.admin_equipment_list"))
+
+        eq.require_teacher_approval = not eq.require_teacher_approval
+        db.commit()
+
+        msg = (
+            f"เปิดโหมด 'ต้องให้อาจารย์อนุมัติ' สำหรับ {eq.name}"
+            if eq.require_teacher_approval
+            else f"ปิดโหมดอนุมัติอาจารย์สำหรับ {eq.name}"
+        )
+        flash(msg, "info")
+
+        return redirect(url_for("inventory.admin_equipment_list"))
     finally:
         db.close()

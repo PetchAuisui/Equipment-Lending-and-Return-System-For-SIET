@@ -47,7 +47,7 @@
                 <div style="width:100px; height:100px; border-radius:50%; overflow:hidden; background:#e5e5e5;
                             display:flex; align-items:center; justify-content:center; flex:0 0 100px;">
                   {% if e.images and e.images|length > 0 %}
-                    {% set latest = (e.images|sort(attribute='created_at', reverse=True))|first %}
+                      {% set latest = (e.equipment_images|sort(attribute='created_at', reverse=True))|first %}
                     <img src="{{ url_for('static', filename=(latest.image_path|replace('\\','/'))) }}?v={{ (e.updated_at.timestamp() if e.updated_at else 0) }}"
                         alt="ภาพอุปกรณ์"
                         style="display:block; width:100%; height:100%; object-fit:cover;">
