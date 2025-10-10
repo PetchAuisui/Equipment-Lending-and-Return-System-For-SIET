@@ -44,18 +44,20 @@ from sqlalchemy.exc import SQLAlchemyError
 from app.db.db import SessionLocal
 from app.db.models import RentReturn, Equipment, User
 
+
 def insert_rent_record(data):
     """
     ✅ บันทึกข้อมูลการยืมลงตาราง rent_returns
+    และอัปเดตสถานะอุปกรณ์ในตาราง equipments
     """
     db = SessionLocal()
     try:
-        # หา equipment_id จาก code
+        # หา equipment จาก code
         equipment = db.query(Equipment).filter(Equipment.code == data["code"]).first()
         if not equipment:
             raise ValueError("❌ ไม่พบอุปกรณ์ที่เลือก")
 
-        # หา user_id จากชื่อ (ในระบบจริงใช้ current_user.user_id แทนได้)
+        # หา user จากชื่อ (หรือใช้ current_user.user_id แทนในภายหลัง)
         user = db.query(User).filter(User.name == data["borrower_name"]).first()
         if not user:
             raise ValueError("❌ ไม่พบผู้ใช้ในระบบ")
@@ -72,11 +74,15 @@ def insert_rent_record(data):
             status_id=data["status_id"],
             created_at=datetime.utcnow()
         )
-
-        # ✅ บันทึกลงฐานข้อมูล
         db.add(rent_record)
+
+        # ✅ อัปเดตสถานะอุปกรณ์
+        equipment.status = "unavailable"  # หรือใช้ "borrowed" ตามระบบของคุณ
+        db.add(equipment)
+
+        # ✅ Commit การเปลี่ยนแปลงทั้งหมด
         db.commit()
-        print("✅ บันทึก RentReturn สำเร็จ")
+        print(f"✅ บันทึกการยืมและอัปเดตสถานะอุปกรณ์ (ID: {equipment.equipment_id}) เรียบร้อย")
 
     except SQLAlchemyError as e:
         db.rollback()
