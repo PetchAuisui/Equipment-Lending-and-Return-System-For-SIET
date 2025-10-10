@@ -75,7 +75,7 @@
   .equip-new input[type="radio"] {
     width:16px;
     height:16px;
-    accent-color:#0d6efd; /* ✅ สีแบบในภาพ (น้ำเงินคลาสสิก) */
+    accent-color:#0d6efd; /* สีตามภาพ */
     cursor:pointer;
     transition:transform .1s ease;
   }
@@ -97,6 +97,7 @@
 </style>
 
 <div class="equip-new">
+
   <div class="page">
     <div class="panel">
       <div class="card">
@@ -104,7 +105,18 @@
           <img src="{{ url_for('static', filename='images/icons/device.png') }}" alt="">
           <h1>เพิ่มอุปกรณ์</h1>
         </div>
-
+        {# ✅ แสดง flash error แค่ 1 ข้อความ (ล่าสุด) และไม่ทำให้ navbar ซ้ำ #}
+        {% with errors = get_flashed_messages(with_categories=true, category_filter=['error']) %}
+          {% if errors %}
+            {% set message = errors[-1][1] %}
+            <div style="
+              max-width:640px; margin:16px auto 0; padding:12px 16px;
+              background:#ffebee; color:#b71c1c;
+            ">
+              {{ message }}
+            </div>
+          {% endif %}
+        {% endwith %}
         <div class="card__body">
           <form action="{{ url_for('inventory.admin_equipment_new') }}" method="post" enctype="multipart/form-data">
             <div class="row">
@@ -154,7 +166,6 @@
               </select>
             </div>
 
-            <!-- ✅ การอนุมัติจากอาจารย์ -->
             <div class="row">
               <label style="font-weight:600;">การอนุมัติจากอาจารย์</label>
               <div class="radio-group">
