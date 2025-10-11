@@ -1,0 +1,200 @@
+{% extends 'base/base_admin.html' %}
+{% block title %}แก้ไขอุปกรณ์{% endblock %}
+{% set CATEGORIES = ["IT & คอมพิวเตอร์","อุปกรณ์อิเล็กทรอนิกส์/วิศวกรรม","โสตทัศนศึกษา","กีฬา","สำนักงาน "] %}
+
+{% block content %}
+<style>
+  * { box-sizing: border-box; }
+
+  /* พื้นหลังหลัก (ไม่มีแผงเทา) */
+  .page {
+    padding: 40px;
+    background: #f5f5f5;
+    min-height: calc(100vh - 60px);
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+  }
+
+  /* กล่องฟอร์มขนาดพอดี */
+  .container {
+    width: 100%;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+
+  .header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 24px;
+    justify-content: center;
+  }
+
+  .header img { width: 48px; height: 48px; }
+  .header h1 { font-size: 26px; font-weight: 700; margin: 0; }
+
+  .card {
+    background: #ffffff;
+    border: 1px solid #cfcfcf;
+    border-radius: 12px;
+    padding: 40px;
+    width: 100%;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+  }
+
+  .row {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 20px;
+  }
+
+  .row label {
+    font-size: 15px;
+    font-weight: 600;
+    margin-bottom: 6px;
+  }
+
+  .ctrl {
+    padding: 10px 14px;
+    border: 1px solid #cfcfcf;
+    border-radius: 8px;
+    background: #fff;
+    font-size: 15px;
+    width: 100%;
+  }
+
+  textarea.ctrl {
+    resize: vertical;
+    min-height: 100px;
+    line-height: 1.5;
+  }
+
+  select.ctrl, input.ctrl, textarea.ctrl { display: block; }
+
+  .btns {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 28px;
+  }
+
+  .btn {
+    padding: 10px 20px;
+    border-radius: 8px;
+    border: 1px solid #cfcfcf;
+    background: #fff;
+    cursor: pointer;
+    font-size: 15px;
+  }
+
+  .btn.primary {
+    background: #4caf50;
+    color: #fff;
+    border-color: #4caf50;
+    font-weight: 600;
+  }
+
+  .btn.primary:hover { background: #45a049; }
+</style>
+
+<div class="page">
+  <div class="container">
+    <div class="header">
+      <img src="{{ url_for('static', filename='images/icons/device.png') }}" alt="">
+      <h1>แก้ไขข้อมูลอุปกรณ์</h1>
+    </div>
+
+    <div class="card">
+      <form action="{{ url_for('inventory.admin_equipment_edit', eid=item.equipment_id) }}" method="post" enctype="multipart/form-data">
+
+        <div class="row">
+          <label>ชื่ออุปกรณ์ *</label>
+          <input class="ctrl" type="text" name="name" value="{{ item.name or '' }}" required>
+        </div>
+
+        <div class="row">
+          <label>รหัส/หมายเลข *</label>
+          <input class="ctrl" type="text" name="code" value="{{ item.code or '' }}" required>
+        </div>
+
+        <div class="row">
+          <label>หมวดหมู่</label>
+          <select class="ctrl" name="category">
+            <option value="">— เลือกหมวดหมู่ —</option>
+            {% for c in CATEGORIES %}
+              <option value="{{ c }}" {% if item.category == c %}selected{% endif %}>{{ c }}</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div class="row">
+          <label>ยี่ห้อ</label>
+          <input class="ctrl" type="text" name="brand" value="{{ item.brand or '' }}">
+        </div>
+
+        <div class="row">
+          <label>รายละเอียด</label>
+          <textarea class="ctrl" name="detail">{{ item.detail or '' }}</textarea>
+        </div>
+
+        <div class="row">
+          <label>วันที่ซื้อ</label>
+          <input class="ctrl" type="date" name="buy_date"
+                 value="{{ item.buy_date.strftime('%Y-%m-%d') if item.buy_date else '' }}">
+        </div>
+
+        <div class="row">
+          <label>สถานะ</label>
+          <select class="ctrl" name="status">
+            {% set s = item.status or '' %}
+            <option value="">— เลือกสถานะ —</option>
+            <option value="available" {{ 'selected' if s=='available' else '' }}>พร้อมใช้งาน</option>
+            <option value="in_use"    {{ 'selected' if s=='in_use'    else '' }}>กำลังถูกยืม</option>
+            <option value="broken"    {{ 'selected' if s=='broken'    else '' }}>ชำรุด</option>
+            <option value="lost"      {{ 'selected' if s=='lost'      else '' }}>สูญหาย</option>
+          </select>
+        </div>  {# ✅ ปิด row ให้เรียบร้อย #}
+
+        {# ✅ เลือกรูป "ใหม่สุด" + กันแคชด้วย updated_at #}
+        {% if item.images and item.images|length > 0 %}
+          {% set latest = (item.images|sort(attribute='created_at', reverse=True))|first %}
+          <div class="row">
+            <label>รูปภาพปัจจุบัน</label>
+            <div style="width:150px; height:150px; border:1px solid #ccc; border-radius:8px; overflow:hidden;">
+              <img
+                src="{{ url_for('static', filename=(latest.image_path|replace('\\','/'))) }}?v={{ (item.updated_at.timestamp() if item.updated_at else 0) }}"
+                alt="รูปปัจจุบัน"
+                style="width:100%; height:100%; object-fit:cover;">
+            </div>
+          </div>
+        {% endif %}
+
+        <div class="row">
+          <label>แนบรูปภาพใหม่ (ถ้ามี)</label>
+          <input class="ctrl" type="file" name="image" accept="image/*">
+        </div>
+
+        <div class="btns" style="justify-content: space-between; align-items: center;">
+          <!-- ปุ่มลบ: ใช้ฟอร์มเดียวกัน ยิงไป route ลบ -->
+          <button type="submit"
+                  class="btn"
+                  style="background:#dc3545; color:#fff; border-color:#dc3545; font-weight:600;"
+                  formaction="{{ url_for('inventory.admin_equipment_delete', eid=item.equipment_id) }}"
+                  formmethod="post"
+                  formnovalidate
+                  onclick="return confirm('❌ ต้องการลบอุปกรณ์นี้ออกจากระบบใช่ไหม?');">
+            🗑️ ลบอุปกรณ์นี้
+          </button>
+
+          <!-- ปุ่มยกเลิก + บันทึก -->
+          <div style="display:flex; gap:12px;">
+            <a class="btn" href="{{ url_for('inventory.admin_equipment_list') }}">ยกเลิก</a>
+            <button type="submit" class="btn primary">บันทึก</button>
+          </div>
+        </div>
+
+        </form>
+  </div>
+</div>
+{% endblock %}

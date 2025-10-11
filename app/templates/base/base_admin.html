@@ -1,26 +1,38 @@
 <!doctype html>
-<html>
+<html lang="th">
   <head>
     <meta charset="utf-8" />
     <title>{% block title %}Equipment Lending{% endblock %}</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}">
-      <link rel="stylesheet" href="{{ url_for('static', filename='css/naverbar_admin.css') }}">
-    <link href="https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css" rel="stylesheet">
 
+    <!-- ฟอนต์เดียวกับหน้า member -->
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;600;700&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+
+    <!-- CSS หลัก -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}">
+    <!-- ✅ ตรวจชื่อไฟล์ให้ถูก: navbar_admin.css (ไม่ใช่ naverbar) -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/navbar_admin.css') }}">
+
+    <!-- Remix Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css" rel="stylesheet">
   </head>
-  <body>
-    {% include 'base/_navbar_register.html' %}
-    <main class="container">
-    <div class="sidebar">
-    <a href="{{ url_for('admin.admin_home') }}"><i class="ri-home-4-line"></i><span>หน้าหลัก</span></a>
-    <a href="#"><i class="ri-tools-line"></i><span>จัดการอุปกรณ์</span></a>
-    <a href="#"><i class="ri-arrow-go-back-line"></i><span>คืนอุปกรณ์</span></a>
-    <a href="#"><i class="ri-time-line"></i><span>ประวัติยืม-คืน</span></a>
-    <a href="#"><i class="ri-alert-line"></i><span>อุปกรณ์สูญหาย/ชำรุด</span></a>
-    <a href="{{ url_for('admin_users.index') }}"><i class="ri-account-circle-line"></i><span>จัดการสมาชิก</span></a>
-    <a href="#"><i class="ri-file-paper-2-line"></i><span>รายงานสรุป</span></a>
-    </div>
-      {% block content %}{% endblock %}
+
+  <body class="admin-page">
+    {% include 'base/_navbar.html' %}
+
+    <main class="container2">
+      <aside class="sidebar">
+        <a href="{{ url_for('admin.admin_home') }}"><i class="ri-home-4-line"></i><span>หน้าหลัก</span></a>
+        <a href="#"><i class="ri-tools-line"></i><span>จัดการอุปกรณ์</span></a>
+        <a href="#"><i class="ri-arrow-go-back-line"></i><span>คืนอุปกรณ์</span></a>
+        <a href="#"><i class="ri-time-line"></i><span>ประวัติยืม-คืน</span></a>
+        <a href="#"><i class="ri-alert-line"></i><span>อุปกรณ์สูญหาย/ชำรุด</span></a>
+        <a href="{{ url_for('admin_users.index') }}"><i class="ri-account-circle-line"></i><span>จัดการสมาชิก</span></a>
+        <a href="#"><i class="ri-file-paper-2-line"></i><span>รายงานสรุป</span></a>
+      </aside>
+
+      <section class="admin-content">
+        {% block content %}{% endblock %}
+      </section>
     </main>
   </body>
 </html>
