@@ -1,11 +1,13 @@
+from app.db.db import Base
+Base.metadata.clear()  # ✅ เคลียร์ mapping ซ้ำก่อนทุกครั้ง
+
 from app.db.db import SessionLocal
-from app.db.models import Subject, StatusRent
+from app.db.models import Subject, StatusRent, Section, Equipment, EquipmentImage
 from datetime import date, datetime, timezone  
 from zoneinfo import ZoneInfo 
-from app.db.models import Subject, Section
-from app.db.models import Class
-from app.db.models import Equipment
-from app.db.models import Equipment_Image
+
+
+
 
 def seed_subjects():
     db = SessionLocal()
@@ -83,151 +85,6 @@ def seed_sections():
     finally:
         db.close()
 
-def seed_classes():
-    db = SessionLocal()
-    try:
-        classes = [
-            Class(class_no="101", class_name="ห้องเพลิน", class_location="หน้าลิฟตึก3"),
-            Class(class_no="102", class_name="ห้องมะเฟือง", class_location="หน้าลิฟตึก3"),
-            Class(class_no="103", class_name="โรงอาหารคณะครุศาสตร์", class_location="ตึกครุศาสตร์"),
-            # ===== ตึก 1 ชั้น 1–9, ห้อง 01–05 =====
-            Class(class_no="1101", class_name="Maker", class_location="ตึก 1 ชั้น 1"),
-            Class(class_no="1102", class_name=None, class_location="ตึก 1 ชั้น 1"),
-            Class(class_no="1103", class_name=None, class_location="ตึก 1 ชั้น 1"),
-            Class(class_no="1104", class_name=None, class_location="ตึก 1 ชั้น 1"),
-            Class(class_no="1105", class_name=None, class_location="ตึก 1 ชั้น 1"),
-
-            Class(class_no="1201", class_name=None, class_location="ตึก 1 ชั้น 2"),
-            Class(class_no="1202", class_name=None, class_location="ตึก 1 ชั้น 2"),
-            Class(class_no="1203", class_name=None, class_location="ตึก 1 ชั้น 2"),
-            Class(class_no="1204", class_name=None, class_location="ตึก 1 ชั้น 2"),
-            Class(class_no="1205", class_name=None, class_location="ตึก 1 ชั้น 2"),
-
-            Class(class_no="1301", class_name=None, class_location="ตึก 1 ชั้น 3"),
-            Class(class_no="1302", class_name=None, class_location="ตึก 1 ชั้น 3"),
-            Class(class_no="1303", class_name=None, class_location="ตึก 1 ชั้น 3"),
-            Class(class_no="1304", class_name=None, class_location="ตึก 1 ชั้น 3"),
-            Class(class_no="1305", class_name=None, class_location="ตึก 1 ชั้น 3"),
-
-            Class(class_no="1401", class_name=None, class_location="ตึก 1 ชั้น 4"),
-            Class(class_no="1402", class_name=None, class_location="ตึก 1 ชั้น 4"),
-            Class(class_no="1403", class_name=None, class_location="ตึก 1 ชั้น 4"),
-            Class(class_no="1404", class_name=None, class_location="ตึก 1 ชั้น 4"),
-            Class(class_no="1405", class_name=None, class_location="ตึก 1 ชั้น 4"),
-
-            Class(class_no="1501", class_name=None, class_location="ตึก 1 ชั้น 5"),
-            Class(class_no="1502", class_name=None, class_location="ตึก 1 ชั้น 5"),
-            Class(class_no="1503", class_name=None, class_location="ตึก 1 ชั้น 5"),
-            Class(class_no="1504", class_name=None, class_location="ตึก 1 ชั้น 5"),
-            Class(class_no="1505", class_name=None, class_location="ตึก 1 ชั้น 5"),
-
-            Class(class_no="1601", class_name=None, class_location="ตึก 1 ชั้น 6"),
-            Class(class_no="1602", class_name=None, class_location="ตึก 1 ชั้น 6"),
-            Class(class_no="1603", class_name=None, class_location="ตึก 1 ชั้น 6"),
-            Class(class_no="1604", class_name=None, class_location="ตึก 1 ชั้น 6"),
-            Class(class_no="1605", class_name=None, class_location="ตึก 1 ชั้น 6"),
-
-            Class(class_no="1701", class_name=None, class_location="ตึก 1 ชั้น 7"),
-            Class(class_no="1702", class_name=None, class_location="ตึก 1 ชั้น 7"),
-            Class(class_no="1703", class_name=None, class_location="ตึก 1 ชั้น 7"),
-            Class(class_no="1704", class_name=None, class_location="ตึก 1 ชั้น 7"),
-            Class(class_no="1705", class_name=None, class_location="ตึก 1 ชั้น 7"),
-
-            Class(class_no="1801", class_name=None, class_location="ตึก 1 ชั้น 8"),
-            Class(class_no="1802", class_name=None, class_location="ตึก 1 ชั้น 8"),
-            Class(class_no="1803", class_name=None, class_location="ตึก 1 ชั้น 8"),
-            Class(class_no="1804", class_name=None, class_location="ตึก 1 ชั้น 8"),
-            Class(class_no="1805", class_name=None, class_location="ตึก 1 ชั้น 8"),
-
-            Class(class_no="1901", class_name=None, class_location="ตึก 1 ชั้น 9"),
-            Class(class_no="1902", class_name=None, class_location="ตึก 1 ชั้น 9"),
-            Class(class_no="1903", class_name=None, class_location="ตึก 1 ชั้น 9"),
-            Class(class_no="1904", class_name=None, class_location="ตึก 1 ชั้น 9"),
-            Class(class_no="1905", class_name=None, class_location="ตึก 1 ชั้น 9"),
-
-            # ===== ตึก 2 ชั้น 1–6, ห้อง 01–05 =====
-            Class(class_no="2101", class_name=None, class_location="ตึก 2 ชั้น 1"),
-            Class(class_no="2102", class_name=None, class_location="ตึก 2 ชั้น 1"),
-            Class(class_no="2103", class_name=None, class_location="ตึก 2 ชั้น 1"),
-            Class(class_no="2104", class_name=None, class_location="ตึก 2 ชั้น 1"),
-            Class(class_no="2105", class_name=None, class_location="ตึก 2 ชั้น 1"),
-
-            Class(class_no="2201", class_name=None, class_location="ตึก 2 ชั้น 2"),
-            Class(class_no="2202", class_name=None, class_location="ตึก 2 ชั้น 2"),
-            Class(class_no="2203", class_name=None, class_location="ตึก 2 ชั้น 2"),
-            Class(class_no="2204", class_name=None, class_location="ตึก 2 ชั้น 2"),
-            Class(class_no="2205", class_name=None, class_location="ตึก 2 ชั้น 2"),
-
-            Class(class_no="2301", class_name=None, class_location="ตึก 2 ชั้น 3"),
-            Class(class_no="2302", class_name=None, class_location="ตึก 2 ชั้น 3"),
-            Class(class_no="2303", class_name=None, class_location="ตึก 2 ชั้น 3"),
-            Class(class_no="2304", class_name=None, class_location="ตึก 2 ชั้น 3"),
-            Class(class_no="2305", class_name=None, class_location="ตึก 2 ชั้น 3"),
-
-            Class(class_no="2401", class_name=None, class_location="ตึก 2 ชั้น 4"),
-            Class(class_no="2402", class_name=None, class_location="ตึก 2 ชั้น 4"),
-            Class(class_no="2403", class_name=None, class_location="ตึก 2 ชั้น 4"),
-            Class(class_no="2404", class_name=None, class_location="ตึก 2 ชั้น 4"),
-            Class(class_no="2405", class_name=None, class_location="ตึก 2 ชั้น 4"),
-
-            Class(class_no="2501", class_name=None, class_location="ตึก 2 ชั้น 5"),
-            Class(class_no="2502", class_name=None, class_location="ตึก 2 ชั้น 5"),
-            Class(class_no="2503", class_name=None, class_location="ตึก 2 ชั้น 5"),
-            Class(class_no="2504", class_name=None, class_location="ตึก 2 ชั้น 5"),
-            Class(class_no="2505", class_name=None, class_location="ตึก 2 ชั้น 5"),
-
-            Class(class_no="2601", class_name=None, class_location="ตึก 2 ชั้น 6"),
-            Class(class_no="2602", class_name=None, class_location="ตึก 2 ชั้น 6"),
-            Class(class_no="2603", class_name=None, class_location="ตึก 2 ชั้น 6"),
-            Class(class_no="2604", class_name=None, class_location="ตึก 2 ชั้น 6"),
-            Class(class_no="2605", class_name=None, class_location="ตึก 2 ชั้น 6"),
-
-            # ตึก 3 ชั้น 1–6, ห้อง 01–05
-            Class(class_no="3101", class_name=None, class_location="ตึก 3 ชั้น 1"),
-            Class(class_no="3102", class_name=None, class_location="ตึก 3 ชั้น 1"),
-            Class(class_no="3103", class_name=None, class_location="ตึก 3 ชั้น 1"),
-            Class(class_no="3104", class_name=None, class_location="ตึก 3 ชั้น 1"),
-            Class(class_no="3105", class_name=None, class_location="ตึก 3 ชั้น 1"),
-
-            Class(class_no="3201", class_name=None, class_location="ตึก 3 ชั้น 2"),
-            Class(class_no="3202", class_name=None, class_location="ตึก 3 ชั้น 2"),
-            Class(class_no="3203", class_name=None, class_location="ตึก 3 ชั้น 2"),
-            Class(class_no="3204", class_name=None, class_location="ตึก 3 ชั้น 2"),
-            Class(class_no="3205", class_name=None, class_location="ตึก 3 ชั้น 2"),
-
-            Class(class_no="3301", class_name=None, class_location="ตึก 3 ชั้น 3"),
-            Class(class_no="3302", class_name=None, class_location="ตึก 3 ชั้น 3"),
-            Class(class_no="3303", class_name=None, class_location="ตึก 3 ชั้น 3"),
-            Class(class_no="3304", class_name=None, class_location="ตึก 3 ชั้น 3"),
-            Class(class_no="3305", class_name=None, class_location="ตึก 3 ชั้น 3"),
-
-            Class(class_no="3401", class_name=None, class_location="ตึก 3 ชั้น 4"),
-            Class(class_no="3402", class_name=None, class_location="ตึก 3 ชั้น 4"),
-            Class(class_no="3403", class_name=None, class_location="ตึก 3 ชั้น 4"),
-            Class(class_no="3404", class_name=None, class_location="ตึก 3 ชั้น 4"),
-            Class(class_no="3405", class_name=None, class_location="ตึก 3 ชั้น 4"),
-
-            Class(class_no="3501", class_name=None, class_location="ตึก 3 ชั้น 5"),
-            Class(class_no="3502", class_name=None, class_location="ตึก 3 ชั้น 5"),
-            Class(class_no="3503", class_name=None, class_location="ตึก 3 ชั้น 5"),
-            Class(class_no="3504", class_name=None, class_location="ตึก 3 ชั้น 5"),
-            Class(class_no="3505", class_name=None, class_location="ตึก 3 ชั้น 5"),
-
-            Class(class_no="3601", class_name=None, class_location="ตึก 3 ชั้น 6"),
-            Class(class_no="3602", class_name=None, class_location="ตึก 3 ชั้น 6"),
-            Class(class_no="3603", class_name=None, class_location="ตึก 3 ชั้น 6"),
-            Class(class_no="3604", class_name=None, class_location="ตึก 3 ชั้น 6"),
-            Class(class_no="3605", class_name=None, class_location="ตึก 3 ชั้น 6"),
-        ]
-
-        db.add_all(classes)
-        db.commit()
-        print(f"✅ Classes inserted successfully")
-    except Exception as e:
-        db.rollback()
-        print("❌ Error inserting classes:", e)
-    finally:
-        db.close()
 
 def seed_equipments():
     db = SessionLocal()
@@ -494,6 +351,5 @@ if __name__ == "__main__":
     seed_subjects()
     seed_status_rents()
     seed_sections()
-    seed_classes()
     seed_equipments()
     seed_equipment_images()
