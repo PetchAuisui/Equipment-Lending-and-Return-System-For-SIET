@@ -1,44 +1,81 @@
+{# templates/pages/home.html #}
 {% extends 'base/base.html' %}
 {% block title %}หน้าหลัก{% endblock %}
 
 {% block content %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/home.css') }}">
+
 <div class="home-page">
-  <section class="hero">
-    <div class="hero-left">
-      <h1>ระบบยืม-คืนอุปกรณ์<br>คณะครุศาสตร์อุตสาหกรรม</h1>
-      <p>ยินดีต้อนรับ {{ current_user.name or 'ผู้ใช้งาน' }}</p>
-      {% if not current_user.is_authenticated %}
-        <a href="{{ url_for('auth.login_page') }}" class="btn-cta">เข้าสู่ระบบ</a>
-      {% else %}
-           <a href="{{ url_for('inventory.lend_device') }}" class="btn-cta">ดูรายการอุปกรณ์</a>
-      {% endif %}
+  <!-- Hero ของเดิม ... -->
+
+  <!-- Top Borrowed -->
+  <section class="section-block">
+    <div class="section-header">
+      <h2>อุปกรณ์ที่มีคนยืมมากที่สุด</h2>
+      <span class="muted">Top popular items</span>
     </div>
-    <div class="hero-right">
-      <img src="{{ url_for('static', filename='images/hero_devices.png') }}" alt="illustration">
-    </div>
+    {% if top_borrowed %}
+      <div class="grid-cards">
+        {% for item in top_borrowed %}
+          <div class="equip-card">
+            <div class="equip-card__head">
+              <div class="equip-card__title">{{ item.name }}</div>
+              <div class="equip-card__code">#{{ item.code }}</div>
+            </div>
+            <div class="equip-card__meta">
+              <div class="badge">ยืมไปแล้ว {{ item.borrow_count }} ครั้ง</div>
+            </div>
+            <div class="equip-card__actions">
+              <a class="btn-outline" href="{{ url_for('inventory.lend_device') }}">ดูรายละเอียด</a>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <p class="muted">ยังไม่มีสถิติการยืม</p>
+    {% endif %}
   </section>
 
-  <section class="features">
-    <h2>บริการของระบบ</h2>
-    <div class="feature-grid">
-      <div class="card">
-        <img src="{{ url_for('static', filename='images/icons/device.png') }}">
-        <h3>ยืมอุปกรณ์</h3>
-        <p>เลือกอุปกรณ์ที่ต้องการใช้ และตรวจสอบสถานะว่างได้แบบเรียลไทม์</p>
-      </div>
-      <div class="card">
-        <img src="{{ url_for('static', filename='images/icons/history.png') }}">
-        <h3>ติดตามประวัติ</h3>
-        <p>ดูประวัติการยืม-คืน และสถานะคำขอในระบบได้ทุกเวลา</p>
-      </div>
-      <div class="card">
-        <img src="{{ url_for('static', filename='images/icons/back.png') }}">
-        <h3>คืนอุปกรณ์</h3>
-        <p>แจ้งคืนอุปกรณ์ง่าย ๆ ผ่านระบบออนไลน์</p>
-      </div>
+  <!-- Outstanding -->
+  <section class="section-block">
+    <div class="section-header">
+      <h2>อุปกรณ์ที่ยังไม่คืน</h2>
+      <span class="muted">รายการค้างส่งล่าสุด</span>
     </div>
+    {% if outstanding %}
+      <div class="table-scroll">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>อุปกรณ์</th><th>รหัส</th><th>ผู้ยืม</th>
+              <th>ยืมเมื่อ</th><th>กำหนดคืน</th><th>สถานะ</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for r in outstanding %}
+              <tr class="{{ 'row-overdue' if r.is_overdue }}">
+                <td>{{ r.equipment_name }}</td>
+                <td>#{{ r.equipment_code }}</td>
+                <td>{{ r.borrower_name }}</td>
+                <td>{{ r.start_date.strftime('%d/%m/%Y %H:%M') }}</td>
+                <td>{{ r.due_date.strftime('%d/%m/%Y %H:%M') }}</td>
+                <td>
+                  {% if r.is_overdue %}
+                    <span class="badge danger">ค้าง {{ r.overdue_days }} วัน</span>
+                  {% else %}
+                    <span class="badge ok">ยังไม่ครบกำหนด</span>
+                  {% endif %}
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      <p class="muted">ไม่มีรายการค้างส่ง</p>
+    {% endif %}
   </section>
+
+  {# บล็อก features เดิมของคุณ #}
 </div>
 {% endblock %}
-
