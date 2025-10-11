@@ -1,0 +1,168 @@
+/* ===== Container ===== */
+.track-container {
+    text-align: center;
+    background-color: #fff;
+    padding: 40px 0 60px 0;
+}
+
+/* ===== Title ===== */
+.track-title {
+    display: inline-block;
+    background-color: #f6b3c3;
+    color: white;
+    font-size: 28px;
+    font-weight: bold;
+    padding: 12px 50px;
+    border-radius: 18px;
+    margin-bottom: 35px;
+}
+
+/* ===== Box ===== */
+.track-box {
+    background-color: #efefef;
+    width: 85%;
+    margin: 0 auto;
+    padding: 35px 0;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+/* ===== Table ===== */
+.track-table {
+    width: 90%;
+    margin: 0 auto;
+    border-collapse: collapse;
+    text-align: center;
+    border-spacing: 0 12px;
+}
+
+.track-table th {
+    font-weight: bold;
+    font-size: 18px;
+    color: #000;
+    padding: 18px 10px;
+    border-bottom: 2px solid #4a90e2;
+}
+
+.track-table td {
+    padding: 14px 10px;
+    font-size: 17px;
+    color: #333;
+    vertical-align: middle;
+}
+
+/* ===== Row spacing ===== */
+.track-table tr + tr {
+    border-top: 1px solid #d0d0d0;
+}
+
+/* ===== Item name ===== */
+.item-name {
+    text-align: left;
+    font-weight: 600;
+    padding-left: 12px;
+}
+
+/* ===== Status ===== */
+.col-status {
+    width: 12%;
+    text-align: center;
+}
+
+.col-status span {
+    display: inline-block;
+    font-weight: 600;
+    min-width: 90px;
+    padding: 6px 10px;
+    border-radius: 8px;
+    background-color: rgba(255, 255, 255, 0.6);
+}
+
+/* ===== Columns ===== */
+.col-item {
+    width: 28%;
+    text-align: left;
+}
+
+.col-date {
+    width: 15%;
+}
+
+.col-action {
+    width: 30%;
+    text-align: center;
+}
+
+/* ===== Buttons ===== */
+.actions {
+    text-align: center;
+    white-space: nowrap;
+}
+
+.btn {
+    text-decoration: none;
+    font-weight: bold;
+    margin: 0 8px;
+    font-size: 16px;
+    display: inline-block;
+    padding: 6px 10px;
+    transition: all 0.2s ease;
+}
+
+.btn.blue {
+    color: #2e7de9;
+}
+
+.btn.red {
+    color: #d93232;
+}
+
+.btn.green {
+    color: #4bb543;
+}
+
+.btn.yellow {
+    color: #c79500;
+}
+
+/* hover effect */
+.btn:hover {
+    opacity: 0.8;
+}
+
+/* ===== No data ===== */
+.no-data {
+    text-align: center;
+    font-style: italic;
+    color: #777;
+    padding: 30px 0;
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 768px) {
+    .track-box {
+        width: 95%;
+        padding: 20px;
+    }
+
+    .track-title {
+        font-size: 22px;
+        padding: 8px 20px;
+    }
+
+    .track-table {
+        width: 100%;
+        font-size: 14px;
+    }
+
+    .track-table th,
+    .track-table td {
+        font-size: 14px;
+        padding: 8px;
+    }
+
+    .btn {
+        display: block;
+        margin: 5px 0;
+    }
+}
