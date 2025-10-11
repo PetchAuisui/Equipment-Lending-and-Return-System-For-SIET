@@ -1,5 +1,5 @@
 # app/blueprints/pages/routes.py
-from flask import Blueprint, render_template, session
+from flask import Blueprint, render_template, session, request, flash, redirect, url_for
 from flask_login import current_user
 from app.services.home_service import HomeService
 
@@ -31,3 +31,18 @@ def about_us():
 @pages_bp.get("/policy")
 def policy():
     return render_template("pages/policy.html")
+
+
+@pages_bp.route('/lost', methods=['GET', 'POST'])
+def lost_report():
+    """Simple lost/damaged report page. Currently POST only flashes and redirects back."""
+    if request.method == 'POST':
+        # Minimal server-side: collect some fields (could be expanded to save to DB later)
+        fullname = request.form.get('full_name')
+        phone = request.form.get('phone')
+        device = request.form.get('device')
+        # Flash a success message and redirect back to the form (could redirect to a thank-you page)
+        flash('แบบแจ้งความถูกส่งเรียบร้อย', 'success')
+        return redirect(url_for('pages.lost_report'))
+
+    return render_template('pages/lost.html')

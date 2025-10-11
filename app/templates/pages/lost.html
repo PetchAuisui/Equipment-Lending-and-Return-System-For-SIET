@@ -1,0 +1,95 @@
+{% extends 'base/blank.html' %}
+{% block title %}แจ้งอุปกรณ์สูญหายหรือเสียหาย{% endblock %}
+
+{% block head %}
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/lost.css') }}">
+{% endblock %}
+
+{% block content %}
+  <div class="lost-wrapper">
+
+    <!-- Header: red full-width bar inside the centered card -->
+    <header class="lost-header">
+      <i class="ri-file-edit-line"></i>
+      <div class="lost-heading">แจ้งอุุปกรณ์สูญหายหรือเสียหาย</div>
+    </header>
+
+    <!-- Form card -->
+    <form class="lost-card" method="post" enctype="multipart/form-data">
+
+      <!-- Top: type, name, phone -->
+      <div class="row small">
+        <label>ประเภทการแจ้ง</label>
+        <select name="report_type" class="input">
+          <option value="lost">สูญหาย</option>
+          <option value="damaged">เสียหาย</option>
+        </select>
+      </div>
+
+      <div class="row">
+        <label>ชื่อ-นามสกุล</label>
+        <input name="full_name" class="input" type="text" placeholder="ชื่อ-นามสกุล">
+      </div>
+
+      <div class="row">
+        <label>เบอร์โทร</label>
+        <input name="phone" class="input" type="text" placeholder="081-xxx-xxxx">
+      </div>
+
+      <!-- Middle: device, type+id, date -->
+      <div class="row">
+        <label>อุปกรณ์ที่หาย</label>
+        <input name="device" class="input" type="text" placeholder="ชื่ออุปกรณ์">
+      </div>
+
+      <div class="row two-col">
+        <div>
+          <label>ประเภท</label>
+          <input name="type" class="input" type="text">
+        </div>
+        <div>
+          <label>ID</label>
+          <input name="device_id" class="input" type="text">
+        </div>
+      </div>
+
+      <div class="row">
+        <label>วันที่หาย</label>
+        <div class="date-row">
+          <input name="lost_day" class="input date" type="text" placeholder="DD">
+          <span class="sep">/</span>
+          <input name="lost_month" class="input date" type="text" placeholder="MM">
+          <span class="sep">/</span>
+          <input name="lost_year" class="input date" type="text" placeholder="YYYY">
+          <i class="ri-calendar-line cal"></i>
+        </div>
+      </div>
+
+      <!-- Bottom: place and detail -->
+      <div class="row">
+        <label>สถานที่ที่ทำหาย</label>
+        <input name="place" class="input" type="text" placeholder="สถานที่ที่ทำหาย">
+      </div>
+
+      <div class="row">
+        <label>รายละเอียดปัญหา</label>
+        <textarea name="detail" class="input textarea" rows="4" placeholder="รายละเอียดเพิ่มเติม..."></textarea>
+      </div>
+
+      <!-- Action row: upload left, send right -->
+      <div class="row actions">
+        <div class="upload">
+          <label class="muted">อัปโหลดรูป</label>
+          <input name="images" type="file" class="file">
+        </div>
+        <div class="submit">
+          <button type="submit" class="btn-send">send</button>
+        </div>
+      </div>
+
+    </form>
+  </div>
+{% endblock %}
+<!-- lost page removed: placeholder file -->
+<!-- If you want the lost form back, tell me which version (compact or original) and I will restore it. -->
+
