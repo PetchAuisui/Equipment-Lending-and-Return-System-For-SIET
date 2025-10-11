@@ -26,3 +26,8 @@ ENV/
 # Mac / Windows files
 .DS_Store
 Thumbs.db
+
+# datebase
+
+.app.db
+

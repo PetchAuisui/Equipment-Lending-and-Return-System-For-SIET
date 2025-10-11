@@ -1,20 +1,25 @@
-from typing import List, Optional
-from .base_repo import BaseRepository
-from ..database.models import Equipment
 
+# repositories/equipment_repository.py
+from app.db.db import SessionLocal
+from app.models import Equipment  # ตรวจให้ชัวร์ว่า path นี้ตรงกับโปรเจกต์ของนาย
 
+class EquipmentRepository:
+    def __init__(self, session=None):
+        self.db = session or SessionLocal()
 
+    def get_all(self):
+        return self.db.query(Equipment).all()
 
-class EquipmentRepository(BaseRepository[Equipment]):
-    def __init__(self):
-        super().__init__(Equipment)
+    def get_by_id(self, equipment_id: int):
+        return self.db.get(Equipment, equipment_id)
 
+    def add(self, equipment: Equipment):
+        self.db.add(equipment)
+        self.db.commit()
+        self.db.refresh(equipment)
+        return equipment
 
-    def search(self, q: str = '', category: Optional[str] = None) -> List[Equipment]:
-        query = self.model.query # via Flask-SQLAlchemy query property
-        if q:
-            like = f"%{q}%"
-            query = query.filter((self.model.name.ilike(like)) | (self.model.code.ilike(like)))
-        if category:
-            query = query.filter(self.model.category == category)
-        return query.order_by(self.model.name.asc()).all()
+    def delete(self, equipment: Equipment):
+        self.db.delete(equipment)
+        self.db.commit()
+
