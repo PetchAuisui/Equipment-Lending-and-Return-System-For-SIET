@@ -4,31 +4,45 @@ from app.db.db import SessionLocal
 from app.db import models as M
 
 class HomeRepository:
-    """เข้าถึงข้อมูลสำหรับหน้า Home"""
-
     def __init__(self, session_factory=SessionLocal):
         self._session_factory = session_factory
 
     def get_top_borrowed(self, limit: int = 8):
-        """
-        อุปกรณ์ที่มีคนยืมมากที่สุด
-        ✅ แสดงเฉพาะอุปกรณ์ที่ status = 'available'
-        """
+        """อุปกรณ์ยอดนิยม: เฉพาะที่ status = 'available' + มีรูป"""
         with self._session_factory() as db:
+            # ใช้ subquery เพื่อหาภาพแรกของแต่ละอุปกรณ์
+            subq = (
+                db.query(
+                    M.EquipmentImage.equipment_id,
+                    func.min(M.EquipmentImage.equipment_image_id).label("first_image_id")
+                )
+                .group_by(M.EquipmentImage.equipment_id)
+                .subquery()
+            )
+
             q = (
                 db.query(
                     M.Equipment.equipment_id,
                     M.Equipment.name,
                     M.Equipment.code,
                     func.count(M.RentReturn.rent_id).label("borrow_count"),
+                    M.EquipmentImage.image_path.label("image_path"),
                 )
                 .join(M.RentReturn, M.RentReturn.equipment_id == M.Equipment.equipment_id)
-                .filter(func.lower(M.Equipment.status) == "available")  # ✅ กรองเฉพาะ available
-                .group_by(M.Equipment.equipment_id, M.Equipment.name, M.Equipment.code)
+                .outerjoin(subq, subq.c.equipment_id == M.Equipment.equipment_id)
+                .outerjoin(M.EquipmentImage, M.EquipmentImage.equipment_image_id == subq.c.first_image_id)
+                .filter(func.lower(M.Equipment.status) == "available")  # เฉพาะของที่ว่าง
+                .group_by(
+                    M.Equipment.equipment_id,
+                    M.Equipment.name,
+                    M.Equipment.code,
+                    M.EquipmentImage.image_path
+                )
                 .order_by(func.count(M.RentReturn.rent_id).desc(), M.Equipment.name.asc())
                 .limit(limit)
             )
             return q.all()
+
 
     def get_outstanding_by_user(self, user_id: int, limit: int = 10):
         """
