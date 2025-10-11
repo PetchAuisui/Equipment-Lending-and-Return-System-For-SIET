@@ -1,0 +1,132 @@
+/* ===== Container ===== */
+.track-container {
+    text-align: center;
+    background-color: #fff;
+    padding: 30px 0;
+}
+
+/* ===== Title ===== */
+.track-title {
+    display: inline-block;
+    background-color: #f6b3c3;
+    color: white;
+    font-size: 28px;
+    font-weight: bold;
+    padding: 10px 40px;
+    border-radius: 15px;
+    margin-bottom: 30px;
+}
+
+/* ===== Box ===== */
+.track-box {
+    background-color: #efefef;
+    width: 85%;
+    margin: 0 auto;
+    padding: 30px 0;
+    border-radius: 8px;
+}
+
+/* ===== Table ===== */
+.track-table {
+    width: 90%;
+    margin: 0 auto;
+    border-collapse: collapse;
+    text-align: center;
+}
+
+.track-table th {
+    font-weight: bold;
+    font-size: 18px;
+    color: #000;
+    padding-bottom: 15px;
+    border-bottom: 2px solid #4a90e2;
+}
+
+.track-table td {
+    padding: 12px;
+    font-size: 17px;
+    color: #333;
+}
+
+.item-name {
+    text-align: left;
+    font-weight: 600;
+}
+
+.no-data {
+    text-align: center;
+    font-style: italic;
+    color: #777;
+    padding: 30px 0;
+}
+
+/* ===== Columns ===== */
+.col-item {
+    width: 35%;
+    text-align: left;
+}
+
+.col-date {
+    width: 15%;
+}
+
+.col-action {
+    width: 35%;
+    text-align: center;
+}
+
+/* ===== Buttons ===== */
+.actions {
+    text-align: center;
+}
+
+.btn {
+    text-decoration: none;
+    font-weight: bold;
+    margin: 0 6px;
+    font-size: 16px;
+}
+
+.btn.blue {
+    color: #2e7de9;
+}
+
+.btn.red {
+    color: #d93232;
+}
+
+.btn.green {
+    color: #4bb543;
+}
+.btn.yellow {
+    color: #c79500;
+}
+
+
+/* ===== Responsive ===== */
+@media (max-width: 768px) {
+    .track-box {
+        width: 95%;
+        padding: 20px;
+    }
+
+    .track-title {
+        font-size: 22px;
+        padding: 8px 20px;
+    }
+
+    .track-table {
+        width: 100%;
+        font-size: 14px;
+    }
+
+    .track-table th,
+    .track-table td {
+        font-size: 14px;
+    }
+
+    .btn {
+        display: block;
+        margin: 5px 0;
+    }
+}
