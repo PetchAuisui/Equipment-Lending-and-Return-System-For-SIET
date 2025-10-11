@@ -17,7 +17,7 @@ class TrackStatusService:
 
         filtered = []
         for r in all_rents:
-            # ✅ เงื่อนไข: user ต้องตรง และสถานะต้องเป็น pending หรือ approved
+            # ✅ เงื่อนไข: user ต้องตรง และสถานะต้องเป็น pending,approved
             if (
                 r["user_id"] == user_id
                 and r["status"]["name"] in ["pending", "approved"]
