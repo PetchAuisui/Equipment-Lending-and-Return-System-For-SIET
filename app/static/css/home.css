@@ -7,7 +7,7 @@
   --muted:#666;
   --card:#f7f7f8;
   --card-border:#e8e8eb;
-  --hero-bg:#ffd3e3;
+  --hero-bg:#FFCCE2;
   --cta:#54c26f;
   --cta-hover:#43a85c;
   --danger:#b51e1e;
@@ -18,7 +18,7 @@
 .home-page{
   padding: 24px clamp(16px, 3vw, 32px) 48px;
   color: var(--ink);
-  max-width: 1200px;
+  max-width: 1370px;
   margin-inline: auto;
 }
 
@@ -35,14 +35,24 @@
 }
 .hero-left h1{
   margin:0 0 8px;
-  font-size: clamp(22px, 3.2vw, 36px);
+  font-size: clamp(33px, 3.2vw, 45px);
   line-height:1.25;
   font-weight:800;
 }
-.hero-left p{ margin:6px 0 16px; color:var(--muted); font-size:clamp(14px,1.6vw,18px); }
+.hero-left p{
+  margin: 6px 0 16px;
+  font-size: clamp(18px, 1.8vw, 22px);
+  font-weight: 600;
+  color: #333;
+}
 .btn-cta{
-  display:inline-block; background:var(--cta); color:#fff; border-radius:12px;
-  padding:12px 22px; text-decoration:none; font-weight:700;
+  display:inline-block;
+  background:var(--cta);
+  color:#fff;
+  border-radius:12px;
+  padding:12px 22px;
+  text-decoration:none;
+  font-weight:700;
   transition: transform .08s ease, background .15s ease;
 }
 .btn-cta:hover{ background:var(--cta-hover); transform: translateY(-1px); }
@@ -54,38 +64,37 @@
   .hero-left{ order:1; }
 }
 
-/* ---------- Two-column main area ---------- */
-/* --- Stack sections vertically: Top borrowed first, then outstanding --- */
+/* ---------- Main sections (stack vertically) ---------- */
 .home-grid{
   display: grid;
-  grid-template-columns: 1fr;   /* เดิม 1.5fr 1fr → เปลี่ยนเป็นคอลัมน์เดียว */
+  grid-template-columns: 1fr;      /* ซ้อนกันบน–ล่าง */
   gap: 24px;
   margin-top: 8px;
 }
-
-/* เผื่อมี style order อื่น ๆ ในอนาคต—ย้ำให้ซ้ายมาก่อน ขวาตามหลัง */
 .col-left{ order: 1; }
 .col-right{ order: 2; }
-
-/* ปรับระยะขอบนเล็กน้อยให้บล็อกล่างหายชิด */
 .col-right .section-header{ margin-top: 4px; }
 
-@media (max-width: 980px){
-  .home-grid{ grid-template-columns: 1fr; }
-}
-
+/* ---------- Section headers & spacing ---------- */
+.section-block{ margin: 48px 0; }              /* เว้นระยะระหว่างแต่ละ section */
 .section-header{
   display:flex; align-items:baseline; gap:12px;
-  margin-bottom: 14px;
+  margin-bottom: 20px;                         /* เว้นหัวข้อกับเนื้อหา */
 }
-.section-header h2{ margin:0; font-size: clamp(18px, 2.2vw, 24px); font-weight:800; }
+.section-header h2{
+  margin:0;
+  font-size: clamp(22px, 2.8vw, 30px);
+  font-weight:900;
+  color:#222;
+  letter-spacing:.5px;
+}
 .muted{ color:var(--muted); font-size:14px; }
 
 /* ---------- Cards grid ---------- */
 .grid-cards{
   display:grid;
   grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-  gap:16px;
+  gap:24px;                                     /* ช่องไฟระหว่างการ์ด */
 }
 
 /* ---------- Card with floating thumb ---------- */
@@ -94,22 +103,29 @@
   background: var(--card);
   border: 1px solid var(--card-border);
   border-radius: 14px;
-  padding: 56px 14px 14px;  /* เว้นพื้นที่บนให้รูป */
+  padding: 56px 14px 14px;                      /* เว้นด้านบนให้รูป */
   display:flex; flex-direction:column; gap:10px;
   transition: box-shadow .15s ease, transform .08s ease;
 }
-.equip-card:hover{ box-shadow: 0 6px 18px rgba(0,0,0,.06); transform: translateY(-2px); }
+.equip-card:hover{
+  box-shadow: 0 6px 18px rgba(0,0,0,.06);
+  transform: translateY(-2px);
+}
 
+/* Floating thumbnail */
 .equip-thumb{
   position:absolute;
   top:-18px;
-  left:16px;                 /* ใช้ left:50% + translateX(-50%) ถ้าอยากให้อยู่กลาง */
+  left:16px;                                    /* ถ้าอยากให้อยู่กลาง: left:50%; transform:translateX(-50%); */
   width:96px; height:64px;
   border-radius:12px; overflow:hidden; background:#fff;
   border:1px solid var(--card-border);
   box-shadow: 0 8px 18px rgba(0,0,0,.08);
 }
-.equip-thumb img{ width:100%; height:100%; object-fit:cover; display:block; transition: transform .25s ease; }
+.equip-thumb img{
+  width:100%; height:100%; object-fit:cover; display:block;
+  transition: transform .25s ease;
+}
 .equip-card:hover .equip-thumb img{ transform: scale(1.04); }
 
 /* Card content */
@@ -125,7 +141,16 @@
 .badge.ok{ background:#e8f7ec; border-color:#b7e2c3; color:var(--ok); }
 .badge.danger{ background:#fdeaea; border-color:#f1b5b5; color:var(--danger); }
 
-.equip-card__actions{ margin-top:6px; }
+/* Actions row: รายละเอียดซ้าย / ยืมขวา */
+.equip-card__actions{
+  margin-top:6px;
+  display:flex;
+  justify-content: space-between;
+  align-items:center;
+}
+.btn-outline,
+.btn-borrow{ min-width:90px; text-align:center; }
+
 .btn-outline{
   display:inline-block; padding:8px 12px; border-radius:10px;
   border:1px solid #cfcfd4; background:#fff; text-decoration:none; color:#333;
@@ -133,74 +158,93 @@
 }
 .btn-outline:hover{ background:#f9f9fb; transform: translateY(-1px); }
 
-/* ---------- Table (right column) ---------- */
+/* ---------- Borrow Button ---------- */
+.btn-borrow{
+  display:inline-block;
+  margin-left:8px;
+  background: var(--cta);
+  color:#fff;
+  border:none;
+  border-radius:10px;
+  padding:8px 14px;
+  font-weight:600;
+  text-decoration:none;
+  cursor:pointer;
+  transition: background .15s ease, transform .08s ease, box-shadow .15s ease;
+  box-shadow: 0 2px 6px rgba(84,194,111,.2);
+}
+.btn-borrow:hover{ background: var(--cta-hover); transform: translateY(-1px); box-shadow:0 4px 10px rgba(84,194,111,.3); }
+.btn-borrow:active{ transform: translateY(0); box-shadow:0 2px 6px rgba(84,194,111,.2); }
+.btn-borrow[disabled], .btn-borrow.disabled{
+  background:#ccc; color:#666; cursor:not-allowed; box-shadow:none; transform:none;
+}
+
+/* ===== Table (clean classic) ===== */
 .table-scroll{
   overflow:auto;
-  border:1px solid var(--card-border);
-  border-radius:12px;
   background:#fff;
+  border: 1px solid var(--card-border);
+  border-radius: 16px;
+  box-shadow: 0 2px 10px rgba(0,0,0,.03);
+  margin-top: 18px;         /* เว้นหัวข้อกับตาราง */
 }
+
 .table{
   width:100%;
-  border-collapse:collapse;
-  font-size:14px;
-  min-width: 560px;
+  border-collapse: separate; /* ใช้ separate เพื่อทำเส้นแบ่งสวย */
+  border-spacing: 0;
+  font-size: 14px;
 }
+
 .table thead th{
-  background:#fafafa; font-weight:700; text-align:left;
-  padding:12px 14px; border-bottom:1px solid var(--card-border);
+  background:#f6f7f8;       /* เทาอ่อน */
+  color:#222;
+  font-weight: 800;
+  text-align:left;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--card-border);
 }
-.table td{ padding:11px 14px; border-bottom:1px solid var(--card-border); }
-.table tbody tr:hover{ background:#fffdf6; }
-.row-overdue{ background:#fff6f6; }
 
-/* ---------- Borrow Button ---------- */
-.btn-borrow {
-  display: inline-block;
-  margin-left: 8px;
-  background: var(--cta);
-  color: #fff;
-  border: none;
-  border-radius: 10px;
-  padding: 8px 14px;
+.table tbody td{
+  padding: 14px 16px;
+  border-bottom: 1px solid #eee;  /* เส้นแบ่งแถวบาง ๆ */
+}
+.table tbody tr:last-child td{
+  border-bottom: none;      /* แถวสุดท้ายไม่ต้องมีเส้น */
+}
+
+.table tbody tr:hover{
+  background: #fafafa;      /* hover เบา ๆ */
+}
+
+/* คอลัมน์สถานะ (เม็ดแคปซูล) */
+.table .badge.ok{
+  background:#e8f7ec;
+  color: var(--ok);
+  border: 1px solid #cfe8d7;
+  padding: 6px 12px;
+  border-radius: 999px;
   font-weight: 600;
-  text-decoration: none;
-  cursor: pointer;
-  transition: background 0.15s ease, transform 0.08s ease, box-shadow 0.15s ease;
-  box-shadow: 0 2px 6px rgba(84, 194, 111, 0.2);
+  font-size: 12px;
+}
+.table .badge.danger{
+  background:#fdeaea;
+  color: var(--danger);
+  border:1px solid #f2c0c0;
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-weight: 600;
+  font-size: 12px;
 }
 
-.btn-borrow:hover {
-  background: var(--cta-hover);
-  transform: translateY(-1px);
-  box-shadow: 0 4px 10px rgba(84, 194, 111, 0.3);
-}
+/* ทำให้ขอบมนสวยทั้งกล่อง */
+.table thead th:first-child { border-top-left-radius: 16px; }
+.table thead th:last-child  { border-top-right-radius: 16px; }
+.table tbody tr:last-child td:first-child { border-bottom-left-radius: 16px; }
+.table tbody tr:last-child td:last-child  { border-bottom-right-radius: 16px; }
 
-.btn-borrow:active {
-  transform: translateY(0);
-  box-shadow: 0 2px 6px rgba(84, 194, 111, 0.2);
-}
-
-/* สำหรับปุ่มที่ปิด (เมื่อไม่ login) */
-.btn-borrow[disabled],
-.btn-borrow.disabled {
-  background: #ccc;
-  color: #666;
-  cursor: not-allowed;
-  box-shadow: none;
-  transform: none;
-}
-/* ---------- ปรับตำแหน่งปุ่มในแต่ละการ์ด ---------- */
-.equip-card__actions {
-  margin-top: 6px;
-  display: flex;
-  justify-content: space-between; /* ✅ ดูรายละเอียดอยู่ซ้าย, ยืมอยู่ขวา */
-  align-items: center;
-}
-
-/* เพิ่มความบาลานซ์ให้ปุ่ม */
-.btn-outline,
-.btn-borrow {
-  min-width: 90px;
-  text-align: center;
+/* เลย์เอาต์/การตัดคำให้พอดีหน้าจอเล็ก */
+@media (max-width: 640px){
+  .table{ font-size: 13px; }
+  .table thead th, .table tbody td{ padding: 12px; }
 }
