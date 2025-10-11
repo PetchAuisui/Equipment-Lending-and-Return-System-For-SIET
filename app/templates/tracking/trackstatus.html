@@ -22,6 +22,7 @@
                 <thead>
                     <tr>
                         <th class="col-item">รายการ</th>
+                        <th class="col-status">สถานะ</th>
                         <th class="col-date">วันที่ยืม</th>
                         <th class="col-date">กำหนดคืน</th>
                         <th class="col-action">การจัดการ</th>
@@ -32,18 +33,25 @@
                         {% for r in rents %}
                         <tr>
                             <td class="item-name">{{ r.equipment_name }}</td>
+                            <td class="status">
+                                <span style="color: {{ r.status_color }}">{{ r.status_name }}</span>
+                            </td>
                             <td>{{ r.start_date.strftime('%d-%m-%Y') }}</td>
                             <td>{{ r.due_date.strftime('%d-%m-%Y') }}</td>
                             <td class="actions">
-                                <a href="#" class="btn blue">เพิ่มเวลา</a>
-                                <a href="#" class="btn red">แจ้งเสียหาย</a>
-                                <a href="#" class="btn green">แจ้งคืน</a>
-                                <a href="#" class="btn yellow">รายละเอียด</a>
+                                {% if r.status_name == 'approved' %}
+                                    <a href="#" class="btn blue">เพิ่มเวลา</a>
+                                    <a href="#" class="btn red">แจ้งเสียหาย</a>
+                                    <a href="#" class="btn green">แจ้งคืน</a>
+                                    <a href="#" class="btn yellow">รายละเอียด</a>
+                                {% else %}
+                                    <a href="#" class="btn yellow">รายละเอียด</a>
+                                {% endif %}
                             </td>
                         </tr>
                         {% endfor %}
                     {% else %}
-                        <tr><td colspan="4" class="no-data">ไม่มีรายการยืมอุปกรณ์</td></tr>
+                        <tr><td colspan="5" class="no-data">ไม่มีรายการยืมอุปกรณ์</td></tr>
                     {% endif %}
                 </tbody>
             </table>
