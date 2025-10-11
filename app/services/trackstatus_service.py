@@ -6,7 +6,9 @@ class TrackStatusService:
         self.repo = TrackStatusRepository()
 
     def get_track_status_list(self):
-        """ดึงข้อมูลทั้งหมด (รวมสถานะ) แล้วกรองเฉพาะ user ที่ login"""
+        """ดึงข้อมูลทั้งหมด (รวมสถานะ) แล้วกรองเฉพาะ user ที่ login
+           และเฉพาะ status = pending, approved เท่านั้น
+        """
         user_id = session.get("user_id")
         if not user_id:
             return []
@@ -15,13 +17,16 @@ class TrackStatusService:
 
         filtered = []
         for r in all_rents:
-            if r["user_id"] == user_id:
+            # ✅ เงื่อนไข: user ต้องตรง และสถานะต้องเป็น pending หรือ approved
+            if (
+                r["user_id"] == user_id
+                and r["status"]["name"] in ["pending", "approved"]
+            ):
                 filtered.append({
                     "rent_id": r["rent_id"],
                     "equipment_name": r["equipment"]["name"],
                     "start_date": r["start_date"],
                     "due_date": r["due_date"],
-                    # ✅ เพิ่มข้อมูลสถานะ
                     "status_name": r["status"]["name"],
                     "status_color": r["status"]["color_code"],
                 })
