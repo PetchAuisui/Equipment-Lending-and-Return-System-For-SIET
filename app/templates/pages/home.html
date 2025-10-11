@@ -1,6 +1,44 @@
 {% extends 'base/base.html' %}
-{% block title %}Home{% endblock %}
+{% block title %}หน้าหลัก{% endblock %}
+
 {% block content %}
-<h1>Home</h1>
-<p>ยินดีต้อนรับสู่ระบบยืม-คืน</p>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/home.css') }}">
+<div class="home-page">
+  <section class="hero">
+    <div class="hero-left">
+      <h1>ระบบยืม-คืนอุปกรณ์<br>คณะครุศาสตร์อุตสาหกรรม</h1>
+      <p>ยินดีต้อนรับ {{ current_user.name or 'ผู้ใช้งาน' }}</p>
+      {% if not current_user.is_authenticated %}
+        <a href="{{ url_for('auth.login_page') }}" class="btn-cta">เข้าสู่ระบบ</a>
+      {% else %}
+           <a href="{{ url_for('inventory.lend_device') }}" class="btn-cta">ดูรายการอุปกรณ์</a>
+      {% endif %}
+    </div>
+    <div class="hero-right">
+      <img src="{{ url_for('static', filename='images/hero_devices.png') }}" alt="illustration">
+    </div>
+  </section>
+
+  <section class="features">
+    <h2>บริการของระบบ</h2>
+    <div class="feature-grid">
+      <div class="card">
+        <img src="{{ url_for('static', filename='images/icons/device.png') }}">
+        <h3>ยืมอุปกรณ์</h3>
+        <p>เลือกอุปกรณ์ที่ต้องการใช้ และตรวจสอบสถานะว่างได้แบบเรียลไทม์</p>
+      </div>
+      <div class="card">
+        <img src="{{ url_for('static', filename='images/icons/history.png') }}">
+        <h3>ติดตามประวัติ</h3>
+        <p>ดูประวัติการยืม-คืน และสถานะคำขอในระบบได้ทุกเวลา</p>
+      </div>
+      <div class="card">
+        <img src="{{ url_for('static', filename='images/icons/back.png') }}">
+        <h3>คืนอุปกรณ์</h3>
+        <p>แจ้งคืนอุปกรณ์ง่าย ๆ ผ่านระบบออนไลน์</p>
+      </div>
+    </div>
+  </section>
+</div>
 {% endblock %}
+
