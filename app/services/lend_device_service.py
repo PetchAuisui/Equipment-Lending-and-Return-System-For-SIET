@@ -1,65 +1,49 @@
-
-from app.repositories import lend_device_repository  # ✅ มีอยู่แล้ว
-
-def get_all_equipments():
-    return lend_device_repository.get_all_equipments_with_images()
+from app.repositories.lend_device_repository import LendDeviceRepository
 
 def get_grouped_equipments_separated():
-    equipments = lend_device_repository.get_all_equipments_with_images()
+    repo = LendDeviceRepository()
+    equipments = repo.get_all_equipments_with_images()
 
     grouped = {}
+
     for e in equipments:
         name = e["name"]
+        code = e.get("code")
+        status = str(e.get("status", "")).lower()
+
+        # ✅ ถ้ายังไม่มี key นี้ให้สร้างก่อน
         if name not in grouped:
             grouped[name] = {
                 "name": name,
                 "amount": 0,
                 "image": e["image_path"],
                 "category": e.get("category", ""),
+                "status": status,
                 "status_color": "",
                 "codes": []
             }
 
-        # ✅ เก็บเฉพาะ code ที่ status == available เท่านั้น
-        if e["status"] == "available" and e.get("code"):
-            grouped[name]["codes"].append(e["code"])
+        # ✅ นับเฉพาะอุปกรณ์ที่พร้อมใช้งาน
+        if status in ["available", "พร้อมใช้งาน"]:
             grouped[name]["amount"] += 1
-
+            if code:
+                grouped[name]["codes"].append(code)
 
     available_items = []
     unavailable_items = []
+
     for item in grouped.values():
         item["status_color"] = "transparent" if item["amount"] > 0 else "yellow"
         if item["amount"] > 0:
             available_items.append(item)
         else:
             unavailable_items.append(item)
-            
-    def get_grouped_equipments_separated(self) -> Dict[str, List[dict]]:
-        """รวมข้อมูลอุปกรณ์ตามชื่อ และแยกเป็น available / unavailable"""
-        equipments = self.repo.get_all_equipments_with_images()
 
-        grouped = {}
-        for e in equipments:
-            name = e["name"]
-            if name not in grouped:
-                grouped[name] = {
-                    "name": name,
-                    "amount": 0,
-                    "image": e["image_path"],
-                    "category": e.get("category", ""),
-                    "status_color": ""
-                }
-            if e["status"] == "available":
-                grouped[name]["amount"] += 1
+    # ✅ print debug ตรวจสอบ
+    print("\n=== DEBUG FROM SERVICE ===")
+    for i in available_items:
+        print(f"{i['name']} → {i['codes']}")
+    print("==========================\n")
 
-        available_items, unavailable_items = [], []
-        for item in grouped.values():
-            # สี: ถ้ามีเหลือให้ยืม -> โปร่งใส, ถ้าไม่มี -> เหลือง
-            item["status_color"] = "transparent" if item["amount"] > 0 else "yellow"
-            if item["amount"] > 0:
-                available_items.append(item)
-            else:
-                unavailable_items.append(item)
-
-        return {"available": available_items, "unavailable": unavailable_items}
+    repo.close()
+    return {"available": available_items, "unavailable": unavailable_items}

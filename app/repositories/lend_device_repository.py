@@ -10,7 +10,7 @@ class LendDeviceRepository:
     def get_all_equipments_with_images(self):
         results = (
             self.db.query(Equipment)
-            .options(joinedload(Equipment.equipment_images))  # หรือ .images
+            .options(joinedload(Equipment.equipment_images))
             .filter(
                 ~exists().where(
                     and_(
@@ -29,8 +29,11 @@ class LendDeviceRepository:
                 "name": e.name,
                 "category": e.category,
                 "status": e.status,
+                "code": e.code,  # ✅ ต้องมีตรงนี้!
                 "image_path": (
-                    e.equipment_images[0].image_path if getattr(e, "equipment_images", []) else "images/placeholder.png"
+                    e.equipment_images[0].image_path
+                    if getattr(e, "equipment_images", [])
+                    else "images/placeholder.png"
                 ),
             })
         return data
