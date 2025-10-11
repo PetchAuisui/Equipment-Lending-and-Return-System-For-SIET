@@ -1,0 +1,28 @@
+.page-head { display:flex; justify-content: center; align-items:center; margin:.75rem 0 1rem; }
+.chip { display:inline-block; padding:.45rem .9rem; border-radius:999px; background:#eee; text-decoration:none; color:#111; font-weight:600; }
+.chip-primary { background:#d4e6d1; }
+.chip-pink { background:#ffd5e5; color:#111; }
+.chip:hover { opacity: 0.85;transition: 0.2 ease; }
+.card-grid { display:grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap:1rem; }
+.card { background:#ffdbe8; border-radius:18px; padding:1rem; box-shadow:0 2px 6px rgba(0,0,0,.06); display:flex; flex-direction:column; }
+.card-title { background:#f7a8c2; border-radius:999px; text-align:center; font-weight:800; padding:.3rem .8rem; margin-bottom:.6rem; }
+.card-img { display:flex; justify-content:center; align-items:center; height:140px; }
+.card-img img { max-height:100%; max-width:100%; object-fit:contain; }
+
+.card-meta { list-style:none; padding:0; margin:.5rem 0 .8rem; display:grid; gap:.35rem; }
+.card-meta li { background:#fff; border-radius:8px; padding:.4rem .6rem; font-weight:600; }
+.card-meta li span { color:#666; margin-right:.4rem; font-weight:700; }
+
+.card-actions { display:flex; gap:.6rem; justify-content:center; margin:.3rem 0 .5rem; }
+.btn { border:none; border-radius:10px; padding:.45rem .9rem; font-weight:800; cursor:pointer; }
+.btn-approve { background:#22c55e; color:#fff; }
+.btn-reject  { background:#ef4444; color:#fff; }
+.btn-detail  { display:inline-block; background:#ffd166; color:#111; text-decoration:none; border-radius:999px; padding:.35rem .8rem; font-weight:800; }
+
+.card-footer { display:flex; justify-content:space-between; align-items:center; }
+.pill { padding:.15rem .55rem; border-radius:999px; font-weight:800; }
+.pill.ok   { background:#dcfce7; color:#166534; }
+.pill.bad  { background:#fee2e2; color:#7f1d1d; }
+.pill.wait { background:#fef3c7; color:#7c2d12; }
+
+.empty { color:#666; }

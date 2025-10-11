@@ -1,0 +1,15 @@
+{% extends 'base/base_teacher.html' %}
+{% block title %}Pending Only{% endblock %}
+{% block content %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/instructor.css') }}">
+
+<h2>รายการคำขอยืมที่ยังไม่ดำเนินการ</h2>
+<ul class="todo-list">
+  {% for r in rows %}
+    <li>#{{ r.id }} — {{ r.borrower }} : {{ r.equipment }} (ยืม {{ r.borrow_date.strftime('%d/%m/%Y') }})</li>
+  {% else %}
+    <li class="empty">ไม่พบคำขอที่ค้างอยู่</li>
+  {% endfor %}
+</ul>
+<p class="muted">* เพจนี้เป็น placeholder ไว้ก่อน สามารถต่อยอดเป็นหน้ารายละเอียดเต็มได้ภายหลัง</p>
+{% endblock %}
