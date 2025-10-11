@@ -1,0 +1,16 @@
+{% extends 'base/base_teacher.html' %}
+{% block title %}{{ title }}{% endblock %}
+{% block content %}
+<style>
+  .bridge-frame {
+    width: 100%;
+    height: calc(100vh - 160px);
+    border: none;
+    border-radius: 12px;
+    background: #fff;
+    box-shadow: 0 2px 6px rgba(0,0,0,.1);
+  }
+</style>
+
+<iframe class="bridge-frame" src="{{ src }}" loading="lazy"></iframe>
+{% endblock %}
