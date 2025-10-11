@@ -15,6 +15,7 @@ def create_app():
     # ===== Upload config (สำคัญสำหรับให้รูป “มา”) =====
     app.config['UPLOAD_FOLDER'] = os.path.join(app.static_folder, 'uploads', 'equipment')
     app.config['ALLOWED_IMAGE_EXT'] = {'jpg','jpeg','png','gif','webp'}
+
     os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 
     # ===== Register blueprints =====

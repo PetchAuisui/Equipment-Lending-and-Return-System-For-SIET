@@ -55,15 +55,16 @@
                 {% else %}
                   <span class="badge badge-dim">{{ e.status or '—' }}</span>
                 {% endif %}
+
               </div>
             </div>
           </a>
         {% endfor %}
       </div>
     {% else %}
+
       <div class="empty-hint">— ยังไม่มีอุปกรณ์ในระบบ —</div>
     {% endif %}
-
     <a href="{{ url_for('inventory.admin_equipment_new') }}" class="fab-add">➕ เพิ่มอุปกรณ์</a>
   </div>
 </div>

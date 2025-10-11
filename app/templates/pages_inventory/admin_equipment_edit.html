@@ -77,6 +77,21 @@
           </select>
         </div>
 
+          <div class="row">
+            <label style="font-weight:600;">การอนุมัติจากอาจารย์</label>
+            <div style="display:flex; gap:20px; margin-top:6px;">
+              <label style="display:flex; align-items:center; gap:8px;">
+                <input type="radio" name="require_teacher_approval" value="1">
+                ต้องขออนุมัติอนุมัติ
+              </label>
+
+              <label style="display:flex; align-items:center; gap:8px;">
+                <input type="radio" name="require_teacher_approval" value="0" checked>
+                ไม่ต้องขออนุมัติ
+              </label>
+            </div>
+          </div>
+
         {% if item.images and item.images|length > 0 %}
           {% set latest = (item.images|sort(attribute='created_at', reverse=True))|first %}
           <div class="eqedit-row">
@@ -96,6 +111,7 @@
         </div>
 
         <div class="eqedit-actions">
+
           <button type="submit"
                   class="btn btn--danger"
                   formaction="{{ url_for('inventory.admin_equipment_delete', eid=item.equipment_id) }}"
@@ -106,11 +122,11 @@
           </button>
 
           <div class="eqedit-actions__right">
+
             <a class="btn" href="{{ url_for('inventory.admin_equipment_list') }}">ยกเลิก</a>
             <button type="submit" class="btn btn--primary">บันทึก</button>
           </div>
         </div>
-
       </form>
     </div>
   </div>

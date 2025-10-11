@@ -19,6 +19,7 @@
         {% if item.images and item.images|length > 0 %}
           {% set latest = (item.images|sort(attribute='created_at', reverse=True))|first %}
           <img src="{{ url_for('static', filename=(latest.image_path|replace('\\','/'))) }}" alt="ภาพอุปกรณ์">
+
         {% else %}
           <div class="placeholder">ไม่มีรูปภาพ</div>
         {% endif %}
@@ -45,6 +46,16 @@
               <span class="badge badge--lost">สูญหาย</span>
             {% else %}
               <span class="badge badge--default">{{ item.status or '-' }}</span>
+            {% endif %}
+          </div>
+
+          <!-- ✅ การอนุมัติจากอาจารย์ (ข้อความธรรมดา ไม่มีสีพื้น) -->
+          <div style="font-weight:600;">การอนุมัติจากอาจารย์:</div>
+          <div>
+            {% if item.confirm %}
+              ต้องขออนุมัติ
+            {% else %}
+              ไม่ต้องขออนุมัติ
             {% endif %}
           </div>
 
