@@ -28,18 +28,48 @@
 
 <div class="device-container">
     <!-- อุปกรณ์พร้อม -->
+     
     {% for item in equipments.available %}
     <div class="device_box" style="background-color: {{ item.status_color }};" 
          data-name="{{ item.name | lower }}" data-category="{{ item.category | lower }}">
+        {% if item.image %}
         <img class="image" src="{{ url_for('static', filename=item.image) }}" alt="{{ item.name }}">
+        {% else %}
+        <img class="image" src="{{ url_for('static', filename='img/default.png') }}" alt="{{ item.name }}">
+        {% endif %}
+        <!-- สำหรับรูปที่อาจจะไม่มี-->
         <div class="device_info">
             <span class="device_name">{{ item.name }}</span>
             <span class="amount">จำนวนคงเหลือ : {{ item.amount }}</span>
         </div>
-        <div class="button_group">
-            <a href="#" class="btn btn-detail">รายละเอียด</a>
-            <a href="/lend" class="btn btn-borrow">ยืม</a>
-        </div>
+
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+function showLoginPopup() {
+  // ✅ ตั้ง flag ก่อน redirect
+  localStorage.setItem("showLoginAlert", "1");
+  // ✅ ไปหน้า login
+  window.location.href = "{{ url_for('auth.login_page') }}";
+}
+</script>
+
+<div class="button_group">
+  <a href="#" class="btn btn-detail">รายละเอียด</a>
+
+  {% if current_user.is_authenticated %}
+    <a href="{{ url_for('inventory.lend', codes=item.codes|join(','), name=item.name, image=item.image) }}" class="btn btn-borrow">ยืม</a>
+  {% else %}
+    <a href="#" class="btn btn-borrow" onclick="showLoginPopup()">ยืม</a>
+  {% endif %}
+</div>
+
+
+
+
+
+
+
     </div>
     {% endfor %}
 
