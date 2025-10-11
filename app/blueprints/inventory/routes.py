@@ -1,7 +1,4 @@
-from flask import (
-    render_template, request, redirect, url_for,
-    flash, abort, session, current_app
-)
+from flask import render_template, request, redirect, url_for, current_app, flash, abort, session
 from app.blueprints.inventory import inventory_bp
 from app.services.lend_device_service import get_grouped_equipments_separated
 from app.services import lend_service
@@ -16,30 +13,25 @@ from sqlalchemy.sql import exists, and_
 from app.models.stock_movements import StockMovement
 import os, uuid
 from app.utils.decorators import staff_required
-from datetime import datetime
-
-# ==== Service Imports ====
 from app.services.equipment_service import EquipmentService
-from app.services.lend_device_service import LendDeviceService
 
-# ==== Helper Factory ====
-def _equip_svc(): return EquipmentService()
-def _lend_svc(): return LendDeviceService()
 
-# ------------------------------------------------------------
-# 1️⃣ หน้า "ระบบยืมอุปกรณ์"
-# ------------------------------------------------------------
+# ===== Helper Factory =====
+def _equip_svc():
+    """helper สำหรับสร้าง service ของอุปกรณ์"""
+    return EquipmentService()
+
 @inventory_bp.route("/lend_device")
 def lend_device():
-    """
-    แสดงหน้าระบบยืมอุปกรณ์
-    - ส่ง 2 list: available / unavailable
-    """
     equipments = get_grouped_equipments_separated()
-    return render_template(
-        "pages_inventory/lend_device.html",
-        equipments=equipments
-    )
+
+    print("\n=== DEBUG EQUIPMENTS ===")
+    for e in equipments["available"]:
+        print(f"{e['name']} => {e.get('codes')}")
+    print("========================\n")
+
+    return render_template("pages_inventory/lend_device.html", equipments=equipments)
+
 
 
 @inventory_bp.route('/lend')
