@@ -35,3 +35,11 @@ class OutstandingDTO:
     due_date: datetime
     is_overdue: bool
     overdue_days: int
+
+@dataclass
+class TopBorrowedDTO:
+    equipment_id: int
+    name: str
+    code: str
+    borrow_count: int
+    image_path: str | None = None   # 👈 เพิ่มตรงนี้

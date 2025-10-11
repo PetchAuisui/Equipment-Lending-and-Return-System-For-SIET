@@ -8,6 +8,7 @@ class HomeService:
     def __init__(self, repo: Optional[HomeRepository] = None):
         self.repo = repo or HomeRepository()
 
+
     def get_top_borrowed_items(self, limit: int = 8) -> List[TopBorrowedDTO]:
         rows = self.repo.get_top_borrowed(limit=limit)
         return [
@@ -16,9 +17,11 @@ class HomeService:
                 name=r.name,
                 code=r.code,
                 borrow_count=r.borrow_count,
+                image_path=r.image_path or "images/default_equip.png"  # 👈 รูป fallback
             )
             for r in rows
         ]
+
 
     def get_outstanding_items_for_user(self, user_id: int, limit: int = 10) -> List[OutstandingDTO]:
         rows = self.repo.get_outstanding_by_user(user_id=user_id, limit=limit)
