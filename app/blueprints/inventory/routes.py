@@ -100,6 +100,7 @@ def admin_equipment_edit(eid):
             detail=form.get("detail"), buy_date=buy_date,
             status=form.get("status"), confirm=form.get("confirm"),
             image_file=request.files.get("image"),
+            actor_id=session.get("user_id"),
         )
         if not ok:
             flash(err, "error")

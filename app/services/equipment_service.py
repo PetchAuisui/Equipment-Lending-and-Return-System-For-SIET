@@ -4,7 +4,7 @@ from typing import Optional, List
 from datetime import datetime
 from werkzeug.utils import secure_filename
 from flask import current_app
-from app.db.models import Equipment, EquipmentImage
+from app.db.models import Equipment, EquipmentImage, User
 from app.repositories.equipment_repository import EquipmentRepository
 
 class EquipmentService:
@@ -49,8 +49,6 @@ class EquipmentService:
             detail=detail,
             buy_date=buy_date,
             status=status or "available",
-            # ถ้ามีคอลัมน์ confirm ในโมเดลจริง ค่อยเปิดใช้
-            # confirm=confirm,
             created_at=datetime.utcnow(),
         )
         self.repo.add_equipment(equipment)
@@ -60,12 +58,19 @@ class EquipmentService:
             image_rel_path = self._save_image(image_file)
             self.repo.add_image(equipment.equipment_id, image_rel_path)
 
-        # ✅ บันทึก movement
+        # ✅ ดึงชื่อผู้ใช้งานจาก user_id
+        actor_name = "ไม่ทราบชื่อ"
+        if actor_id:
+            actor = self.repo.db.query(User).filter_by(user_id=actor_id).first()
+            if actor:
+                actor_name = actor.name
+
+        # ✅ บันทึก movement พร้อมชื่อผู้เพิ่ม
         if actor_id:
             self.repo.add_movement(
                 equipment_id=equipment.equipment_id,
                 actor_id=actor_id,
-                history=f"[ADDED] เพิ่มอุปกรณ์ '{name}' (รหัส: {code})",
+                history=f"[ADDED] เพิ่มอุปกรณ์ '{name}' (รหัส: {code}) โดย {actor_name}",
             )
 
         self.repo.commit()
@@ -83,7 +88,8 @@ class EquipmentService:
         detail: Optional[str],
         buy_date,
         status: str,
-        confirm: bool,              # ไม่บังคับใช้ หาก schema ไม่มีฟิลด์นี้
+        confirm: bool,
+        actor_id: Optional[int] = None,
         image_file=None,
     ):
         eq = self.repo.get(equipment_id)
@@ -99,10 +105,7 @@ class EquipmentService:
         if buy_date:
             eq.buy_date = buy_date
 
-        # if hasattr(eq, "confirm"):
-        #     eq.confirm = bool(confirm)
-
-        # อัปเดตรูป: ลบเก่า เพิ่มใหม่
+        # ✅ อัปเดตรูป: ลบเก่า เพิ่มใหม่
         if image_file and image_file.filename:
             for im in list(self._images_of(eq)):
                 try:
@@ -116,6 +119,21 @@ class EquipmentService:
             rel_path = self._save_image(image_file)
             self.repo.add_image(eq.equipment_id, rel_path)
 
+        # ✅ ดึงชื่อผู้ใช้งานจาก user_id
+        actor_name = "ไม่ทราบชื่อ"
+        if actor_id:
+            actor = self.repo.db.query(User).filter_by(user_id=actor_id).first()
+            if actor:
+                actor_name = actor.name
+
+        # ✅ บันทึก movement พร้อมชื่อผู้แก้ไข
+        if eq and hasattr(self.repo, "add_movement"):
+            self.repo.add_movement(
+                equipment_id=eq.equipment_id,
+                actor_id=actor_id,
+                history=f"[UPDATED] แก้ไขข้อมูลอุปกรณ์ '{eq.name}' (รหัส: {eq.code}) โดย {actor_name}",
+            )
+
         self.repo.commit()
         return True, None, eq
 
@@ -125,7 +143,7 @@ class EquipmentService:
         if not eq:
             return False, "ไม่พบอุปกรณ์", None
 
-        # ลบไฟล์รูปจริง + ลบ row image
+        # ✅ ลบไฟล์รูปจริง + ลบ row image
         for im in list(self._images_of(eq)):
             try:
                 abs_path = self._abs_image_path(im.image_path)
@@ -135,15 +153,21 @@ class EquipmentService:
                 current_app.logger.warning("delete file failed: %s", e)
             self.repo.delete_image_row(im)
 
-        # บันทึก movement ว่า [DELETED] เพื่อใช้เป็นเงื่อนไขกรอง
+        # ✅ ดึงชื่อผู้ใช้งานจาก user_id
+        actor_name = "ไม่ทราบชื่อ"
+        if actor_id:
+            actor = self.repo.db.query(User).filter_by(user_id=actor_id).first()
+            if actor:
+                actor_name = actor.name
+
+        # ✅ บันทึก movement พร้อมชื่อผู้ลบ
         if actor_id:
             self.repo.add_movement(
                 equipment_id=eq.equipment_id,
                 actor_id=actor_id,
-                history=f"[DELETED] อุปกรณ์ '{eq.name}' (รหัส: {eq.code}) ถูกลบออกจากระบบ",
+                history=f"[DELETED] อุปกรณ์ '{eq.name}' (รหัส: {eq.code}) ถูกลบออกจากระบบ โดย {actor_name}",
             )
 
-        # ❌ ไม่เรียก repo.soft_delete_equipment / ไม่แตะ is_active
         self.repo.commit()
         return True, None, eq
 
@@ -152,10 +176,7 @@ class EquipmentService:
         return getattr(eq, self._img_rel, []) or []
 
     def _save_image(self, image_file) -> str:
-        """
-        เซฟไฟล์ลง /static/uploads/equipment/<uuid>.<ext>
-        และคืน 'uploads/equipment/<file>'
-        """
+        """เซฟไฟล์ลง /static/uploads/equipment/<uuid>.<ext>"""
         upload_dir = current_app.config["UPLOAD_FOLDER"]
         os.makedirs(upload_dir, exist_ok=True)
         ext = secure_filename(image_file.filename).rsplit(".", 1)[-1].lower()
@@ -165,10 +186,7 @@ class EquipmentService:
         return f"uploads/equipment/{fname}"
 
     def _abs_image_path(self, rel_path: str) -> str:
-        """
-        รับ 'uploads/equipment/xxx.png' -> คืน absolute path ใต้ static/
-        """
+        """รับ 'uploads/equipment/xxx.png' -> คืน absolute path ใต้ static/"""
         if rel_path.startswith("uploads/"):
             return os.path.join(current_app.static_folder, rel_path.replace("/", os.sep))
-        # fallback กรณีเก่า
         return os.path.join(current_app.config["UPLOAD_FOLDER"], os.path.basename(rel_path))
