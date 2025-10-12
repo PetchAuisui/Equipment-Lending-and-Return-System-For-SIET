@@ -32,7 +32,7 @@ class User(Base):
     # ✅ เพิ่ม foreign_keys ให้ชัดเจนทั้งสองด้าน
     rent_checked       = relationship("RentReturn", back_populates="checker", foreign_keys="RentReturn.check_by")
     rent_requests      = relationship("RentReturn", back_populates="user", foreign_keys="RentReturn.user_id")
-    teacher_confirmed  = relationship("RentReturn", back_populates="user", foreign_keys="RentReturn.teacher_confirmed")
+    teacher_confirmed = relationship("RentReturn",back_populates="teacher_confirm",foreign_keys="RentReturn.teacher_confirmed")
     renewals_approved  = relationship("Renewal", back_populates="approver")
     audits_made        = relationship("UserAudit",back_populates="actor",foreign_keys="UserAudit.actor_id",cascade="all, delete-orphan")
     audits_received    = relationship("UserAudit",back_populates="target_user",foreign_keys="UserAudit.user_id",cascade="all, delete-orphan")
