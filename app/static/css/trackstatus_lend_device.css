@@ -8,7 +8,7 @@ body {
 /* ส่วนครอบทั้งหมด */
 .detail-container {
   max-width: 1000px;             /* ✅ ขยายความกว้าง */
-  margin: 60px auto;
+  margin: 10px auto;
   background: #fff;
   border-radius: 14px;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
@@ -16,13 +16,7 @@ body {
   box-sizing: border-box;
 }
 
-/* หัวเรื่อง */
-h1 {
-  text-align: center;
-  font-size: 30px;
-  margin-bottom: 35px;
-  color: #333;
-}
+
 
 /* กล่องหลัก */
 .card {
@@ -170,4 +164,20 @@ h1 {
 .btn.red:hover {
   background-color: #d93232;
   color: #fff;
+}
+
+.page-title {
+  display: inline-block;
+  background-color: #f6b3c3;
+  color: white;
+  font-size: 28px;
+  font-weight: bold;
+  padding: 12px 50px;
+  border-radius: 18px;
+  margin-top: 40px;
+
+  /* ✅ จัดให้อยู่ตรงกลาง */
+  position: relative;
+  left: 50%;
+  transform: translateX(-50%);
 }

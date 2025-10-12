@@ -27,7 +27,7 @@ class TrackStatusService:
                 "status_color": r["status"]["color_code"],
             }
             for r in all_rents
-            if r["user_id"] == user_id and r["status"]["name"] in ["pending", "approved"]
+            if r["user_id"] == user_id and r["status"]["name"] in ["pending", "approved","pending  extend time", "approved extend time", "cancle extend time"]
         ]
 
         self.repo.close()
