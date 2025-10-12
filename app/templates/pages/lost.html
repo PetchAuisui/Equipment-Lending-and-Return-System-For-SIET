@@ -8,16 +8,13 @@
 {% block content %}
   <div class="lost-wrapper">
 
-    <!-- Header: red full-width bar inside the centered card -->
     <header class="lost-header">
       <i class="ri-file-edit-line"></i>
       <div class="lost-heading">แจ้งอุุปกรณ์สูญหายหรือเสียหาย</div>
     </header>
 
-    <!-- Form card -->
     <form class="lost-card" method="post" enctype="multipart/form-data">
 
-      <!-- Top: type, name, phone -->
       <div class="row small">
         <label>ประเภทการแจ้ง</label>
         <select name="report_type" class="input" required>
@@ -37,10 +34,11 @@
         <input name="phone" class="input" type="text" placeholder="081-xxx-xxxx" required>
       </div>
 
-      <!-- Middle: device, type+id, date -->
       <div class="row">
-        <label>อุปกรณ์ที่หาย/สูญหาย</label>
-        <input name="device" class="input" type="text" placeholder="ชื่ออุปกรณ์" required>
+        <label>อุปกรณ์ที่ยืมมาที่เกิดปัญหา</label>
+        <input name="device" class="input" type="text" placeholder="ชื่ออุปกรณ์" 
+               value="{{ request.args.equipment_name or '' }}" 
+               required>
       </div>
 
       <div class="row two-col">
@@ -50,9 +48,14 @@
         </div>
         <div>
           <label>ID</label>
-          <input name="device_id" class="input" type="text">
+          <input name="device_id" class="input" type="text"
+                 value="{{ request.args.equipment_code or '' }}">
         </div>
       </div>
+
+      {% if request.args.rent_id %}
+      <input type="hidden" name="rent_id" value="{{ request.args.rent_id }}">
+      {% endif %}
 
       <div class="row">
         <label>วันที่หาย/สูญหาย</label>
@@ -66,7 +69,6 @@
         </div>
       </div>
 
-      <!-- Bottom: place and detail -->
       <div class="row">
         <label>สถานที่ที่ทำหาย/สูญหาย</label>
         <input name="place" class="input" type="text" placeholder="สถานที่ที่ทำหาย" required>
@@ -77,7 +79,6 @@
         <textarea name="detail" class="input textarea" rows="4" placeholder="รายละเอียดเพิ่มเติม..."></textarea>
       </div>
 
-      <!-- Action row: upload left, send right -->
       <div class="row actions">
         <div class="upload">
           <label class="muted">อัปโหลดรูป</label>
@@ -160,6 +161,3 @@
   })();
 </script>
 {% endblock %}
-<!-- lost page removed: placeholder file -->
-<!-- If you want the lost form back, tell me which version (compact or original) and I will restore it. -->
-

@@ -104,6 +104,54 @@
       {% endif %}
     </section>
 
+    {# ------------------ NEW: Lost Equipment Section ------------------ #}
+    <section class="section-block">
+      <div class="section-header">
+        <h2>อุปกรณ์สูญหาย</h2>
+        <span class="muted">หากพบเจอโปรดติดต่อเบอร์ด้านล่าง</span>
+      </div>
+
+      <div class="lost-info-card">
+        <p>หากใครพบเจออุปกรณ์เหล่านี้ **โปรดติดต่อ**:</p>
+        <ul class="contact-list-lost">
+          <li>☎️ 012-345-6789 (สอบถามเรื่อง : คุณสมศรี)</li>
+          <li>✉️ support@kmitl.ac.th</li>
+        </ul>
+      </div>
+
+      <div class="grid-cards">
+        
+        <div class="equip-card lost lost-no-actions">
+          <div class="equip-thumb">
+            <img src="{{ url_for('static', filename='uploads/equipment/ปลั๊กพ่วง_5_ช่อง.jpg') }}" alt="ปลั๊กพ่วง 5 ช่อง">
+          </div>
+          <div class="equip-card__detail"> 
+            <div class="equip-card__title">ปลั๊กพ่วง 5 ช่อง</div>
+            <div class="equip-card__code">#PWC-005</div>
+            <p class="lost-detail">**วันที่ทำหาย:** 20/09/2025</p>
+            <p class="lost-detail">**สถานที่:** ห้องปฏิบัติการคอมพิวเตอร์ 1204</p>
+            <span class="lost-tag">สูญหาย</span>
+          </div>
+        </div>
+        
+        <div class="equip-card lost lost-no-actions">
+          <div class="equip-thumb">
+            <img src="{{ url_for('static', filename='uploads/equipment/Mouse_Wireless_HP_X3000.jpg') }}" alt="เมาส์ไร้สาย">
+          </div>
+          <div class="equip-card__detail"> 
+            <div class="equip-card__title">เมาส์ไร้สาย HP X3000</div>
+            <div class="equip-card__code">#MSE-002</div>
+            <p class="lost-detail">**วันที่ทำหาย:** 05/10/2025</p>
+            <p class="lost-detail">**สถานที่:** ลานกิจกรรมหน้าอาคาร</p>
+            <span class="lost-tag">สูญหาย</span>
+          </div>
+        </div>
+        
+      </div>
+    </section>
+    {# ------------------ END: Lost Equipment Section ------------------ #}
+
+
     <section class="section-block">
       <div class="section-header">
         <h2>อุปกรณ์ที่ยังไม่คืน</h2>
