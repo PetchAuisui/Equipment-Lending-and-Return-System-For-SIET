@@ -35,8 +35,9 @@ def seed_status_rents():
     try:
         status_list = [
             StatusRent(name="pending", color_code="#ff9800"),
-            StatusRent(name="approved", color_code="#4caf50"),
+            StatusRent(name="approved", color_code="#8840d1"),
             StatusRent(name="returned", color_code="#2196f3"),
+            StatusRent(name="succeed", color_code="#4caf50"),
         ]
         db.add_all(status_list)
         db.commit()
