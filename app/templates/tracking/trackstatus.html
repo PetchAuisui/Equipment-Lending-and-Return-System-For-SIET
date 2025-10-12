@@ -40,7 +40,7 @@
                             <td>{{ r.due_date.strftime('%d-%m-%Y') }}</td>
                             <td class="actions">
                                 {% if r.status_name == 'approved' %}
-                                    <a href="#" class="btn blue">เพิ่มเวลา</a>
+                                    <a href="{{ url_for('tracking.add_time') }}?rent_id={{ r.rent_id }}" class="btn blue">เพิ่มเวลา</a>
                                     <a href="#" class="btn red">แจ้งเสียหาย</a>
                                     <a href="#" class="btn green">แจ้งคืน</a>
                                     <a class="btn yellow" href="{{ url_for('tracking.lend_detial') }}?rent_id={{ r.rent_id }}">รายละเอียด</a>
