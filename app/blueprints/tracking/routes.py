@@ -1,6 +1,8 @@
-from flask import render_template
+from flask import request, render_template
 from . import tracking_bp
 from app.services.trackstatus_service import TrackStatusService, TrackStatusUserService
+
+
 
 @tracking_bp.get("/")
 def track_index():
@@ -10,7 +12,11 @@ def track_index():
 
 @tracking_bp.get("/lend_detial")
 def lend_detial():
-    """แสดงรายละเอียดการยืมของผู้ใช้ที่ล็อกอิน"""
+    """แสดงรายละเอียดการยืมตาม rent_id"""
+    rent_id = request.args.get("rent_id", type=int)  # ✅ รับค่าจาก URL เช่น /lend_detial?rent_id=3
     service = TrackStatusUserService()
-    rents = service.get_user_track_status()  # ✅ ดึงข้อมูลจาก Service
-    return render_template("tracking/lend_detial.html", rents=rents)
+    rents = service.get_user_track_status()
+
+    rent = next((r for r in rents if r["rent_id"] == rent_id), None)
+
+    return render_template("tracking/lend_detial.html", rent=rent)
