@@ -8,11 +8,13 @@ from app.repositories.user_repository import UserRepository
 from app.repositories.rent_history_repository import RentHistoryRepository
 from app.services.borrow_history_service import BorrowHistoryService
 from app.utils.decorators import login_required
+
+
 def _user_repo(): return UserRepository(SessionLocal())
 def _svc():       return BorrowHistoryService(RentHistoryRepository(SessionLocal()))
 
 
-@history_bp.get("/borrows")
+@history_bp.get("/history")
 @login_required
 def my_borrow_history():
     email = session.get("user_email")
