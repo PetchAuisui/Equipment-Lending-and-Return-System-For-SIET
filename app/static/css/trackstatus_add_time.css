@@ -17,7 +17,6 @@ body {
 }
 
 
-
 /* กล่องหลัก */
 .card {
   display: flex;
@@ -80,6 +79,47 @@ body {
 .date-row p {
   flex: 1;
   margin: 7px 0;
+}
+
+/* ✅ ช่อง input และ textarea ที่ใช้สำหรับขยายเวลา */
+.input-block {
+  width: 100%;
+  margin-top: 10px;
+  text-align: left;
+}
+
+.input-block label {
+  display: block;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 6px;
+}
+
+.extend-input {
+  width: 100%;
+  font-size: 17px;
+  background: #fff;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 10px 14px;
+  margin: 7px 0;
+  box-sizing: border-box;
+  line-height: 1.5;
+  font-family: "Prompt", sans-serif;
+}
+
+.extend-textarea {
+  width: 100%;
+  font-size: 17px;
+  background: #fff;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 10px 14px;
+  margin: 7px 0;
+  box-sizing: border-box;
+  line-height: 1.5;
+  resize: vertical;
+  font-family: "Prompt", sans-serif;
 }
 
 /* ข้อความ “ไม่พบข้อมูลการยืมนี้” */
@@ -166,6 +206,7 @@ body {
   color: #fff;
 }
 
+/* หัวข้อหลักของหน้า (ให้เหมือน trackstatus และอยู่ตรงกลาง) */
 .page-title {
   display: inline-block;
   background-color: #f6b3c3;
@@ -180,4 +221,43 @@ body {
   position: relative;
   left: 50%;
   transform: translateX(-50%);
+}
+
+/* ==== ปุ่ม ==== */
+.button-group {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.btn {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+/* ปุ่มยกเลิก */
+.btn-cancel {
+  text-decoration: none;
+  background: #d9534f; /* แดง */
+  color: white;
+}
+
+.btn-cancel:hover {
+  background: #c9302c;
+}
+
+/* ปุ่มยืนยัน */
+.btn-submit {
+  background: #5cb85c; /* เขียว */
+  color: white;
+  text-decoration: none;
+  text-align: center;
+}
+
+.btn-submit:hover {
+  background: #449d44;
 }
