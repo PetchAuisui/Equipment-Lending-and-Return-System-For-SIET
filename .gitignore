@@ -29,5 +29,9 @@ Thumbs.db
 
 # datebase
 
-.app.db
+app.db
 
+# DB files
+*.db
+*.sqlite
+*.sqlite3
