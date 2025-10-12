@@ -17,8 +17,7 @@
     <i class="ri-file-edit-fill"></i>
     <span>บันทึกการ “ยืม” อุปกรณ์</span>
   </div>
-
-{% if current_user.member_type == 'student' %}
+{% if current_user.member_type == 'student' and confirm == True %}
   <!-- Form สำหรับนักศึกษา -->
   <div class="form-container">
     <form action="{{ url_for('inventory.lend_submit') }}" method="POST">
