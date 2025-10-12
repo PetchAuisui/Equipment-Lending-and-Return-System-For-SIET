@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/user_return.css') }}">
+    <title>Track Status</title>
+</head>
+
+{% extends 'base/base.html' %}
+{% block title %}Track Status{% endblock %}
+{% block content %}
+
+<body>
+    <h1 class="track-title">แจ้งคืนอุปกรณ์</h1>
+    <p>คุณกำลังแจ้งคืนอุปกรณ์หมายเลข: {{ rent_id }}</p>
+
+    <h1>รายละเอียดการคืนอุปกรณ์</h1>
+
+    {% if rent_info %}
+        <div class="equipment-detail">
+            <p><strong>รหัสอุปกรณ์:</strong> {{ rent_info.equipment_id }}</p>
+            <p><strong>ชื่ออุปกรณ์:</strong> {{ rent_info.equipment_name }}</p>
+            {% if rent_info.image_path %}
+                <img src="{{ url_for('static', filename=rent_info.image_path) }}" alt="Equipment image" width="200">
+            {% endif %}
+            <p><strong>วันที่ยืม:</strong> {{ rent_info.start_date.strftime('%d-%m-%Y') }}</p>
+            <p><strong>กำหนดคืน:</strong> {{ rent_info.due_date.strftime('%d-%m-%Y') }}</p>
+        </div>
+
+        <!-- ✅ ปุ่มยืนยันและยกเลิก -->
+        <div class="action-buttons">
+    <form method="POST" action="{{ url_for('tracking.confirm_return', rent_id=rent_info.equipment_id) }}">
+        <button type="submit" class="btn-confirm">ยืนยันการคืน</button>
+    </form>
+
+    <a href="{{ url_for('tracking.track_index') }}" class="btn-cancel">ยกเลิก</a>
+</div>
+
+
+    {% else %}
+        <p>ไม่พบข้อมูลการยืมนี้</p>
+    {% endif %}
+</body>
+
+{% endblock %}
+</html>
