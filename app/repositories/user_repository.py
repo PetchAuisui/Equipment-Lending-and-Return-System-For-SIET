@@ -1,6 +1,6 @@
 from __future__ import annotations
-from typing import Optional, Dict, Iterable
-from datetime import datetime
+from typing import Optional, Dict, Iterable, Tuple
+from datetime import datetime, timezone
 import json
 
 from sqlalchemy import text
@@ -30,11 +30,22 @@ class UserRepository:
         """กรองเฉพาะฟิลด์ที่อนุญาต"""
         return {k: v for k, v in data.items() if k in ALLOWED_FIELDS}
 
-    def _is_sqlite(self) -> bool:
+    def _dialect(self) -> str:
         try:
-            return (self.session.bind.dialect.name or "").lower() == "sqlite"
+            return (self.session.bind.dialect.name or "").lower()
         except Exception:
-            return False
+            return ""
+
+    def _is_sqlite(self) -> bool:
+        return self._dialect() == "sqlite"
+
+    def _is_postgres(self) -> bool:
+        d = self._dialect()
+        return d in {"postgresql", "postgres"}
+
+    def _now(self) -> datetime:
+        # ใช้ UTC aware datetime
+        return datetime.now(timezone.utc)
 
     def _get_by_id(self, user_id: int) -> Optional[Dict]:
         sql = text("SELECT * FROM users WHERE user_id = :uid LIMIT 1")
@@ -57,19 +68,22 @@ class UserRepository:
             return {k: v for k, v in d.items() if k not in AUDIT_EXCLUDE_FIELDS}
 
         payload = {"before": _clean(before), "after": _clean(after)}
-        ts = datetime.utcnow()
+        ts = self._now()
 
-        # รองรับทั้ง SQLite และ Postgres
+        # เลือก expression JSON ให้เหมาะกับ DB
         if self._is_sqlite():
-            diff_expr = ":diff"                      # SQLite JSON column รับ text ได้
+            diff_expr = ":diff"               # SQLite: TEXT/JSON
+        elif self._is_postgres():
+            diff_expr = ":diff::jsonb"        # Postgres: แนะนำ jsonb
         else:
-            diff_expr = "CAST(:diff AS JSON)"        # Postgres/DB อื่น ๆ
+            diff_expr = "CAST(:diff AS JSON)" # อื่น ๆ
 
         sql = text(f"""
-            INSERT INTO audits (entity_id, action, actor_id, diff, created_at)
-            VALUES (:entity_id, :action, :actor_id, {diff_expr}, :ts)
+            INSERT INTO audits (entity, entity_id, action, actor_id, diff, created_at)
+            VALUES (:entity, :entity_id, :action, :actor_id, {diff_expr}, :ts)
         """)
         self.session.execute(sql, {
+            "entity": "users",  # ✅ ให้ตรง schema
             "entity_id": entity_id,
             "action": action,
             "actor_id": actor_id,
@@ -78,6 +92,15 @@ class UserRepository:
         })
 
     # ---------- readers ----------
+    def find_by_id(self, user_id: int) -> Optional[Dict]:
+        """ดึงผู้ใช้ตาม user_id"""
+        return self._get_by_id(user_id)
+
+    def find_by_identity(self, identity: str) -> Optional[Dict]:
+        """ดึงผู้ใช้จาก student_id หรือ employee_id โดยไม่ต้องรู้ประเภท"""
+        row = self.find_by_student_id(identity)
+        return row or self.find_by_employee_id(identity)
+
     def find_by_email(self, email: str) -> Optional[Dict]:
         sql = text("SELECT * FROM users WHERE email = :email LIMIT 1")
         row = self.session.execute(sql, {"email": email}).first()
@@ -95,10 +118,13 @@ class UserRepository:
 
     # ---------- writers ----------
     def add(self, data: Dict, *, actor_id: Optional[int] = None, audit: bool = True) -> Dict:
-        """สร้างผู้ใช้ใหม่ + เติม created_at/updated_at อัตโนมัติ + บันทึก audit 'created'"""
+        """
+        สร้างผู้ใช้ใหม่ + เติม created_at/updated_at อัตโนมัติ
+        เขียน audit 'created' (ถ้า audit=True)
+        """
         d = self._sanitize(dict(data))
-        d.setdefault("created_at", datetime.utcnow())
-        d.setdefault("updated_at", datetime.utcnow())
+        d.setdefault("created_at", self._now())
+        d.setdefault("updated_at", self._now())
 
         cols = ", ".join(d.keys())
         vals = ", ".join(f":{k}" for k in d.keys())
@@ -127,6 +153,7 @@ class UserRepository:
     def update_user(self, user_id: int, changes: Dict, *, actor_id: Optional[int]) -> Optional[Dict]:
         """
         อัปเดตผู้ใช้ตาม user_id แล้วเขียน audit 'updated'
+        - จะไม่อัปเดต/ไม่เขียน audit ถ้าไม่มีการเปลี่ยนค่า (no-op)
         คืนค่า row หลังอัปเดต หรือ None ถ้าหาไม่เจอ
         """
         before = self._get_by_id(user_id)
@@ -137,16 +164,22 @@ class UserRepository:
         if not d:
             return before  # ไม่มีอะไรจะอัปเดต
 
-        d["updated_at"] = datetime.utcnow()
-        safe_keys = [k for k in d.keys() if k not in {"user_id", "id", "created_at"}]
+        # ตัดค่าที่ไม่เปลี่ยนออก เพื่อลด no-op update
+        changeset = {k: v for k, v in d.items() if before.get(k) != v}
+        if not changeset:
+            return before  # ไม่มีการเปลี่ยนค่า → ไม่อัปเดตและไม่เขียน audit
+
+        changeset["updated_at"] = self._now()
+        safe_keys = [k for k in changeset.keys() if k not in {"user_id", "id", "created_at"}]
         sets = ", ".join(f"{k} = :{k}" for k in safe_keys)
 
         sql = text(f"UPDATE users SET {sets} WHERE user_id = :id RETURNING *")
-        d["id"] = user_id
+        changeset["id"] = user_id
 
-        row = self.session.execute(sql, d).first()
+        row = self.session.execute(sql, changeset).first()
         after = self._row_to_dict(row)
 
+        # เขียน audit เฉพาะเมื่อมีการเปลี่ยนจริง
         self._insert_audit(
             entity_id=user_id,
             action="updated",
@@ -206,7 +239,7 @@ class UserRepository:
 
     def list_users(self, page: int = 1, per_page: int = 10, q: Optional[str] = None) -> Dict:
         """
-        ดึง user ทั้งหมด รองรับค้นหา + แบ่งหน้า
+        ดึง users รองรับค้นหา + แบ่งหน้า
         return {"rows": [...], "total": int}
         """
         offset = (page - 1) * per_page
@@ -273,5 +306,5 @@ class UserRepository:
 
         return {
             "rows": [self._row_to_dict(r) for r in rows],
-            "total": total or 0
+            "total": int(total or 0),
         }
