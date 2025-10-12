@@ -46,6 +46,14 @@ def lend():
     teachers_data = lend_service.get_all_users()
     teachers = teachers_data["teachers"]
 
+    # ✅ 3. ดึงข้อมูล confirm จากอุปกรณ์
+    confirm_status = False  # ค่าเริ่มต้น (กรณีหาไม่เจอ)
+    with SessionLocal() as db:
+        if codes:
+            equipment = db.query(Equipment).filter(Equipment.code == codes[0]).first()
+            if equipment:
+                confirm_status = equipment.confirm  # ✅ ดึงค่าจาก DB
+
     # ✅ print log ไปที่ console (ตามที่คุณขอ)
     print("\n--- Teachers Data ---")
     for t in teachers:
@@ -59,29 +67,10 @@ def lend():
         image=image,
         codes=codes,
         subjects=subjects,
-        teachers=teachers
+        teachers=teachers,
+        confirm=confirm_status
     )
 
-    codes_raw = request.args.get("codes", "")
-    name = request.args.get("name", "")
-    image = request.args.get("image", "")
-
-    # แยกรหัสออกเป็น list
-    codes = [c.strip() for c in codes_raw.split(",") if c.strip()]
-
-    # ✅ ดึงข้อมูลวิชาและอาจารย์จาก service
-    subjects = lend_service.get_all_subjects()
-    teachers_data = lend_service.get_all_users()
-    teachers = teachers_data["teachers"]
-
-    return render_template(
-        "pages_inventory/lend.html",
-        name=name,
-        image=image,
-        codes=codes,
-        subjects=subjects,
-        teachers=teachers
-    )
 
 @inventory_bp.route("/lend_submit", methods=["POST"])
 def lend_submit():
