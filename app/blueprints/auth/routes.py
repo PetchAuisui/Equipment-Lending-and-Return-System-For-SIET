@@ -117,6 +117,7 @@ def inject_current_user():
             "phone": session.get("phone"),   
             "member_type": session.get("member_type"),
             "is_authenticated": session.get("is_authenticated", False),
+            "role": session.get("role"),
         }
     }
 

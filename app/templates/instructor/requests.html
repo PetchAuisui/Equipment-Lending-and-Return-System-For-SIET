@@ -1,69 +1,69 @@
 {% extends 'base/base_teacher.html' %}
-{% block title %}Requests{% endblock %}
-
+{% block title %}Requests (Pending){% endblock %}
 {% block content %}
 
-<link rel="stylesheet" href="{{ url_for('static', filename='css/instructor_cards.css') }}">
+<h2>คำขอรออนุมัติ</h2>
 
-<div class="toolbar">
-  <a href="{{ url_for('instructor.pending') }}" class="chip">กลับไปตารางสรุป</a>
-  <span class="chip chip-muted">รายละเอียดคำขอยืมที่ยังไม่ดำเนินการ</span>
-</div>
+<div class="card-grid">
 
-{% if not reqs %}
-  <p class="muted">ไม่มีคำขอค้างอยู่</p>
-{% else %}
-  <div class="card-grid">
-    {% for r in reqs %}
-      <div class="card">
-        <div class="card-media">
-          {# พยายามแสดงรูปอุปกรณ์ ถ้าไม่มีใช้ไอคอนดีฟอลต์ #}
-          {% set img = r.equipment.image if r.equipment else None %}
-          {% if img %}
-            {# กรณีเก็บเป็น uploads/... #}
-            {% if img.startswith('uploads/') %}
-              <img src="{{ url_for('static', filename=img) }}" alt="{{ r.equipment.name }}">
-            {% elif img.startswith('static/') %}
-              <img src="/{{ img }}" alt="{{ r.equipment.name }}">
-            {% else %}
-              <img src="{{ url_for('static', filename='uploads/equipment/' ~ img) }}" alt="{{ r.equipment.name }}">
-            {% endif %}
-          {% else %}
-            <img src="{{ url_for('static', filename='images/device.png') }}" alt="device">
-          {% endif %}
-        </div>
+  {% if reqs|length == 0 %}
+    <p class="empty">ไม่มีคำขอค้างอยู่</p>
+  {% endif %}
 
-        <div class="card-body">
-          <h3 class="card-title">{{ r.equipment.name if r.equipment else '—' }}</h3>
+  {% for r in reqs %}
+  {% set st = (r.status.name if r.status else 'PENDING')|lower %}
+  
+  {# ✅ ใช้ dict images ที่ส่งมาจาก instructor.py เพื่อแสดงรูป #}
+  {% set img_url = images.get(r.equipment_id) 
+      or url_for('static', filename='images/device/default.png') %}
 
-          <dl class="meta">
-            <div><dt>ผู้ยืม</dt><dd>{{ r.user.fullname if r.user else '—' }}</dd></div>
-            <div><dt>เริ่มยืม</dt><dd>{{ (r.start_date or '')|string }}</dd></div>
-            <div><dt>กำหนดคืน</dt><dd>{{ (r.due_date or '')|string }}</dd></div>
-            <div><dt>สถานะ</dt>
-              <dd>
-                <span class="badge">
-                  {{ r.status.name if r.status else 'PENDING' }}
-                </span>
-              </dd>
-            </div>
-          </dl>
+  <div class="card">
+    <div class="card-img">
+      <img
+        src="{{ images.get(r.equipment_id, url_for('static', filename='images/device/default.png')) }}"
+        alt="{{ r.equipment.name if r.equipment else 'device' }}"
+      />
+    </div>
 
-          <form method="post" action="{{ url_for('instructor.pending_decide', req_id=r.rent_id) }}" class="action-row">
-            <button name="action" value="approve" class="btn btn-approve">อนุมัติ</button>
-            <button name="action" value="reject" class="btn btn-reject">ปฏิเสธ</button>
-          </form>
+    <ul class="card-meta">
+      <li><span>รหัสคำขอ:</span> {{ r.rent_id }}</li>
+      <li><span>ผู้ขอ:</span>
+        {{ (r.user.student_id or r.user.employee_id) if r.user else '-' }}
+      </li>
+      <li><span>อุปกรณ์:</span>
+        {{ r.equipment.code if r.equipment and r.equipment.code else '-' }}
+        <div class="muted">{{ r.equipment.name if r.equipment else '' }}</div>
+      </li>
+      <li><span>ยืมเมื่อ:</span>
+        {{ r.start_date.strftime('%d/%m/%Y %H:%M') if r.start_date else '-' }}
+      </li>
+      <li><span>กำหนดคืน:</span>
+        {{ r.due_date.strftime('%d/%m/%Y %H:%M') if r.due_date else '-' }}
+      </li>
+      <li><span>หมายเหตุ:</span> {{ r.note or r.reason or '-' }}</li>
+    </ul>
 
-          <details class="reason">
-            <summary>เหตุผลการยืม</summary>
-            <p>{{ r.reason or '—' }}</p>
-          </details>
-        </div>
-      </div>
-    {% endfor %}
+    <div class="pill {% if st=='approved' %}ok{% elif st=='rejected' %}bad{% else %}warn{% endif %}">
+      {{ st }}
+    </div>
+
+    <div class="card-actions">
+      <a class="btn btn-detail"
+         href="{{ url_for('instructor.request_detail', req_id=r.rent_id) }}">รายละเอียด</a>
+
+      <form method="post" action="{{ url_for('instructor.pending_decide', req_id=r.rent_id) }}">
+        <input type="hidden" name="action" value="approve">
+        <button type="submit" class="btn btn-approve">อนุมัติ</button>
+      </form>
+
+      <form method="post" action="{{ url_for('instructor.pending_decide', req_id=r.rent_id) }}">
+        <input type="hidden" name="action" value="reject">
+        <button type="submit" class="btn btn-reject">ปฏิเสธ</button>
+      </form>
+    </div>
   </div>
-{% endif %}
 
-
+  {% endfor %}
+</div>
 
 {% endblock %}
