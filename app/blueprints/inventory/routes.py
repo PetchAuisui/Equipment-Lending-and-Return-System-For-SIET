@@ -32,8 +32,6 @@ def lend_device():
 
     return render_template("pages_inventory/lend_device.html", equipments=equipments)
 
-
-
 @inventory_bp.route('/lend')
 def lend():
     codes_raw = request.args.get("codes", "")
@@ -224,3 +222,12 @@ def toggle_teacher_approval(eid):
         svc.repo.commit()
         flash(f"{'เปิด' if eq.confirm else 'ปิด'}โหมดให้อาจารย์อนุมัติสำเร็จ", "success")
     return redirect(url_for("inventory.admin_equipment_list"))
+
+@inventory_bp.route("/equipments/<int:eid>/detail", methods=["GET"])
+def equipment_detail(eid):
+    """แสดงรายละเอียดอุปกรณ์ (ฝั่งผู้ใช้ทั่วไป)"""
+    svc = EquipmentService()
+    item = svc.get(eid)
+    if not item:
+        abort(404)
+    return render_template("pages_inventory/equipment_detail.html", item=item)

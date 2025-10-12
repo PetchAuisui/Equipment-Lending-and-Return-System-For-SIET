@@ -1,0 +1,36 @@
+{% extends 'base/base_user.html' %}
+{% block title %}รายละเอียดอุปกรณ์{% endblock %}
+{% block content %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/equipment_detail.css') }}">
+
+<div class="detail-container">
+  <div class="detail-card">
+    <div class="image-section">
+      <img 
+        src="{{ url_for('static', filename=item.images[0].image_path if item.images else 'images/no_image.png') }}" 
+        alt="{{ item.name }}">
+    </div>
+
+    <div class="info-section">
+      <h2>{{ item.name }}</h2>
+      <p><strong>รหัสครุภัณฑ์:</strong> {{ item.code }}</p>
+      <p><strong>หมวดหมู่:</strong> {{ item.category }}</p>
+      <p><strong>ยี่ห้อ:</strong> {{ item.brand }}</p>
+      <p><strong>รายละเอียด:</strong> {{ item.detail }}</p>
+      <p><strong>วันที่ซื้อ:</strong> 
+        {{ item.buy_date.strftime('%d/%m/%Y') if item.buy_date else '-' }}</p>
+      <p><strong>สถานะ:</strong> 
+        <span class="status {{ item.status }}">{{ item.status }}</span>
+      </p>
+      <p><strong>จำนวนคงเหลือ:</strong> {{ item.stock_remaining or 0 }}</p>
+
+      <div class="button-group">
+        <a href="{{ url_for('inventory.lend', codes=item.code, name=item.name, image=item.images[0].image_path if item.images else '') }}" 
+           class="btn btn-primary">ยืมอุปกรณ์</a>
+        <a href="{{ url_for('inventory.lend_device') }}" 
+           class="btn btn-outline">กลับ</a>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
