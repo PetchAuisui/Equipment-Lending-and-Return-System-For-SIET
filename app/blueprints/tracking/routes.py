@@ -20,3 +20,7 @@ def lend_detial():
     rent = next((r for r in rents if r["rent_id"] == rent_id), None)
 
     return render_template("tracking/lend_detial.html", rent=rent)
+
+@tracking_bp.get("/add_time")
+def add_time():
+    return render_template("tracking/add_time.html")
