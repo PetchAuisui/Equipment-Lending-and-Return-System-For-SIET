@@ -37,12 +37,17 @@ def policy():
 def lost_report():
     """Simple lost/damaged report page. Currently POST only flashes and redirects back."""
     if request.method == 'POST':
-        # Minimal server-side: collect some fields (could be expanded to save to DB later)
+        # Minimal server-side handling: could save to DB here
         fullname = request.form.get('full_name')
         phone = request.form.get('phone')
         device = request.form.get('device')
-        # Flash a success message and redirect back to the form (could redirect to a thank-you page)
         flash('แบบแจ้งความถูกส่งเรียบร้อย', 'success')
-        return redirect(url_for('pages.lost_report'))
+        return redirect(url_for('pages.lost_sent'))
 
     return render_template('pages/lost.html')
+
+
+@pages_bp.get('/lost/sent')
+def lost_sent():
+    """Confirmation page after sending lost report."""
+    return render_template('pages/lost_sent.html')
