@@ -26,6 +26,7 @@ def create_app():
     from .blueprints.admin import admin_users_bp
     from .blueprints.admin import admin_bp                     # root: "/"
     from app.blueprints.pages.routes import pages_bp
+    from app.blueprints.history import history_bp
 
     app.register_blueprint(pages_bp)
     app.register_blueprint(auth_bp, url_prefix="/auth")
@@ -33,7 +34,6 @@ def create_app():
     app.register_blueprint(tracking_bp, url_prefix="/track-status")
     app.register_blueprint(admin_users_bp)
     app.register_blueprint(admin_bp)
-
-
+    app.register_blueprint(history_bp)
 
     return app
