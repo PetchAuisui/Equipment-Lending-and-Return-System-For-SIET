@@ -1,3 +1,7 @@
+{% extends 'base/base.html' %}
+{% block title %}Track Status{% endblock %}
+
+{% block content %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -7,13 +11,40 @@
     <title>Track Status</title>
 </head>
 
-{% extends 'base/base.html' %}
-{% block title %}Track Status{% endblock %}
-{% block content %}
-
 <body>
-    <h1>detail</h1>
-</body>
+    <h1>รายละเอียดการยืมอุปกรณ์</h1>
 
-{% endblock %}
+    {% if rents and rents|length > 0 %}
+        {% for r in rents %}
+            <div class="card" style="margin: 1rem 0; padding: 1rem; border-radius: 10px; border: 1px solid #ccc; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+                {% if r.image_path %}
+                    <img src="{{ url_for('static', filename=r.image_path) }}" 
+                         alt="{{ r.equipment_name }}" 
+                         style="width: 200px; height: auto; border-radius: 8px;">
+                {% endif %}
+
+                <h2>{{ r.equipment_name }} ({{ r.equipment_code }})</h2>
+                <p><strong>วันที่ยืม:</strong> {{ r.start_date }}</p>
+                <p><strong>กำหนดคืน:</strong> {{ r.due_date }}</p>
+                <p><strong>สถานะ:</strong> 
+                    <span style="color: {{ r.status_color }}; font-weight: bold;">
+                        {{ r.status_name }}
+                    </span>
+                </p>
+
+                <hr>
+
+                <p><strong>ชื่อผู้ยืม:</strong> {{ r.full_name }}</p>
+                <p><strong>เบอร์โทร:</strong> {{ r.phone_number }}</p>
+                <p><strong>สาขา:</strong> {{ r.department }}</p>
+                <p><strong>วิชา:</strong> {{ r.subject_name }}</p>
+                <p><strong>อาจารย์ประจำวิชา:</strong> {{ r.teacher_name }}</p>
+                <p><strong>เหตุผลในการยืม:</strong> {{ r.reason }}</p>
+            </div>
+        {% endfor %}
+    {% else %}
+        <p>ยังไม่มีข้อมูลการยืมของคุณ</p>
+    {% endif %}
+</body>
 </html>
+{% endblock %}
