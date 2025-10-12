@@ -11,17 +11,18 @@
     <div class="content-row">
       <!-- รูปอุปกรณ์ -->
       <div class="image-section">
-        <img src="{{ url_for('static', filename=item.images[0].image_path if item.images else 'images/no_image.png') }}"
+        <img src="{{ url_for('static', filename=(item.image_path or item.image or 'images/no_image.png')) }}"
              alt="{{ item.name }}">
       </div>
 
       <!-- ข้อมูลอุปกรณ์ -->
       <div class="info-section">
-        <h3 class="equip-name">{{ item.name }}</h3>
+        <h2 class="equip-name">{{ item.name }}</h2>
 
         <p><strong>หมวดหมู่:</strong> {{ item.category or '-' }}</p>
         <p><strong>ยี่ห้อ:</strong> {{ item.brand or '-' }}</p>
-        <p><strong>รายละเอียด:</strong> {{ item.detail or 'ไม่มีรายละเอียดเพิ่มเติม' }}</p>
+        <p><strong>รายละเอียด:</strong> {{ item.detail or '-' }}</p>
+
         <p><strong>สถานะ:</strong>
           {% if item.status == 'available' %}
             <span class="status available">พร้อมใช้งาน</span>
@@ -29,10 +30,8 @@
             <span class="status in-use">กำลังถูกยืม</span>
           {% elif item.status == 'broken' %}
             <span class="status broken">ชำรุด</span>
-          {% elif item.status == 'lost' %}
-            <span class="status lost">สูญหาย</span>
           {% else %}
-            <span class="status unknown">ไม่ทราบ</span>
+            <span class="status lost">สูญหาย</span>
           {% endif %}
         </p>
 
@@ -44,17 +43,14 @@
           {% endif %}
         </p>
 
-        <p><strong>จำนวนคงเหลือ:</strong> {{ item.stock_remaining or 0 }}</p>
+        <p><strong>จำนวนคงเหลือ:</strong> {{ item.amount or 0 }} / {{ item.total or 0 }}</p>
 
-        <!-- ปุ่ม -->
         <div class="button-group">
-          <a href="{{ url_for('inventory.lend_device') }}" class="btn btn-gray">กลับ</a>
+          <a href="{{ url_for('inventory.lend_device') }}" class="btn btn-cancel">กลับ</a>
 
-          {% if current_user.is_authenticated %}
-            <a href="{{ url_for('inventory.lend', codes=item.code, name=item.name, image=item.images[0].image_path if item.images else '') }}" 
-               class="btn btn-blue">ยืมอุปกรณ์</a>
-          {% else %}
-            <a href="#" class="btn btn-blue" onclick="showLoginPopup()">ยืมอุปกรณ์</a>
+          {% if item.status == 'available' %}
+            <a href="{{ url_for('inventory.lend', codes=item.codes|join(','), name=item.name, image=(item.image_path or item.image)) }}" 
+               class="btn btn-submit">ยืมอุปกรณ์</a>
           {% endif %}
         </div>
       </div>
