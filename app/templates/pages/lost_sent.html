@@ -1,0 +1,34 @@
+{% extends 'base/blank.html' %}
+{% block title %}แจ้งอุปกรณ์สูญหายหรือเสียหาย - ส่งแล้ว{% endblock %}
+
+{% block head %}
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/lost.css') }}">
+{% endblock %}
+
+{% block content %}
+  <div class="lost-wrapper">
+    <header class="lost-header">
+      <i class="ri-file-edit-line"></i>
+      <div class="lost-heading">แจ้งอุุปกรณ์สูญหายหรือเสียหาย</div>
+    </header>
+
+    <div class="lost-card sent">
+      <div class="sent-main">
+        <h2 class="sent-line black">เราได้รับข้อมูลของท่านแล้ว</h2>
+        <h3 class="sent-line red">กรุณารอตรวจสอบจากทางเจ้าหน้าที่</h3>
+        <p class="sent-line black">หรือติดต่อได้ที่ :</p>
+
+        <ul class="contact-list">
+          <li>💬 Line : @kmitl</li>
+          <li>☎️ 012-000-0000 (สอบถามเรื่อง : คุณ...)</li>
+          <li>☎️ 02-000-0000 (สอบถามเรื่อง : คุณ...)</li>
+          <li>✉️ support@kmitl.ac.th</li>
+        </ul>
+
+        <div class="sent-actions">
+          <a href="{{ url_for('pages.home') }}" class="btn-send">กลับไปหน้าหลัก</a>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
