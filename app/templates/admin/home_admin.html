@@ -22,7 +22,7 @@
       <div class="card__title">อุปกรณ์สูญหาย/ชำรุด</div>
     </a>
 
-    <a class="card" href="#">
+    <a class="card" href={{ url_for('inventory.admin_confirm_return_item') }}">
       <img class="card__icon" src="{{ url_for('static', filename='/images/icons/back.png') }}" alt="">
       <div class="card__title">คืนอุปกรณ์</div>
     </a>

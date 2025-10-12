@@ -8,6 +8,7 @@ from sqlalchemy.orm import joinedload
 from sqlalchemy.exc import IntegrityError
 from werkzeug.utils import secure_filename
 from datetime import datetime
+from app.services.return_item import ReturnItemService
 import os, uuid
 from app.services.return_item import ReturnItemService
 
@@ -248,76 +249,17 @@ def admin_equipment_edit(eid):
         db.close()
 
 
-@inventory_bp.route('/equipments/return', methods=['GET'])
-def return_item_form():
-    """แสดงหน้าฟอร์มสำหรับการคืนอุปกรณ์"""
-    # ในหน้า form นี้ ควรจะมีช่องให้กรอก 'รหัสอุปกรณ์' หรือ 'รหัสการยืม' 
-    # เพื่อใช้ในการค้นหาและประมวลผลการคืน
-    return render_template('pages_inventory/admin_return_item.html')
-
-
-@inventory_bp.route('/equipments/return', methods=['POST'])
-def return_item_submit():
-    """ประมวลผลการคืนอุปกรณ์"""
-    
-    # 1. ดึงข้อมูลจากฟอร์ม (สมมติว่ารับ 'code' ของอุปกรณ์ หรือ 'borrow_id')
-    equipment_code = (request.form.get("code") or "").strip()
-    
-    if not equipment_code:
-        flash("กรุณากรอกรหัส/หมายเลขอุปกรณ์ที่ต้องการคืน", "error")
-        return redirect(url_for('inventory.return_item_form'))
-
-    db = SessionLocal()
-    try:
-        # 2. ค้นหาอุปกรณ์ด้วยรหัส/หมายเลข
-        equipment = (
-            db.query(Equipment)
-              .filter(Equipment.code == equipment_code)
-              .first()
-        )
-        
-        if not equipment:
-            flash(f"ไม่พบอุปกรณ์ด้วยรหัส/หมายเลข: {equipment_code}", "error")
-            return redirect(url_for('inventory.return_item_form'))
-
-        # 3. ตรวจสอบสถานะว่าสามารถคืนได้หรือไม่ (สมมติว่า 'on_loan' คือสถานะที่ยืมอยู่)
-        if equipment.status != 'on_loan':
-            flash(f"อุปกรณ์ '{equipment.name}' รหัส {equipment_code} ไม่ได้อยู่ในสถานะยืม", "error")
-            # ถ้ามีระบบยืม/คืนที่ซับซ้อนกว่านี้ (เช่น มีตาราง BorrowRecord)
-            # ควรจะตรวจสอบจากตารางนั้นว่ามีการยืมที่ยังไม่คืนหรือไม่
-            return redirect(url_for('inventory.return_item_form'))
-
-        # 4. อัปเดตสถานะอุปกรณ์ (หลักการเบื้องต้นของการคืนคือเปลี่ยน status กลับเป็น 'available')
-        equipment.status = 'available'
-        
-        # 5. อัปเดตเวลาการแก้ไข (optional)
-        # equipment.updated_at = datetime.utcnow()
-        
-        # 6. (สำหรับระบบที่ซับซ้อน) ถ้ามีตาราง BorrowRecord
-        # ควรจะอัปเดตเรคคอร์ดการยืมที่เกี่ยวข้อง ให้มีเวลา 'return_date'
-        # latest_borrow_record = db.query(BorrowRecord).filter(...).first()
-        # latest_borrow_record.return_date = datetime.utcnow()
-        # db.add(latest_borrow_record) 
-        
-        db.commit()
-        flash(f"คืนอุปกรณ์ '{equipment.name}' รหัส {equipment_code} เรียบร้อยแล้ว", "success")
-        return redirect(url_for('inventory.lend_device')) # หรือไปหน้าหลัก/หน้ารายการอุปกรณ์
-
-    except Exception as e:
-        db.rollback()
-        current_app.logger.error("Return item failed: %s", e)
-        flash("เกิดข้อผิดพลาดในการคืนอุปกรณ์ กรุณาลองใหม่อีกครั้ง", "error")
-        return redirect(url_for('inventory.return_item_form'))
-    finally:
-        db.close()
-
 @inventory_bp.route("/user/return/<int:borrow_id>", methods=["POST"])
 def user_submit_return(borrow_id):
+    """
+    ผู้ใช้กดแจ้งคืนอุปกรณ์ (เปลี่ยนสถานะเป็น 'pending_return')
+    """
     db = SessionLocal()
     try:
-        return_service = ReturnItemService(db)
-        # ... สมมติว่า user_id ถูกดึงมาจาก session หรือ token ...
+        # TODO: ดึง user_id จาก session หรือ current_user
+        # user_id = current_user.id 
         
+        return_service = ReturnItemService(db)
         updated_record, message = return_service.user_request_return(borrow_id)
 
         if updated_record:
@@ -325,19 +267,24 @@ def user_submit_return(borrow_id):
         else:
             flash(message, "error")
             
-        return redirect(url_for("...")) # หน้าแสดงรายการยืมของผู้ใช้
+        # ✅ Redirect ไปหน้าแสดงรายการยืมของผู้ใช้
+        # (สมมติว่าชื่อ route คือ 'inventory.user_loan_history')
+        return redirect(url_for("inventory.user_loan_history")) 
     finally:
         db.close()
 
 # ...
 @inventory_bp.route("/admin/confirm_return/<int:borrow_id>", methods=["POST"])
 def admin_confirm_return_item(borrow_id):
+    """
+    Admin ยืนยันการคืนอุปกรณ์ (เปลี่ยนสถานะเป็น 'returned' และปลดอุปกรณ์)
+    """
     db = SessionLocal()
     try:
-        return_service = ReturnItemService(db)
-        # ... สมมติว่า admin_id ถูกดึงมาจาก session ...
+        # TODO: ดึง admin_id จาก session หรือ current_user (ต้องเป็น Admin)
         admin_id = 1 # แทนที่ด้วย ID จริงของ Admin ที่ล็อกอินอยู่
 
+        return_service = ReturnItemService(db)
         updated_record, message = return_service.admin_confirm_return(borrow_id, admin_id)
 
         if updated_record:
@@ -345,17 +292,30 @@ def admin_confirm_return_item(borrow_id):
         else:
             flash(message, "error")
             
-        return redirect(url_for("...")) # หน้าแสดงรายการรอการยืนยันของ Admin
+        # ✅ Redirect กลับไปหน้าแสดงรายการรอการยืนยันของ Admin
+        return redirect(url_for("inventory.admin_pending_returns")) 
     finally:
         db.close()
 
-@inventory_bp.route("/admin/returns/pending")
+@inventory_bp.route("/admin/returns/pending", methods=["GET"])
 def admin_pending_returns():
+    """
+    แสดงหน้า Admin: รายการยืมที่รอการยืนยันการคืน
+    """
     db = SessionLocal()
     try:
+        # TODO: ตรวจสอบสิทธิ์ Admin ก่อนเข้าหน้านี้
         return_service = ReturnItemService(db)
         pending_records = return_service.get_pending_returns_list()
+        
         # ส่งรายการที่รอดำเนินการไปให้ template
         return render_template("pages_inventory/admin_return_item.html", pending_records=pending_records)
+    except Exception as e:
+        current_app.logger.error(f"Error loading pending returns list: {e}")
+        flash("เกิดข้อผิดพลาดในการดึงรายการที่รอการยืนยัน", "error")
+        # ส่งกลับไปหน้า Admin Dashboard หลัก
+        return redirect(url_for("admin.index")) 
     finally:
         db.close()
+
+# ... (Route อื่นๆ ของคุณ)
