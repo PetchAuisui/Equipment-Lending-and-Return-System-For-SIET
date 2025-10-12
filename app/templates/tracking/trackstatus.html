@@ -42,8 +42,8 @@
                                 {% if r.status_name == 'approved' %}
                                     <a href="#" class="btn blue">เพิ่มเวลา</a>
                                     <a href="#" class="btn red">แจ้งเสียหาย</a>
-                                    <a href="#" class="btn green">แจ้งคืน</a>
-                                    <a href="#" class="btn yellow">รายละเอียด</a>
+                                    <a href="{{ url_for('tracking.user_return', rent_id=r.rent_id) }}" class="btn green">แจ้งคืน</a>
+                                    <a href="" class="btn yellow">รายละเอียด</a>
                                 {% else %}
                                     <a href="#" class="btn yellow">รายละเอียด</a>
                                 {% endif %}
