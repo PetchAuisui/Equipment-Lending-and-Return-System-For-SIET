@@ -215,6 +215,7 @@ class Renewal(Base):
     old_due     = Column(DateTime, nullable=False)
     new_due     = Column(DateTime, nullable=False)
     approved_by = Column(Integer, ForeignKey("users.user_id"))
+    status      = Column(String, nullable=False, default="pending")
     created_at  = Column(DateTime, default=datetime.utcnow)
     note        = Column(Text)
 
