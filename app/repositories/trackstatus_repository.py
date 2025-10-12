@@ -1,14 +1,15 @@
 from sqlalchemy.orm import joinedload
 from app.db.db import SessionLocal
-from app.db.models import RentReturn, Equipment, StatusRent, Subject, User
+from app.db.models import RentReturn, Equipment, EquipmentImage, StatusRent, Subject, User
+
 
 class TrackStatusRepository:
     def __init__(self):
         self.db = SessionLocal()
 
-    # -----------------------------
-    # ✅ ของเดิม (อย่าแตะ) สำหรับ TrackStatusService
-    # -----------------------------
+    # ------------------------------------------------------------------
+    # ✅ ของเดิม: ใช้ในหน้าแรก (TrackStatusService)
+    # ------------------------------------------------------------------
     def get_all_rent_returns_with_equipment(self):
         """ดึงข้อมูล RentReturn ทั้งหมดพร้อมข้อมูลอุปกรณ์และสถานะ"""
         results = (
@@ -23,7 +24,6 @@ class TrackStatusRepository:
         data = []
         for r in results:
             data.append({
-                # ✅ RentReturn
                 "rent_id": r.rent_id,
                 "equipment_id": r.equipment_id,
                 "user_id": r.user_id,
@@ -37,7 +37,6 @@ class TrackStatusRepository:
                 "status_id": r.status_id,
                 "created_at": r.created_at,
 
-                # ✅ Equipment
                 "equipment": {
                     "equipment_id": getattr(r.equipment, "equipment_id", None),
                     "name": getattr(r.equipment, "name", None),
@@ -51,7 +50,6 @@ class TrackStatusRepository:
                     "created_at": getattr(r.equipment, "created_at", None),
                 },
 
-                # ✅ StatusRent
                 "status": {
                     "status_id": getattr(r.status, "status_id", None),
                     "name": getattr(r.status, "name", None),
@@ -60,26 +58,27 @@ class TrackStatusRepository:
             })
         return data
 
-    # -----------------------------
-    # ✅ ของใหม่ สำหรับ TrackStatusUserService (ใช้ /lend_detial)
-    # -----------------------------
+    # ------------------------------------------------------------------
+    # ✅ ของใหม่: ใช้ในหน้า lend_detail (TrackStatusUserService)
+    # ------------------------------------------------------------------
     def get_all_rent_returns_full(self):
-        """ดึงข้อมูล RentReturn ทั้งหมด พร้อมข้อมูลอุปกรณ์, วิชา, สถานะ, และอาจารย์"""
+        """ดึงข้อมูล RentReturn พร้อมอุปกรณ์, รูป, สถานะ, วิชา, อาจารย์, ผู้ใช้"""
         results = (
             self.db.query(RentReturn)
             .options(
                 joinedload(RentReturn.equipment)
-                    .joinedload(Equipment.equipment_images),  # ✅ โหลดรูปภาพอุปกรณ์
-                joinedload(RentReturn.status),
-                joinedload(RentReturn.subject),
-                joinedload(RentReturn.teacher_confirm),     # ✅ โหลดอาจารย์ผู้อนุมัติ
+                    .joinedload(Equipment.equipment_images),  # โหลดภาพอุปกรณ์
+                joinedload(RentReturn.status),               # โหลดสถานะ
+                joinedload(RentReturn.subject),              # โหลดวิชา
+                joinedload(RentReturn.teacher_confirm),      # โหลดอาจารย์ผู้อนุมัติ
+                joinedload(RentReturn.user),                 # โหลดผู้ยืม
             )
             .all()
         )
 
         data = []
         for r in results:
-            # ✅ หา path ของภาพแรก (ถ้ามี)
+            # ✅ ภาพแรกของอุปกรณ์ (ถ้ามี)
             image_path = None
             if r.equipment and r.equipment.equipment_images:
                 image_path = r.equipment.equipment_images[0].image_path
@@ -103,9 +102,21 @@ class TrackStatusRepository:
                     "name": getattr(r.subject, "subject_name", None),
                 },
 
-                # ✅ Teacher (จาก user)
+                # ✅ Teacher
                 "teacher": {
                     "name": getattr(r.teacher_confirm, "name", None),
+                },
+
+                # ✅ User (เฉพาะชื่อและเบอร์โทร)
+                "user": {
+                    "name": getattr(r.user, "name", None),
+                    "phone": getattr(r.user, "phone", None),
+                },
+
+                # ✅ Status
+                "status": {
+                    "name": getattr(r.status, "name", None),
+                    "color_code": getattr(r.status, "color_code", None),
                 },
             })
         return data
