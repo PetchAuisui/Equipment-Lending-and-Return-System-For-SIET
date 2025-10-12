@@ -1,10 +1,42 @@
-from app.models.lend_device import device
+from sqlalchemy.orm import joinedload
+from sqlalchemy.sql import exists, and_
+from app.db.db import SessionLocal
+from app.db.models import Equipment, StockMovement
 
-def get_all_equipment_mock():
-    equipments = [
-        device("images/hdmi.jpg", "สาย HDMI", 3),
-        device("images/hdmi.jpg", "เมาส์", 5),
-        device("images/hdmi.jpg", "คีย์บอร์ด", 2),
-        device("images/hdmi.jpg", "คีย์บอร์ด", 2)
-    ]
-    return equipments
+class LendDeviceRepository:
+    def __init__(self):
+        self.db = SessionLocal()
+
+    def get_all_equipments_with_images(self):
+        results = (
+            self.db.query(Equipment)
+            .options(joinedload(Equipment.equipment_images))
+            .filter(
+                ~exists().where(
+                    and_(
+                        StockMovement.equipment_id == Equipment.equipment_id,
+                        StockMovement.history.ilike("%[DELETED]%")
+                    )
+                )
+            )
+            .all()
+        )
+
+        data = []
+        for e in results:
+            data.append({
+                "equipment_id": e.equipment_id,
+                "name": e.name,
+                "category": e.category,
+                "status": e.status,
+                "code": e.code,  # ✅ ต้องมีตรงนี้!
+                "image_path": (
+                    e.equipment_images[0].image_path
+                    if getattr(e, "equipment_images", [])
+                    else "images/placeholder.png"
+                ),
+            })
+        return data
+
+    def close(self):
+        self.db.close()
