@@ -7,3 +7,8 @@ def track_index():
     service = TrackStatusService()
     rents = service.get_track_status_list()
     return render_template("tracking/trackstatus.html", rents=rents)
+
+@tracking_bp.get("/lend_detial")
+def lend_detial():
+    service = TrackStatusService()
+    return render_template("tracking/lend_detial.html")
