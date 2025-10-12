@@ -4,7 +4,7 @@
 from __future__ import annotations
 from typing import List, Dict
 
-from app.repositories.rent_history_repository import RentHistoryRepository
+from app.repositories.history_repository import RentHistoryRepository
 
 
 class BorrowHistoryService:

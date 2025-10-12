@@ -5,8 +5,8 @@ from flask import render_template, session, redirect, url_for, current_app
 from . import history_bp
 from app.db.db import SessionLocal
 from app.repositories.user_repository import UserRepository
-from app.repositories.rent_history_repository import RentHistoryRepository
-from app.services.borrow_history_service import BorrowHistoryService
+from app.repositories.history_repository import RentHistoryRepository
+from app.services.history_service import BorrowHistoryService
 from app.utils.decorators import login_required
 
 
