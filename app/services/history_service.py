@@ -1,24 +1,49 @@
-# =============================================
-# app/services/borrow_history_service.py
-# =============================================
 from __future__ import annotations
-from typing import List, Dict
+from dataclasses import dataclass
+from datetime import datetime
+from typing import Literal, Optional, List, Dict, TYPE_CHECKING
 
-from app.repositories.history_repository import RentHistoryRepository
+# ✅ ป้องกัน circular import
+if TYPE_CHECKING:
+    from app.repositories.history_repository import RentHistoryRepository
 
 
+# ---- type alias ----
+OrderLiteral = Literal["asc", "desc"]
+DateField = Literal["start_date", "return_date"]
+
+
+# ---- filter object สำหรับกรองข้อมูลใน repo ----
+@dataclass
+class HistoryFilter:
+    start_date: Optional[datetime] = None
+    end_date:   Optional[datetime] = None
+    returned_only: bool = False
+    order: OrderLiteral = "desc"
+    date_field: DateField = "start_date"
+
+
+# ---- service layer ----
 class BorrowHistoryService:
     """
-    ชั้นบริการ (Service Layer) สำหรับประวัติการยืม-คืนของผู้ใช้
-    ใช้เรียกข้อมูลจาก RentHistoryRepository
+    จัดการข้อมูลประวัติการยืม-คืนทั้งหมด
+    ใช้ร่วมกับ RentHistoryRepository ที่ทำงานกับตาราง rent_returns
     """
 
-    def __init__(self, repo: RentHistoryRepository):
+    def __init__(self, repo: "RentHistoryRepository"):
         self.repo = repo
 
-    def get_for_user(self, user_id: int, returned_only: bool = True) -> List[Dict]:
+    def get_all(self, f: HistoryFilter) -> List[Dict]:
         """
-        ดึงประวัติการยืมของผู้ใช้ตาม user_id
-        ถ้า returned_only=True → แสดงเฉพาะที่คืนแล้ว (return_date != NULL)
+        ดึงประวัติทั้งหมด (ทุก user)
+        รองรับการกรอง/เรียงลำดับตาม HistoryFilter
         """
-        return self.repo.list_by_user(user_id, returned_only=returned_only)
+        return self.repo.fetch_all(f)
+
+    def get_for_user(self, user_id: int, returned_only: bool = False) -> List[Dict]:
+        """
+        ดึงเฉพาะประวัติของผู้ใช้คนหนึ่ง
+        ถ้า returned_only=True จะกรองเฉพาะที่คืนแล้ว
+        """
+        f = HistoryFilter(returned_only=returned_only)
+        return self.repo.fetch_for_user(user_id, f)
