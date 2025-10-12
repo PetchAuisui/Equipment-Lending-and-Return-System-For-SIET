@@ -1,170 +1,116 @@
-/* ===== Page Wrapper ===== */
-.admin-users {
-  padding: 32px;
-  background: #f9fafb;
-  min-height: 100vh;
-  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+/* ======================================================
+   Edit User Page (Navbar + Sidebar layout) — final
+   ====================================================== */
+.admin-scope .admin-users *,
+.admin-scope .admin-users *::before,
+.admin-scope .admin-users *::after { box-sizing: border-box; }
+
+.admin-scope{
+  --ink:#222; --muted:#555;
+  --panel:#f3f3f3; --card:#fff; --border:#e8e8eb;
+  --shadow:0 4px 12px rgba(0,0,0,.05);     /* เงอบางลง */
+  --accent:#3bf679; --accent-hover:#26a228; /* ปุ่มบันทึก */
+  --radius:14px;
+
+  /* Sidebar / Navbar */
+  --sb-collapsed:96px;
+  --sb-expanded:240px;
+  --nav-h:86px;
+
+  /* ===== จุดปรับหลัก (แก้ได้ตามชอบ) ===== */
+  --content-max:1200px;   /* ความกว้างสูงสุดของการ์ด */
+  --shift-right:190px;    /* ระยะขยับไปทางขวา (เดสก์ท็อป) */
+  --pad-x:60px;           /* padding ซ้าย-ขวาภายในการ์ด */
 }
 
-/* กันล้นทั้งหมดภายใต้หน้า admin-users */
-.admin-users,
-.admin-users * , 
-.admin-users *::before, 
-.admin-users *::after {
-  box-sizing: border-box;
+/* ===== เนื้อหาใต้ navbar ===== */
+.admin-scope .admin-content{
+  min-height: calc(100vh - var(--nav-h));
+  background:#fff;                      /* พื้นหลังขาว */
+  padding: 40px 28px 64px;
+  margin-left: var(--sb-collapsed);
+  transition: margin-left .25s ease;
 }
 
-/* กรอบเนื้อหาให้กว้างกำลังดีและอยู่กลางหน้า */
-.admin-users .container {
-  max-width: 720px;
-  margin: 0 auto;
+/* ถ้า sidebar ขยาย (ใช้คลาสหรือโครงสร้าง hover ของธีม) */
+.layout--sb-expanded .admin-content { margin-left: var(--sb-expanded); }
+.sidebar:hover ~ .admin-content { margin-left: var(--sb-expanded); }
+
+/* ===== กล่องฟอร์มหลัก ===== */
+.admin-scope .admin-users .container{
+  background: var(--card);
+  width: min(var(--content-max), 100%);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 36px var(--pad-x) 52px;     /* ลด padding-top ให้หัวข้อชิดขึ้น */
+  display: flex; flex-direction: column; gap: 18px;
+
+  /* จัดกลาง + ขยับไปทางขวา */
+  margin-left: clamp(0px,
+                    calc((100% - min(var(--content-max), 100%)) / 2 + var(--shift-right)),
+                    400px);
+  margin-right: auto;
 }
 
-.admin-users h2 {
-  font-size: 1.6rem;
-  font-weight: 600;
-  margin-bottom: 20px;
-  color: #1f2937;             /* เทาเข้ม */
-  text-align: center;         /* จัดกลาง */
+/* ===== หัวข้อ ===== */
+.admin-scope .admin-users h2{
+  font-size: 28px; font-weight: 700; text-align: center;
+  margin: 0 0 4px; color: var(--ink);
 }
 
-/* ===== Alerts / Flash / Error Bar ===== */
-.alerts {
-  margin: 0 auto 12px;
-  width: 100%;
-  max-width: 600px;           /* ให้เท่ากับความกว้างฟอร์ม */
-}
+/* ===== Alerts ===== */
+.alerts{ margin:4px 0 8px; }
+.alert{ padding:10px 14px; border-radius:8px; font-size:15px; text-align:center; }
+.alert-error{ background:#ffe0e0; color:#a60000; border:1px solid #f5c2c2; }
+.alert-success{ background:#e5f7e9; color:#1e7b34; border:1px solid #bfe5c6; }
 
-.alert {
-  width: 100%;
-  max-width: 600px;           /* กันล้นต่อให้ลืมห่อด้วย .alerts */
-  margin: 0 auto 8px;
-  padding: 10px 12px;
-  border-radius: 10px;
-  background: #f4f4f5;
-  color: #374151;
-  border: 1px solid #e5e7eb;
-  overflow-wrap: anywhere;    /* ตัดคำยาว ๆ */
-}
-.alert-success { background: #ecfdf5; color: #065f46; border-color: #a7f3d0; }
-.alert-info    { background: #eef2ff; color: #3730a3; border-color: #c7d2fe; }
-.alert-error   { background: #fef2f2; color: #991b1b; border-color: #fecaca; }
+/* ===== ฟอร์ม ===== */
+.form-group{ display:flex; flex-direction:column; gap:8px; margin-bottom:18px; }
+.form-group:last-of-type{ margin-bottom:0; }
 
-/* ข้อความผิดพลาดใต้ฟิลด์ */
-.field-error {
-  display: block;
-  margin-top: 6px;
-  font-size: 12px;
-  color: #b91c1c;
-}
+.form-group label{ font-weight:600; color:var(--ink); }
 
-/* ===== Form Card ===== */
-.admin-users form {
-  background: #fff;
-  padding: 24px;
-  border-radius: 12px;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.06);
-  max-width: 100%;           /* ให้พอดีกับ alerts */
-  margin: 0 auto;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  /* overflow: hidden;  // เปิดเมื่อเห็นขอบ focus เกินมุมการ์ด */
-}
-
-/* ===== Form Group ===== */
-.form-group {
-  display: flex;
-  flex-direction: column;
-  margin-bottom: 16px;
-  min-width: 0;               /* กันลูกกางเกิน */
-}
-
-.form-group label {
-  margin-bottom: 6px;
-  font-weight: 600;
-  color: #374151;             /* เทาเข้ม */
-}
-
-/* อินพุต/เซเลกต์ (รวม .auth__input ที่มีอยู่เดิม) */
 .form-group input,
-.form-group select,
-.auth__input {
-  padding: 10px 12px;
-  border: 1px solid #d1d5db;
-  border-radius: 8px;
-  font-size: 0.95rem;
-  background: #fff;
-  transition: border 0.2s, box-shadow 0.2s;
-  width: 100%;
-  max-width: 100%;            /* กันล้นแนวนอน */
-  min-width: 0;               /* กันกางใน flex item */
+.form-group select{
+  width:100%;               /* ✅ เต็มความกว้างทุกช่อง */
+  display:block;            /* ✅ กันปัญหา inline ทำให้สั้น */
+  padding:12px 14px;
+  border:1px solid var(--border);
+  border-radius: var(--radius);
+  font-size:15px;
+  outline:none;
+  transition: border-color .2s, box-shadow .2s;
 }
 
 .form-group input:focus,
-.form-group select:focus,
-.auth__input:focus {
-  border-color: #3b82f6;      /* ฟ้า */
-  box-shadow: 0 0 0 3px rgba(59,130,246,0.25);
-  outline: none;
+.form-group select:focus{
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(59,130,246,.15);
 }
 
-/* ไฮไลต์ช่องที่มี error (เติม class .is-invalid ที่ input/select เมื่อ validate ไม่ผ่าน) */
-.is-invalid {
-  border-color: #ef4444 !important;
-  box-shadow: 0 0 0 3px rgba(239,68,68,0.2) !important;
-}
-
-/* ปรับหัวข้อ optgroup ให้ดูเด่นขึ้น */
-select optgroup {
-  color: #6b7280;             /* เทาอ่อน */
-  font-style: normal;
-  font-weight: 600;
-  padding-top: 4px;
-}
-
-/* ===== Actions ===== */
-.form-actions {
-  display: flex;
-  gap: 12px;
-  margin-top: 20px;
-  justify-content: center;
-  flex-wrap: wrap;
-}
-
-/* ===== Buttons ===== */
-.btn {
-  padding: 10px 18px;
-  border-radius: 8px;
-  font-weight: 600;
-  cursor: pointer;
-  text-decoration: none;
-  display: inline-block;
-  text-align: center;
-  transition: background 0.2s, transform 0.1s;
-  border: none;
-  min-width: 120px;
-  font-size: 0.95rem;         /* ทำให้ปุ่มทุกปุ่มฟอนต์เท่ากัน */
-  line-height: 1.2;
-}
-
-.btn-save {
-  background: #16a34a;
-  color: #fff;
-}
-.btn-save:hover { background: #15803d; }
-.btn-save:active { transform: translateY(1px); }
-
-.btn-cancel {
-  background: #ef4444;
-  color: #fff;
-}
-.btn-cancel:hover { background: #dc2626; }
-.btn-cancel:active { transform: translateY(1px); }
+/* ===== ปุ่ม ===== */
+.form-actions{ display:flex; justify-content:center; gap:16px; margin-top:24px; }
+.btn{ font-size:16px; padding:12px 30px; border-radius:var(--radius); border:none;
+      cursor:pointer; font-weight:600; transition:background .2s, transform .15s;
+      text-decoration:none; text-align:center; }
+.btn-save{ background:var(--accent); color:#fff; }
+.btn-save:hover{ background:var(--accent-hover); transform:translateY(-1px); }
+.btn-cancel{ background:#ff4f4f; color:#fff; }
+.btn-cancel:hover{ background:#b40000; transform:translateY(-1px); }
 
 /* ===== Responsive ===== */
-@media (max-width: 640px) {
-  .admin-users { padding: 20px 16px; }
-  .admin-users form { padding: 16px; max-width: 100%; }
-  .alerts, .alert { max-width: 100%; }
+@media (max-width: 992px){
+  .admin-scope .admin-content{
+    margin-left: var(--sb-collapsed);
+    padding: 28px 20px 44px;
+  }
+  .admin-scope .admin-users .container{
+    width:100%;
+    margin-left:0; margin-right:0;     /* มือถือ: ไม่ขยับขวา */
+    padding: 32px 28px 40px;
+  }
+}
+@media (max-width: 600px){
+  .form-actions{ flex-direction: column; }
 }

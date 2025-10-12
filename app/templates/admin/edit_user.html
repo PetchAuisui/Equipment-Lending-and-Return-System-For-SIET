@@ -145,8 +145,13 @@
 
   function toggleIdFields() {
     const val = memberSelect.value;
-    studentGroup.style.display  = (val === 'student') ? 'block' : 'none';
-    employeeGroup.style.display = (val === 'student') ? 'none'  : 'block';
+    if (val === 'student') {
+      studentGroup.style.display = 'flex';   // ✅ เหมือนฟอร์มกรุ๊ปปกติ
+      employeeGroup.style.display = 'none';
+    } else {
+      studentGroup.style.display = 'none';
+      employeeGroup.style.display = 'flex';
+    }
   }
   toggleIdFields();
   memberSelect.addEventListener('change', toggleIdFields);
