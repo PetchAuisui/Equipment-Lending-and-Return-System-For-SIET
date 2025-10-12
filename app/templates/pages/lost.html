@@ -20,7 +20,8 @@
       <!-- Top: type, name, phone -->
       <div class="row small">
         <label>ประเภทการแจ้ง</label>
-        <select name="report_type" class="input">
+        <select name="report_type" class="input" required>
+          <option value="">-- เลือกประเภท --</option>
           <option value="lost">สูญหาย</option>
           <option value="damaged">เสียหาย</option>
         </select>
@@ -28,18 +29,18 @@
 
       <div class="row">
         <label>ชื่อ-นามสกุล</label>
-        <input name="full_name" class="input" type="text" placeholder="ชื่อ-นามสกุล">
+        <input name="full_name" class="input" type="text" placeholder="ชื่อ-นามสกุล" required>
       </div>
 
       <div class="row">
         <label>เบอร์โทร</label>
-        <input name="phone" class="input" type="text" placeholder="081-xxx-xxxx">
+        <input name="phone" class="input" type="text" placeholder="081-xxx-xxxx" required>
       </div>
 
       <!-- Middle: device, type+id, date -->
       <div class="row">
-        <label>อุปกรณ์ที่หาย</label>
-        <input name="device" class="input" type="text" placeholder="ชื่ออุปกรณ์">
+        <label>อุปกรณ์ที่หาย/สูญหาย</label>
+        <input name="device" class="input" type="text" placeholder="ชื่ออุปกรณ์" required>
       </div>
 
       <div class="row two-col">
@@ -54,21 +55,21 @@
       </div>
 
       <div class="row">
-        <label>วันที่หาย</label>
+        <label>วันที่หาย/สูญหาย</label>
         <div class="date-row">
-          <input name="lost_day" class="input date" type="text" placeholder="DD">
+          <input name="lost_day" class="input date" type="text" placeholder="DD" required>
           <span class="sep">/</span>
-          <input name="lost_month" class="input date" type="text" placeholder="MM">
+          <input name="lost_month" class="input date" type="text" placeholder="MM" required>
           <span class="sep">/</span>
-          <input name="lost_year" class="input date" type="text" placeholder="YYYY">
+          <input name="lost_year" class="input date" type="text" placeholder="YYYY" required>
           <i class="ri-calendar-line cal"></i>
         </div>
       </div>
 
       <!-- Bottom: place and detail -->
       <div class="row">
-        <label>สถานที่ที่ทำหาย</label>
-        <input name="place" class="input" type="text" placeholder="สถานที่ที่ทำหาย">
+        <label>สถานที่ที่ทำหาย/สูญหาย</label>
+        <input name="place" class="input" type="text" placeholder="สถานที่ที่ทำหาย" required>
       </div>
 
       <div class="row">
@@ -83,12 +84,81 @@
           <input name="images" type="file" class="file">
         </div>
         <div class="submit">
-          <button type="submit" class="btn-send">send</button>
+          <div class="error-message" id="errorMessage" role="alert" aria-live="assertive" style="display:none"></div>
+          <button type="submit" class="btn-send" id="sendBtn" disabled>send</button>
         </div>
       </div>
 
     </form>
   </div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  (function(){
+    const form = document.querySelector('.lost-card');
+    const sendBtn = document.getElementById('sendBtn');
+    const errorMessage = document.getElementById('errorMessage');
+
+    // fields to validate
+    const requiredSelectors = [
+      '[name="report_type"]',
+      '[name="full_name"]',
+      '[name="phone"]',
+      '[name="device"]',
+      '[name="lost_day"]',
+      '[name="lost_month"]',
+      '[name="lost_year"]',
+      '[name="place"]'
+    ];
+
+    function getFields(){
+      return requiredSelectors.map(s=>document.querySelector(s));
+    }
+
+    function validate(){
+      const fields = getFields();
+      let valid = true;
+      let firstInvalid = null;
+      fields.forEach(f=>{
+        if(!f) return;
+        const v = (f.value || '').trim();
+        if(!v){
+          valid = false;
+          f.classList.add('invalid');
+          if(!firstInvalid) firstInvalid = f;
+        } else {
+          f.classList.remove('invalid');
+        }
+      });
+      if(valid){
+        errorMessage.style.display='none';
+        sendBtn.disabled = false;
+      } else {
+        errorMessage.textContent = 'กรุณากรอกข้อมูลที่จำเป็นทั้งหมดก่อนส่งแบบฟอร์ม';
+        errorMessage.style.display='block';
+        sendBtn.disabled = true;
+      }
+      return {valid, firstInvalid};
+    }
+
+    // validate on input/change
+    getFields().forEach(f=>{ if(f) f.addEventListener('input', validate); if(f) f.addEventListener('change', validate); });
+
+    form.addEventListener('submit', function(e){
+      const res = validate();
+      if(!res.valid){
+        e.preventDefault();
+        if(res.firstInvalid) res.firstInvalid.focus();
+      }
+    });
+
+    // initial check
+    document.addEventListener('DOMContentLoaded', validate);
+    // also run immediately in case DOMContentLoaded already fired
+    validate();
+  })();
+</script>
 {% endblock %}
 <!-- lost page removed: placeholder file -->
 <!-- If you want the lost form back, tell me which version (compact or original) and I will restore it. -->

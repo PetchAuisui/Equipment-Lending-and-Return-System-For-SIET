@@ -47,7 +47,13 @@ label{ display:block; font-weight:600; margin-bottom:6px; color:#222; }
 .contact-list{ margin-top:12px; padding-left:20px; }
 .contact-list li{ margin-bottom:8px; font-size:15px; }
 .sent-actions{ margin-top:18px; text-align:left; }
+
 .sent-actions .btn-send{ background:var(--btn); padding:10px 18px; border-radius:8px; color:#fff; text-decoration:none; display:inline-block; }
-/* lost.css cleared to revert UI changes */
+
+/* validation styles */
+.input.invalid{ border-color: #e06a6a; box-shadow: 0 0 0 3px rgba(224,106,106,0.06); }
+.error-message{ color:#b22222; font-weight:600; margin-bottom:8px; }
+.btn-send[disabled]{ opacity:0.6; cursor:not-allowed; }
+
 
 
