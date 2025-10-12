@@ -29,7 +29,10 @@ class LendDeviceRepository:
                 "name": e.name,
                 "category": e.category,
                 "status": e.status,
-                "code": e.code,  # ✅ ต้องมีตรงนี้!
+                "code": e.code,
+                "brand": e.brand,              
+                "detail": e.detail,           
+                "confirm": e.confirm,           # ✅ ต้องให้อาจารย์อนุมัติ
                 "image_path": (
                     e.equipment_images[0].image_path
                     if getattr(e, "equipment_images", [])

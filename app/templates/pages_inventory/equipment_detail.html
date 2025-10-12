@@ -1,0 +1,74 @@
+{% extends 'base/base.html' %}
+{% block title %}รายละเอียดอุปกรณ์{% endblock %}
+{% block content %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/equipment_detail.css') }}">
+
+<!-- 🔹 หัวข้ออยู่นอกกรอบ -->
+<h2 class="page-title">รายละเอียดอุปกรณ์</h2>
+
+<div class="detail-container">
+  <div class="detail-card">
+    <div class="content-row">
+      <!-- รูปอุปกรณ์ -->
+      <div class="image-section">
+        <img src="{{ url_for('static', filename=(item.image_path or item.image or 'images/no_image.png')) }}"
+             alt="{{ item.name }}">
+      </div>
+
+      <!-- ข้อมูลอุปกรณ์ -->
+      <div class="info-section">
+        <h2 class="equip-name">{{ item.name }}</h2>
+
+        <p><strong>หมวดหมู่:</strong> {{ item.category or '-' }}</p>
+        <p><strong>ยี่ห้อ:</strong> {{ item.brand or '-' }}</p>
+        <p><strong>รายละเอียด:</strong> {{ item.detail or '-' }}</p>
+
+        <p><strong>สถานะ:</strong>
+          {% if item.status == 'available' %}
+            <span class="status available">พร้อมใช้งาน</span>
+          {% elif item.status == 'in_use' %}
+            <span class="status in-use">กำลังถูกยืม</span>
+          {% elif item.status == 'broken' %}
+            <span class="status broken">ชำรุด</span>
+          {% else %}
+            <span class="status lost">สูญหาย</span>
+          {% endif %}
+        </p>
+
+        <p><strong>ต้องให้อาจารย์อนุมัติ:</strong>
+          {% if item.confirm %}
+            ต้องอนุมัติ
+          {% else %}
+            ไม่ต้องอนุมัติ
+          {% endif %}
+        </p>
+
+        <p><strong>จำนวนคงเหลือ:</strong> {{ item.amount or 0 }} / {{ item.total or 0 }}</p>
+
+        <div class="button-group">
+          <a href="{{ url_for('inventory.lend_device') }}" class="btn btn-cancel">กลับ</a>
+
+          {% if item.status == 'available' %}
+            <a href="{{ url_for('inventory.lend', codes=item.codes|join(','), name=item.name, image=(item.image_path or item.image)) }}" 
+               class="btn btn-submit">ยืมอุปกรณ์</a>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+function showLoginPopup() {
+  Swal.fire({
+    icon: 'warning',
+    title: 'กรุณาเข้าสู่ระบบ',
+    text: 'คุณต้องเข้าสู่ระบบก่อนทำรายการยืมอุปกรณ์',
+    confirmButtonText: 'ตกลง'
+  }).then(() => {
+    window.location.href = "{{ url_for('auth.login_page') }}";
+  });
+}
+</script>
+{% endblock %}
