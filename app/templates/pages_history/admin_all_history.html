@@ -12,6 +12,39 @@
         <h1>ประวัติการยืม-คืนของผู้ใช้ทั้งหมด</h1>
       </div>
 
+      <!-- ===== Filter Bar ===== -->
+<!-- ADD-ONLY Filter Bar (ไปที่ OOP endpoint) -->
+<div class="filter-bar">
+  <form method="get" action="{{ url_for('admin_history.oop_filter') }}" class="filter-form" role="search">
+    
+    <!-- 🔹 โซนซ้าย: input + label -->
+    <div class="filter-group">
+      <label for="identity">รหัสประจำตัว:</label>
+      <input id="identity" type="text" name="identity"
+             placeholder="เช่น 65070xxxx หรือ EMP123"
+             value="{{ q_identity or '' }}">
+      
+      <label for="start">ตั้งแต่วันที่:</label>
+      <input id="start" type="date" name="start" value="{{ q_start or '' }}">
+      
+      <label for="end">ถึงวันที่:</label>
+      <input id="end" type="date" name="end" value="{{ q_end or '' }}">
+    </div>
+
+    <!-- 🔹 โซนขวา: ปุ่ม -->
+    <div class="filter-actions">
+      <button type="submit" class="btn btn-filter">กรอง</button>
+      {% if q_start or q_end or q_identity %}
+        <a href="{{ url_for('admin_history.oop_index') }}" class="btn btn-clear">ล้าง</a>
+      {% endif %}
+    </div>
+
+  </form>
+</div>
+
+
+
+
       <table class="table table-striped" style="width:100%; border-collapse: collapse;">
         <thead>
           <tr style="background:#f3f3f3;">
@@ -33,7 +66,11 @@
             <td>{{ item.start_date.strftime('%d/%m/%Y') if item.start_date else '-' }}</td>
             <td>{{ item.due_date.strftime('%d/%m/%Y') if item.due_date else '-' }}</td>
             <td>{{ item.return_date.strftime('%d/%m/%Y') if item.return_date else '-' }}</td>
-            <td><span style="color:{{ item.status_color or '#333' }}">{{ item.status_name or '-' }}</span></td>
+            <td>
+              <span style="color:{{ item.status_color or '#333' }}">
+                {{ item.status_name or '-' }}
+              </span>
+            </td>
           </tr>
           {% else %}
           <tr><td colspan="7" class="text-center">ไม่มีข้อมูลการยืม</td></tr>
