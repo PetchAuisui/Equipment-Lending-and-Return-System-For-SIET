@@ -84,9 +84,8 @@ def edit_user_action(user_id: int):
     return redirect(url_for("admin_users.index"))
 
 
-# ==============================
-# /admin/history (ประวัติยืม-คืนของผู้ใช้ทั้งหมด)
-# ==============================
+
+
 admin_history_bp = Blueprint("admin_history", __name__, url_prefix="/admin/history")
 
 def _hist_svc():
@@ -129,3 +128,13 @@ def admin_history_index():
 
     # ใช้ template เดิมที่คุณมีอยู่แล้ว
     return render_template("pages_history/admin_all_history.html", items=all_items)
+
+from app.controllers.admin_history_controller import AdminHistoryController
+
+# ใช้ factory/guard เดิมของคุณ
+AdminHistoryController(
+    bp=admin_history_bp,
+    hist_svc_factory=_hist_svc,
+    user_repo_factory=_user_repo,
+    staff_guard=staff_required,
+)

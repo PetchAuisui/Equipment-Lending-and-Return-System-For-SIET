@@ -157,3 +157,254 @@
     width: min(92vw - var(--sb-w), 1600px);
   }
 }
+
+
+/* =========================
+   ADD-ONLY: Filter Bar (scoped)
+========================= */
+.dashboard .filter-bar{
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--border);
+  background: linear-gradient(180deg, #fff, #fffafc);
+}
+
+.dashboard .filter-bar .filter-form{
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px 14px;
+  flex-wrap: wrap;
+}
+
+.dashboard .filter-bar label{
+  font-size: 14px;
+  color: var(--muted);
+}
+
+.dashboard .filter-bar input[type="date"]{
+  appearance: none;
+  -webkit-appearance: none;
+  padding: 8px 12px;
+  min-width: 180px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: #fff;
+  color: var(--ink);
+  box-shadow: 0 1px 0 rgba(0,0,0,.02);
+}
+
+.dashboard .filter-bar input[type="date"]:focus{
+  outline: 2px solid color-mix(in srgb, var(--pink) 32%, transparent);
+  border-color: var(--pink);
+}
+
+/* ปุ่มในแถบฟิลเตอร์ — scoped */
+.dashboard .filter-bar .btn{
+  border: none;
+  border-radius: 999px;
+  padding: 8px 14px;
+  font-weight: 600;
+  cursor: pointer;
+  line-height: 1;
+  box-shadow: 0 1px 0 rgba(0,0,0,.04);
+}
+
+.dashboard .filter-bar .btn-filter{
+  background: var(--pink);
+  color:#fff;
+}
+.dashboard .filter-bar .btn-filter:hover{
+  filter: brightness(.95);
+}
+
+.dashboard .filter-bar .btn-clear{
+  background:#f1f1f3;
+  color:#222;
+  text-decoration: none;
+  
+}
+.dashboard .filter-bar .btn-clear:hover{
+  background:#e7e7eb;
+}
+
+/* ให้ขอบบนตารางชิดกับฟิลเตอร์สวยขึ้น */
+.card-wide > .filter-bar + .table{
+  border-top: 1px solid var(--border);
+}
+
+/* Responsive: ซ้อนเป็น 2 แถวเมื่อจอแคบ */
+@media (max-width: 768px){
+  .dashboard .filter-bar{
+    padding: 12px;
+  }
+  .dashboard .filter-bar .filter-form{
+    justify-content: stretch;
+  }
+  .dashboard .filter-bar label{
+    flex: 1 1 100%;
+  }
+  .dashboard .filter-bar input[type="date"]{
+    flex: 1 1 160px;
+    min-width: 0;
+  }
+  .dashboard .filter-bar .btn,
+  .dashboard .filter-bar .btn-clear{
+    flex: 0 0 auto;
+  }
+}
+
+/* === ADD-ONLY: unify button font to match dashboard theme === */
+.dashboard .filter-bar .btn,
+.dashboard .filter-bar .btn-clear,
+.dashboard .filter-bar .btn-filter {
+  font-family: inherit;          /* ใช้ฟอนต์เดียวกับ theme หลัก */
+  font-weight: 600;              /* ให้หนาเท่ากัน */
+  letter-spacing: 0.3px;
+  font-size: medium;
+  transition: background .15s ease, transform .1s ease;
+}
+
+.dashboard .filter-bar .btn:hover,
+.dashboard .filter-bar .btn-filter:hover,
+.dashboard .filter-bar .btn-clear:hover {
+  transform: translateY(-1px);
+}
+
+/* =========================
+   ADD-ONLY: Identity filter styling + unified controls
+========================= */
+
+/* คุมขนาดคอนโทรลทั้งหมดในแถบฟิลเตอร์ให้เท่ากัน */
+.dashboard .filter-bar{ --ctl-h: 38px; }
+
+.dashboard .filter-bar input[type="date"],
+.dashboard .filter-bar input[type="text"],
+.dashboard .filter-bar .btn,
+.dashboard .filter-bar .btn-filter,
+.dashboard .filter-bar .btn-clear{
+  height: var(--ctl-h);
+  line-height: calc(var(--ctl-h) - 2px);
+}
+
+/* สไตล์ช่อง "รหัสประจำตัว" ให้เข้ากับช่องวันที่ */
+.dashboard .filter-bar input[type="text"]{
+  appearance: none;
+  -webkit-appearance: none;
+  padding: 8px 12px;
+  min-width: 200px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: #fff;
+  color: var(--ink);
+  box-shadow: 0 1px 0 rgba(0,0,0,.02);
+}
+
+.dashboard .filter-bar input[type="text"]::placeholder{
+  color: color-mix(in srgb, var(--muted) 65%, transparent);
+}
+
+
+/* สถานะ error (ถ้าฝั่ง server เติมคลาส .is-invalid ให้ input) */
+
+/* ระยะห่างไอคอน/รูปในปุ่ม กรณีมี <svg> หรือ <i> */
+.dashboard .filter-bar .btn svg,
+.dashboard .filter-bar .btn i{
+  margin-right: 6px;
+  vertical-align: -2px;
+}
+
+/* ปรับระยะ label ให้กระชับ */
+.dashboard .filter-bar label{
+  margin-right: 2px;
+}
+
+/* Responsive: ช่องรหัสยืดได้เมื่อจอแคบ */
+@media (max-width: 768px){
+  .dashboard .filter-bar input[type="text"]{
+    flex: 1 1 220px;
+    min-width: 0;
+  }
+}
+
+/* =========================
+   FIX: Align filter buttons with inputs
+========================= */
+.dashboard .filter-bar .btn,
+.dashboard .filter-bar .btn-filter,
+.dashboard .filter-bar .btn-clear {
+  display: inline-flex;           /* จัดแนวภายในปุ่มแบบ flex */
+  align-items: center;            /* กึ่งกลางแนวตั้ง */
+  justify-content: center;        /* กึ่งกลางแนวนอน */
+  padding: 0 16px;                /* ใช้ padding แนวนอนเท่านั้น */
+  height: var(--ctl-h);           /* ใช้ความสูงเดียวกับ input */
+  line-height: normal;            /* ปิดการบังคับ line-height เก่า */
+  box-sizing: border-box;
+}
+
+/* ปรับขนาดตัวอักษรปุ่มให้ตรงกับ input */
+.dashboard .filter-bar .btn,
+.dashboard .filter-bar .btn-filter,
+.dashboard .filter-bar .btn-clear {
+  font-size: 15px;
+  font-weight: 600;
+}
+
+/* hover animation ให้ดูนุ่มขึ้น */
+.dashboard .filter-bar .btn:hover,
+.dashboard .filter-bar .btn-filter:hover,
+.dashboard .filter-bar .btn-clear:hover {
+  transform: translateY(-1px);
+  transition: all .15s ease;
+}
+
+/* =========================
+   FIX: Align filter-bar content to left
+========================= */
+.dashboard .filter-bar .filter-form {
+  justify-content: flex-start !important;   /* เปลี่ยนจากขวา → ซ้าย */
+}
+
+/* เผื่อมี padding ด้านในของ .filter-bar ให้ดูสมดุลกับหัวข้อ */
+.dashboard .filter-bar {
+  padding-left: 28px !important;
+  padding-right: 18px !important;
+}
+
+/* เพิ่มช่องว่างเล็กน้อยระหว่าง label/input เพื่ออ่านง่าย */
+.dashboard .filter-bar label {
+  margin-right: 4px;
+}
+
+/* ปรับช่องว่างแนวนอนให้อ่านสบายตอนเรียงชิดซ้าย */
+.dashboard .filter-bar .filter-form {
+  gap: 12px 16px;
+}
+
+/* =========================
+   FIX: Left-align inputs, keep buttons on right
+========================= */
+.dashboard .filter-bar .filter-form {
+  justify-content: flex-start !important;  /* เริ่มจากซ้าย */
+  gap: 12px 18px;
+}
+
+/* กล่องรวม input และ label */
+.dashboard .filter-bar .filter-group {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px 14px;
+}
+
+/* กล่องรวมปุ่ม */
+.dashboard .filter-bar .filter-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;   /* ดันไปขวาสุด */
+}
+
+/* เผื่อฟอร์มเต็มบรรทัด */
+.dashboard .filter-bar .filter-form {
+  width: 100%;
+}
