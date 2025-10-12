@@ -14,6 +14,7 @@ def get_grouped_equipments_separated():
         # ✅ ถ้ายังไม่มี key นี้ให้สร้างก่อน
         if name not in grouped:
             grouped[name] = {
+                "equipment_id": e.get("equipment_id"),  
                 "name": name,
                 "amount": 0,
                 "image": e["image_path"],
