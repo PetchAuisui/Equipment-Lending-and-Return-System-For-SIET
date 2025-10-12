@@ -1,0 +1,159 @@
+/* =====================================================
+   Borrow/Return History — SIET KMITL (fixed center + layout)
+===================================================== */
+
+.dashboard *, .dashboard *::before, .dashboard *::after { box-sizing: border-box; }
+
+:root{
+  --nav-h: 86px;          /* ความสูง navbar ของธีม */
+  --sb-w: 60px;          /* ความกว้าง sidebar */
+  --ink:#222; --muted:#555;
+  --card:#fff; --border:#f0d9df;
+  --bg:#fff7fa; --shadow:0 8px 20px rgba(0,0,0,.06);
+
+  --pink:#ff7aa5;
+  --pink-light:#ffb672;
+  --pink-soft:#fff0f4;
+
+  --green:#3ccf91; --green-bg:#e6fff4;
+  --red:#ff8080;
+}
+
+/* ===== พื้นหลัง + เผื่อ sidebar + จัดกึ่งกลาง ===== */
+.dashboard{
+  margin-left: var(--sb-w);
+  padding: 28px 24px 60px;
+  color: var(--ink);
+  min-height: calc(100vh - var(--nav-h));
+  display: block;
+}
+
+/* คอนเทนเนอร์กลาง */
+.dashboard__grid{
+  max-width: 1400px;      /* กำหนดความกว้างการ์ดรวม */
+  margin: 0 auto;         /* จัดให้อยู่กึ่งกลางแนวนอน */
+}
+
+/* ===== การ์ด ===== */
+.card-wide{
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+
+/* ส่วนหัว */
+.header-row{
+  background: var(--pink-light);
+  padding: 18px 24px;
+  border-bottom: 1px solid var(--border);
+  text-align: center;     /* ให้หัวเรื่องอยู่กึ่งกลาง */
+}
+.header-row h1{
+  margin: 0;
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--ink);
+}
+
+/* ===== ตาราง ===== */
+.table{
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 15px;
+}
+.table thead{ background: var(--pink-light); }
+.table thead th{
+  text-align: left;
+  padding: 14px 16px;
+  font-weight: 700;
+  color: #333;
+  border-bottom: 1px solid var(--border);
+}
+.table tbody td{
+  padding: 14px 16px;
+  color: var(--ink);
+  border-bottom: 1px solid var(--border);
+  vertical-align: middle;
+}
+
+/* คอลัมน์ยาว – ตัด ... */
+.table td:nth-child(1),
+.table td:nth-child(3){
+  max-width: 280px;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+
+/* ===== สถานะ (ชิป) ===== */
+.status-chip{
+  display:inline-block;
+  padding:6px 12px;
+  border-radius:999px;
+  font-weight:600; font-size:14px;
+  border:1px solid transparent;
+}
+.status--returned{ background:var(--green-bg); color:var(--green); border-color:#b5f0d2; }
+.status--borrowed{ background:#e9f3ff; color:#2c7ae0; border-color:#c4e0ff; }
+.status--overdue{  background:#ffe8e8; color:var(--red);  border-color:#ffcccc; }
+
+/* ไม่มีข้อมูล */
+.text-center{ text-align:center; color:var(--muted); padding:18px; }
+
+/* ===== Responsive ===== */
+@media (max-width: 1200px){
+  .dashboard__grid{ max-width: 1000px; }
+}
+@media (max-width: 992px){
+  .dashboard{ margin-left: 0; padding: 16px 12px 40px; } /* ซ่อนผลกระทบ sidebar เมื่อจอแคบ */
+  .card-wide{ border-radius:16px; }
+  .table{ display:block; overflow-x:auto; white-space:nowrap; }
+}
+
+
+/* === WIDE OVERRIDES — ใส่ไว้ท้ายไฟล์ให้ชนะทุกตัว === */
+
+/* บางธีม fix ความกว้างไว้ที่ .admin-content/.container — ปลดล็อกก่อน */
+.admin-content,
+.admin-content > .dashboard {
+  max-width: none !important;
+  width: auto !important;
+}
+
+/* ขยายคอนเทนเนอร์หลักให้กว้างขึ้นจริง (อิง viewport) */
+.admin-content .dashboard__grid,
+.dashboard__grid {
+  max-width: 1440px !important;             /* เดิม 1100 → 1440 */
+  width: min(96vw - var(--sb-w), 1440px);    /* ใช้ความกว้างจอ แต่เผื่อ sidebar */
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* เผื่อบางธีมมี padding ซ้อน ทำให้ดูแคบ — ผ่อนคลายหน่อย */
+.dashboard {
+  padding-right: 10px !important;
+}
+
+/* ตัวตารางให้ดูโปร่งขึ้นเมื่อกว้าง */
+.table {
+  font-size: 16px;
+}
+.table thead th,
+.table tbody td {
+  padding: 16px 20px;
+}
+
+/* ถ้าชื่อ/อุปกรณ์ยาว ให้ได้พื้นที่มากขึ้นอีกนิด */
+.table td:nth-child(1),
+.table td:nth-child(3){
+  max-width: 420px;
+}
+
+/* จอใหญ่มาก ๆ ก็ปล่อยให้กว้างได้อีกนิด */
+@media (min-width: 1200px){
+  .admin-content .dashboard__grid,
+  .dashboard__grid {
+    max-width: 1200px !important;
+    width: min(92vw - var(--sb-w), 1600px);
+  }
+}

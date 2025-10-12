@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, request, flash, redirect, url_for, session  # ✅ เพิ่ม session
-from sqlalchemy import text  # ✅ ใช้ query users แบบเร็ว
+from sqlalchemy import text  
 from app.db.db import SessionLocal
 from app.repositories.user_repository import UserRepository
 from app.services.admin_user_service import AdminUserService
