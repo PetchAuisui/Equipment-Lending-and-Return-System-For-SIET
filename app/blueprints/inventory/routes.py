@@ -225,8 +225,13 @@ def toggle_teacher_approval(eid):
 
 @inventory_bp.route("/equipments/<int:eid>/detail", methods=["GET"])
 def equipment_detail(eid):
-    svc = EquipmentService()
-    item = svc.get(eid)
+    from app.services import lend_device_service
+
+    svc = lend_device_service.get_grouped_equipments_separated()
+    all_items = svc["available"] + svc["unavailable"]
+
+    item = next((i for i in all_items if i["equipment_id"] == eid), None)
     if not item:
         abort(404)
+
     return render_template("pages_inventory/equipment_detail.html", item=item)

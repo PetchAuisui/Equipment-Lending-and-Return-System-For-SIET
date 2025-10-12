@@ -122,3 +122,42 @@ body {
   background: #0069d9;
   transform: scale(1.03);
 }
+/* === ปุ่มกลับ (เทา) === */
+.btn-cancel {
+  background: #6c757d;   /* เทา */
+  color: white;
+  border: none;
+  padding: 10px 25px;
+  border-radius: 6px;
+  text-decoration: none;
+  font-weight: 600;
+  transition: 0.2s;
+}
+.btn-cancel:hover {
+  background: #5a6268;
+  transform: scale(1.05);
+}
+
+/* === ปุ่มยืมอุปกรณ์ (ฟ้า) === */
+.btn-submit {
+  background: #007bff;   /* ฟ้า */
+  color: white;
+  border: none;
+  padding: 10px 25px;
+  border-radius: 6px;
+  text-decoration: none;
+  font-weight: 600;
+  transition: 0.2s;
+}
+.btn-submit:hover {
+  background: #0069d9;
+  transform: scale(1.05);
+}
+
+/* === จัดตำแหน่งกลุ่มปุ่ม === */
+.button-group {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 20px;
+}

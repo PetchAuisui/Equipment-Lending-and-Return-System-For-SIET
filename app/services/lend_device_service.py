@@ -14,17 +14,24 @@ def get_grouped_equipments_separated():
         # ✅ ถ้ายังไม่มี key นี้ให้สร้างก่อน
         if name not in grouped:
             grouped[name] = {
-                "equipment_id": e.get("equipment_id"),  
+                "equipment_id": e.get("equipment_id"),
                 "name": name,
-                "amount": 0,
+                "amount": 0,                 # จำนวน "พร้อมใช้งาน"
+                "total": 0,                  # ✅ เพิ่มจำนวนรวมทั้งหมด
                 "image": e["image_path"],
                 "category": e.get("category", ""),
+                "brand": e.get("brand", ""),
+                "detail": e.get("detail", ""),
+                "buy_date": e.get("buy_date", ""),
+                "confirm": e.get("confirm", False),
                 "status": status,
-                "status_color": "",
                 "codes": []
             }
 
-        # ✅ นับเฉพาะอุปกรณ์ที่พร้อมใช้งาน
+        # ✅ นับทุกสถานะ (รวม)
+        grouped[name]["total"] += 1
+
+        # ✅ นับเฉพาะที่พร้อมใช้งาน
         if status in ["available", "พร้อมใช้งาน"]:
             grouped[name]["amount"] += 1
             if code:
@@ -39,12 +46,6 @@ def get_grouped_equipments_separated():
             available_items.append(item)
         else:
             unavailable_items.append(item)
-
-    # ✅ print debug ตรวจสอบ
-    print("\n=== DEBUG FROM SERVICE ===")
-    for i in available_items:
-        print(f"{i['name']} → {i['codes']}")
-    print("==========================\n")
 
     repo.close()
     return {"available": available_items, "unavailable": unavailable_items}
