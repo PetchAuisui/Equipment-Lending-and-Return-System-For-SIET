@@ -225,7 +225,6 @@ def toggle_teacher_approval(eid):
 
 @inventory_bp.route("/equipments/<int:eid>/detail", methods=["GET"])
 def equipment_detail(eid):
-    """แสดงรายละเอียดอุปกรณ์ (ฝั่งผู้ใช้ทั่วไป)"""
     svc = EquipmentService()
     item = svc.get(eid)
     if not item:

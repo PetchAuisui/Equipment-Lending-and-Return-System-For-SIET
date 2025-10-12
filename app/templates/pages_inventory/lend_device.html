@@ -55,7 +55,7 @@ function showLoginPopup() {
 </script>
 
 <div class="button_group">
-  <a href="#" class="btn btn-detail">รายละเอียด</a>
+<a href="{{ url_for('inventory.equipment_detail', eid=item.equipment_id) }}" class="btn btn-detail">รายละเอียด</a>
 
   {% if current_user.is_authenticated %}
     <a href="{{ url_for('inventory.lend', codes=item.codes|join(','), name=item.name, image=item.image) }}" class="btn btn-borrow">ยืม</a>
