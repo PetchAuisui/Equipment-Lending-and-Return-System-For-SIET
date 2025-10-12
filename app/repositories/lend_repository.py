@@ -1,0 +1,94 @@
+from app.db.db import SessionLocal
+from app.db.models import Subject  # ✅ เพิ่ม import
+from app.db.models import User    # ✅ เพิ่ม import
+
+def get_all_subjects():
+    """
+    ดึงข้อมูลวิชาทั้งหมดจากตาราง subjects
+    """
+    db = SessionLocal()
+    try:
+        subjects = db.query(Subject).all()
+        return [
+            {
+                "subject_id": s.subject_id,
+                "subject_code": s.subject_code,
+                "subject_name": s.subject_name
+            }
+            for s in subjects
+        ]
+    finally:
+        db.close()
+
+def get_all_users():
+    """
+    ดึงข้อมูลผู้ใช้ทั้งหมดจากตาราง users
+    """
+    db = SessionLocal()
+    try:
+        users = db.query(User).all()
+        return [
+            {
+                "user_id": u.user_id,
+                "name": u.name,
+                "member_type": u.member_type
+            }
+            for u in users
+        ]
+    finally:
+        db.close()
+
+
+from datetime import datetime
+from sqlalchemy.exc import SQLAlchemyError
+from app.db.db import SessionLocal
+from app.db.models import RentReturn, Equipment, User
+
+
+def insert_rent_record(data):
+    """
+    ✅ บันทึกข้อมูลการยืมลงตาราง rent_returns
+    และอัปเดตสถานะอุปกรณ์ในตาราง equipments
+    """
+    db = SessionLocal()
+    try:
+        # หา equipment จาก code
+        equipment = db.query(Equipment).filter(Equipment.code == data["code"]).first()
+        if not equipment:
+            raise ValueError("❌ ไม่พบอุปกรณ์ที่เลือก")
+
+        # หา user จากชื่อ (หรือใช้ current_user.user_id แทนในภายหลัง)
+        user = db.query(User).filter(User.name == data["borrower_name"]).first()
+        if not user:
+            raise ValueError("❌ ไม่พบผู้ใช้ในระบบ")
+
+        # ✅ รองรับกรณี subject_id หรือ teacher_confirmed เป็น None
+        subject_val = data.get("subject_id")
+        teacher_val = data.get("teacher_confirmed")
+
+        rent_record = RentReturn(
+            equipment_id=equipment.equipment_id,
+            user_id=user.user_id,
+            subject_id=int(subject_val) if subject_val else None,   # ✅ ป้องกัน int(None)
+            start_date=data["start_date"],
+            due_date=datetime.strptime(data["return_date"], "%Y-%m-%d"),
+            teacher_confirmed=int(teacher_val) if teacher_val else None,
+            reason=data.get("reason"),
+            status_id=data["status_id"],
+            created_at=datetime.utcnow()
+        )
+        db.add(rent_record)
+
+        # ✅ อัปเดตสถานะอุปกรณ์
+        equipment.status = "unavailable"  # หรือใช้ "borrowed" ตามระบบของคุณ
+        db.add(equipment)
+
+        db.commit()
+        print(f"✅ บันทึกการยืมและอัปเดตสถานะอุปกรณ์ (ID: {equipment.equipment_id}) เรียบร้อย")
+
+    except SQLAlchemyError as e:
+        db.rollback()
+        print("❌ Database Error:", e)
+        raise e
+    finally:
+        db.close()

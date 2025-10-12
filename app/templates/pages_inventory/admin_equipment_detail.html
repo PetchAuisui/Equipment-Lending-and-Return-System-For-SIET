@@ -1,0 +1,76 @@
+{% extends 'base/base_admin.html' %}
+{% block title %}รายละเอียดอุปกรณ์{% endblock %}
+
+{% block content %}
+<div class="page-shell">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/admin_equipment_detail.css') }}">
+
+  <!-- หัวข้อ -->
+  <div class="header-row">
+    <h1>รายละเอียดอุปกรณ์</h1>
+  </div>
+
+  <!-- การ์ดหลัก -->
+  <div class="card-wide">
+
+    <div class="split">
+      <!-- ซ้าย: รูปภาพ -->
+      <div class="media">
+        {% if item.images and item.images|length > 0 %}
+          {% set latest = (item.images|sort(attribute='created_at', reverse=True))|first %}
+          <img src="{{ url_for('static', filename=(latest.image_path|replace('\\','/'))) }}" alt="ภาพอุปกรณ์">
+
+        {% else %}
+          <div class="placeholder">ไม่มีรูปภาพ</div>
+        {% endif %}
+      </div>
+
+      <!-- ขวา: ข้อมูล -->
+      <div class="detail">
+        <div class="detail-grid">
+          <div class="label">ชื่ออุปกรณ์:</div> <div>{{ item.name or '-' }}</div>
+          <div class="label">หมายเลข:</div> <div>{{ item.code or '-' }}</div>
+          <div class="label">หมวดหมู่:</div> <div>{{ item.category or '-' }}</div>
+          <div class="label">ยี่ห้อ:</div> <div>{{ item.brand or '-' }}</div>
+          <div class="label">วันที่ซื้อ:</div> <div>{{ item.buy_date or '-' }}</div>
+
+          <div class="label">สถานะ:</div>
+          <div>
+            {% if item.status == "available" %}
+              <span class="badge badge--available">พร้อมใช้งาน</span>
+            {% elif item.status == "in_use" %}
+              <span class="badge badge--inuse">กำลังใช้งาน</span>
+            {% elif item.status == "broken" %}
+              <span class="badge badge--broken">ชำรุด</span>
+            {% elif item.status == "lost" %}
+              <span class="badge badge--lost">สูญหาย</span>
+            {% else %}
+              <span class="badge badge--default">{{ item.status or '-' }}</span>
+            {% endif %}
+          </div>
+
+          <!-- ✅ การอนุมัติจากอาจารย์ (ข้อความธรรมดา ไม่มีสีพื้น) -->
+          <div style="font-weight:600;">การอนุมัติจากอาจารย์:</div>
+          <div>
+            {% if item.confirm %}
+              ต้องขออนุมัติ
+            {% else %}
+              ไม่ต้องขออนุมัติ
+            {% endif %}
+          </div>
+
+          <div class="label" style="align-self:start;">รายละเอียด:</div>
+          <div style="white-space: pre-line;">{{ item.detail or '-' }}</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ปุ่ม -->
+    <div class="actions">
+      <a href="{{ url_for('inventory.admin_equipment_list') }}" class="btn btn--secondary">⬅ กลับหน้ารายการ</a>
+      <a href="{{ url_for('inventory.admin_equipment_edit', eid=item.equipment_id) }}" class="btn btn--primary">แก้ไขข้อมูล</a>
+    </div>
+
+  </div>
+</div>
+{% endblock %}

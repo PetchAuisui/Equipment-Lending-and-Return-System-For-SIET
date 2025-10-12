@@ -4,117 +4,157 @@
 
 <link rel="stylesheet" href="{{ url_for('static', filename='css/edit_user.css') }}">
 
-<div class="admin-users">
-  <div class="container">
-    <h2>แก้ไขข้อมูลสมาชิก</h2>
-<div class="alerts">
-  {% if error %}
-    <div class="alert alert-error">{{ error }}</div>
-  {% endif %}
+<div class="admin-scope">
+  <main class="admin-content">
+    <div class="admin-users">
+      <div class="container">
+
+        <h2>แก้ไขข้อมูลสมาชิก</h2>
+
+        <div class="alerts">
+          {% if error %}
+            <div class="alert alert-error">{{ error }}</div>
+          {% endif %}
+        </div>
+
+        <form method="post"
+              action="{{ url_for('admin_users.edit_user_action', user_id=user.user_id) }}">
+
+          <!-- ===== ช่องรหัส ===== -->
+          <div class="form-group" id="group-student-id">
+            <label for="student_id">รหัสนักศึกษา:</label>
+            <input id="student_id" type="text" name="student_id"
+                   value="{{ (old.student_id if old else user.student_id) or '' }}"
+                   placeholder="เช่น 65070xxxx">
+  
+          </div>
+
+          <div class="form-group" id="group-employee-id">
+            <label for="employee_id">รหัสบุคลากร:</label>
+            <input id="employee_id" type="text" name="employee_id"
+                   value="{{ (old.employee_id if old else user.employee_id) or '' }}"
+                   placeholder="เช่น TCH-001 หรือ STF-320">
+          </div>
+
+          <!-- ===== ฟิลด์ทั่วไป ===== -->
+          <div class="form-group">
+            <label>ชื่อ:</label>
+            <input type="text" name="name" value="{{ user.name }}" required>
+          </div>
+
+          <div class="form-group">
+            <label>อีเมล:</label>
+            <input type="email" name="email" value="{{ user.email }}" required>
+          </div>
+
+          <div class="form-group">
+            <label>เบอร์โทร:</label>
+            <input type="text" name="phone" value="{{ user.phone or '' }}">
+          </div>
+
+          <!-- ===== สาขาวิชา ===== -->
+          {% set selected_major = (old.major if old and old.get('major') else user.major or '') %}
+          <div class="form-group">
+            <label for="major">สาขาวิชา:</label>
+            <select id="major" class="auth__input" name="major" required>
+              <option value="" {{ "selected" if selected_major == "" else "" }}>กรุณาเลือกสาขา</option>
+
+              <optgroup label="ครุศาสตร์สถาปัตยกรรม">
+                <option value="ครุศาสตร์สถาปัตยกรรม" {{ "selected" if selected_major=="ครุศาสตร์สถาปัตยกรรม" else "" }}>ครุศาสตร์สถาปัตยกรรม</option>
+                <option value="ครุศาสตร์การออกแบบ (หลักสูตร 5 ปี)" {{ "selected" if selected_major=="ครุศาสตร์การออกแบบ (หลักสูตร 5 ปี)" else "" }}>ครุศาสตร์การออกแบบ (หลักสูตร 5 ปี)</option>
+                <option value="สถาปัตยกรรม (หลักสูตร 5 ปี)" {{ "selected" if selected_major=="สถาปัตยกรรม (หลักสูตร 5 ปี)" else "" }}>สถาปัตยกรรม (หลักสูตร 5 ปี)</option>
+                <option value="การออกแบบสภาพแวดล้อมภายใน (หลักสูตร 5 ปี)" {{ "selected" if selected_major=="การออกแบบสภาพแวดล้อมภายใน (หลักสูตร 5 ปี)" else "" }}>การออกแบบสภาพแวดล้อมภายใน (หลักสูตร 5 ปี)</option>
+                <option value="ครุศาสตร์การออกแบบ (หลักสูตร 4 ปี)" {{ "selected" if selected_major=="ครุศาสตร์การออกแบบ (หลักสูตร 4 ปี)" else "" }}>ครุศาสตร์การออกแบบ (หลักสูตร 4 ปี)</option>
+                <option value="นวัตกรรมและเทคโนโลยีการออกแบบ" {{ "selected" if selected_major=="นวัตกรรมและเทคโนโลยีการออกแบบ" else "" }}>นวัตกรรมและเทคโนโลยีการออกแบบ</option>
+              </optgroup>
+
+              <optgroup label="ครุศาสตร์อุตสาหกรรม">
+                <option value="ครุศาสตร์อุตสาหกรรม" {{ "selected" if selected_major=="ครุศาสตร์อุตสาหกรรม" else "" }}>ครุศาสตร์อุตสาหกรรม</option>
+                <option value="วิทยาการจัดการเรียนรู้" {{ "selected" if selected_major=="วิทยาการจัดการเรียนรู้" else "" }}>วิทยาการจัดการเรียนรู้</option>
+              </optgroup>
+
+              <optgroup label="ครุศาสตร์วิศวกรรม">
+                <option value="ครุศาสตร์วิศวกรรม" {{ "selected" if selected_major=="ครุศาสตร์วิศวกรรม" else "" }}>ครุศาสตร์วิศวกรรม</option>
+                <option value="ครุศาสตร์วิศวกรรม (หลักสูตร 5 ปี)" {{ "selected" if selected_major=="ครุศาสตร์วิศวกรรม (หลักสูตร 5 ปี)" else "" }}>ครุศาสตร์วิศวกรรม (หลักสูตร 5 ปี)</option>
+                <option value="เทคโนโลยีอิเล็กทรอนิกส์ (ต่อเนื่อง)" {{ "selected" if selected_major=="เทคโนโลยีอิเล็กทรอนิกส์ (ต่อเนื่อง)" else "" }}>เทคโนโลยีอิเล็กทรอนิกส์ (ต่อเนื่อง)</option>
+                <option value="ครุศาสตร์วิศวกรรม (หลักสูตร 4 ปี)" {{ "selected" if selected_major=="ครุศาสตร์วิศวกรรม (หลักสูตร 4 ปี)" else "" }}>ครุศาสตร์วิศวกรรม (หลักสูตร 4 ปี)</option>
+                <option value="เทคโนโลยีคอมพิวเตอร์" {{ "selected" if selected_major=="เทคโนโลยีคอมพิวเตอร์" else "" }}>เทคโนโลยีคอมพิวเตอร์</option>
+                <option value="อิเล็กทรอนิกส์และโทรคมนาคม" {{ "selected" if selected_major=="อิเล็กทรอนิกส์และโทรคมนาคม" else "" }}>อิเล็กทรอนิกส์และโทรคมนาคม</option>
+              </optgroup>
+
+              <optgroup label="ครุศาสตร์เกษตร">
+                <option value="ครุศาสตร์เกษตร" {{ "selected" if selected_major=="ครุศาสตร์เกษตร" else "" }}>ครุศาสตร์เกษตร</option>
+                <option value="ครุศาสตร์เกษตร (หลักสูตร 5 ปี)" {{ "selected" if selected_major=="ครุศาสตร์เกษตร (หลักสูตร 5 ปี)" else "" }}>ครุศาสตร์เกษตร (หลักสูตร 5 ปี)</option>
+                <option value="เทคโนโลยีชีวภาพทางการเกษตร (ต่อเนื่อง)" {{ "selected" if selected_major=="เทคโนโลยีชีวภาพทางการเกษตร (ต่อเนื่อง)" else "" }}>เทคโนโลยีชีวภาพทางการเกษตร (ต่อเนื่อง)</option>
+                <option value="ครุศาสตร์เกษตร (หลักสูตร 4 ปี)" {{ "selected" if selected_major=="ครุศาสตร์เกษตร (หลักสูตร 4 ปี)" else "" }}>ครุศาสตร์เกษตร (หลักสูตร 4 ปี)</option>
+              </optgroup>
+
+              <optgroup label="หมวดอื่น ๆ">
+                <option value="ภาษาและสังคม" {{ "selected" if selected_major=="ภาษาและสังคม" else "" }}>ภาษาและสังคม</option>
+                <option value="สำนักงานมาตราฐานครุศาสตร์อุตสาหกรรมและเทคโนโลยี" {{ "selected" if selected_major=="สำนักงานมาตราฐานครุศาสตร์อุตสาหกรรมและเทคโนโลยี" else "" }}>สำนักงานมาตราฐานครุศาสตร์อุตสาหกรรมและเทคโนโลยี</option>
+                <option value="เทคโนโลยีบัณฑิต (บูรณาการนวัตกรรมเพื่อสินค้าและบริการ)" {{ "selected" if selected_major=="เทคโนโลยีบัณฑิต (บูรณาการนวัตกรรมเพื่อสินค้าและบริการ)" else "" }}>เทคโนโลยีบัณฑิต (บูรณาการนวัตกรรมเพื่อสินค้าและบริการ)</option>
+              </optgroup>
+            </select>
+          </div>
+
+          <!-- ===== ประเภทสมาชิก ===== -->
+          <div class="form-group">
+            <label>ประเภทสมาชิก:</label>
+            <select name="member_type" id="member_type">
+              <option value="student"  {% if user.member_type=='student' %}selected{% endif %}>นักศึกษา</option>
+              <option value="teacher"  {% if user.member_type=='teacher' %}selected{% endif %}>อาจารย์</option>
+              <option value="officer"  {% if user.member_type=='officer' %}selected{% endif %}>เจ้าหน้าที่</option>
+            </select>
+          </div>
+
+          <!-- ===== เพศ ===== -->
+          <div class="form-group">
+            <label>เพศ:</label>
+            <select name="gender">
+              <option value="male"   {% if user.gender=='male' %}selected{% endif %}>ชาย</option>
+              <option value="female" {% if user.gender=='female' %}selected{% endif %}>หญิง</option>
+              <option value="other"  {% if user.gender=='other' %}selected{% endif %}>อื่นๆ</option>
+            </select>
+          </div>
+
+          <!-- ===== สิทธิ์การใช้งาน ===== -->
+          {% set selected_role = (old.role if old and old.get('role') else user.role or "member") %}
+          <div class="form-group">
+            <label for="role">สิทธิ์การใช้งาน:</label>
+            <select id="role" name="role" required>
+              <option value="member" {{ "selected" if selected_role=="member" else "" }}>สมาชิกทั่วไป</option>
+              <option value="staff"  {{ "selected" if selected_role=="staff" else "" }}>ผู้ดูแลระบบ</option>
+            </select>
+          </div>
+
+          <div class="form-actions">
+            <button type="submit" class="btn btn-save">บันทึก</button>
+            <a href="{{ url_for('admin_users.index') }}" class="btn btn-cancel">ยกเลิก</a>
+          </div>
+
+        </form>
+      </div>
+    </div>
+  </main>
 </div>
 
-    <form method="post"
-          action="{{ url_for('admin_users.edit_user_action', user_id=user.user_id) }}">
-      
-      <div class="form-group">
-        <label>ชื่อ:</label>
-        <input type="text" name="name" value="{{ user.name }}" required>
-      </div>
+<script>
+  const memberSelect = document.getElementById('member_type');
+  const studentGroup = document.getElementById('group-student-id');
+  const employeeGroup = document.getElementById('group-employee-id');
 
-      <div class="form-group">
-        <label>อีเมล:</label>
-        <input type="email" name="email" value="{{ user.email }}" required>
-      </div>
-
-      <div class="form-group">
-        <label>เบอร์โทร:</label>
-        <input type="text" name="phone" value="{{ user.phone or '' }}">
-      </div>
-
-{# ก่อนเริ่ม select: ตั้งตัวแปรค่าเดิม #}
-{% set selected_major =
-    (old.major if (old is defined and old and old.get('major')) else
-     (user.major if (user is defined and user and user.major) else "")) %}
-
-  <div class="form-group">
-    <label for="major">สาขาวิชา:</label>
-    <select id="major" class="auth__input" name="major" required>
-      <option value="" {{ "selected" if selected_major == "" else "" }}>กรุณาเลือกสาขา</option>
-
-      <optgroup label="ครุศาสตร์สถาปัตยกรรม">
-        <option value="ครุศาสตร์สถาปัตยกรรม" {{ "selected" if selected_major=="ครุศาสตร์สถาปัตยกรรม" else "" }}>ครุศาสตร์สถาปัตยกรรม</option>
-        <option value="ครุศาสตร์การออกแบบ (หลักสูตร 5 ปี)" {{ "selected" if selected_major=="ครุศาสตร์การออกแบบ (หลักสูตร 5 ปี)" else "" }}>ครุศาสตร์การออกแบบ (หลักสูตร 5 ปี)</option>
-        <option value="สถาปัตยกรรม (หลักสูตร 5 ปี)" {{ "selected" if selected_major=="สถาปัตยกรรม (หลักสูตร 5 ปี)" else "" }}>สถาปัตยกรรม (หลักสูตร 5 ปี)</option>
-        <option value="การออกแบบสภาพแวดล้อมภายใน (หลักสูตร 5 ปี)" {{ "selected" if selected_major=="การออกแบบสภาพแวดล้อมภายใน (หลักสูตร 5 ปี)" else "" }}>การออกแบบสภาพแวดล้อมภายใน (หลักสูตร 5 ปี)</option>
-        <option value="ครุศาสตร์การออกแบบ (หลักสูตร 4 ปี)" {{ "selected" if selected_major=="ครุศาสตร์การออกแบบ (หลักสูตร 4 ปี)" else "" }}>ครุศาสตร์การออกแบบ (หลักสูตร 4 ปี)</option>
-        <option value="นวัตกรรมและเทคโนโลยีการออกแบบ" {{ "selected" if selected_major=="นวัตกรรมและเทคโนโลยีการออกแบบ" else "" }}>นวัตกรรมและเทคโนโลยีการออกแบบ</option>
-      </optgroup>
-
-      <optgroup label="ครุศาสตร์อุตสาหกรรม">
-        <option value="ครุศาสตร์อุตสาหกรรม" {{ "selected" if selected_major=="ครุศาสตร์อุตสาหกรรม" else "" }}>ครุศาสตร์อุตสาหกรรม</option>
-        <option value="วิทยาการจัดการเรียนรู้" {{ "selected" if selected_major=="วิทยาการจัดการเรียนรู้" else "" }}>วิทยาการจัดการเรียนรู้</option>
-      </optgroup>
-
-      <optgroup label="ครุศาสตร์วิศวกรรม">
-        <option value="ครุศาสตร์วิศวกรรม" {{ "selected" if selected_major=="ครุศาสตร์วิศวกรรม" else "" }}>ครุศาสตร์วิศวกรรม</option>
-        <option value="ครุศาสตร์วิศวกรรม (หลักสูตร 5 ปี)" {{ "selected" if selected_major=="ครุศาสตร์วิศวกรรม (หลักสูตร 5 ปี)" else "" }}>ครุศาสตร์วิศวกรรม (หลักสูตร 5 ปี)</option>
-        <option value="เทคโนโลยีอิเล็กทรอนิกส์ (ต่อเนื่อง)" {{ "selected" if selected_major=="เทคโนโลยีอิเล็กทรอนิกส์ (ต่อเนื่อง)" else "" }}>เทคโนโลยีอิเล็กทรอนิกส์ (ต่อเนื่อง)</option>
-        <option value="ครุศาสตร์วิศวกรรม (หลักสูตร 4 ปี)" {{ "selected" if selected_major=="ครุศาสตร์วิศวกรรม (หลักสูตร 4 ปี)" else "" }}>ครุศาสตร์วิศวกรรม (หลักสูตร 4 ปี)</option>
-        <option value="เทคโนโลยีคอมพิวเตอร์" {{ "selected" if selected_major=="เทคโนโลยีคอมพิวเตอร์" else "" }}>เทคโนโลยีคอมพิวเตอร์</option>
-        <option value="อิเล็กทรอนิกส์และโทรคมนาคม" {{ "selected" if selected_major=="อิเล็กทรอนิกส์และโทรคมนาคม" else "" }}>อิเล็กทรอนิกส์และโทรคมนาคม</option>
-      </optgroup>
-
-      <optgroup label="ครุศาสตร์เกษตร">
-        <option value="ครุศาสตร์เกษตร" {{ "selected" if selected_major=="ครุศาสตร์เกษตร" else "" }}>ครุศาสตร์เกษตร</option>
-        <option value="ครุศาสตร์เกษตร (หลักสูตร 5 ปี)" {{ "selected" if selected_major=="ครุศาสตร์เกษตร (หลักสูตร 5 ปี)" else "" }}>ครุศาสตร์เกษตร (หลักสูตร 5 ปี)</option>
-        <option value="เทคโนโลยีชีวภาพทางการเกษตร (ต่อเนื่อง)" {{ "selected" if selected_major=="เทคโนโลยีชีวภาพทางการเกษตร (ต่อเนื่อง)" else "" }}>เทคโนโลยีชีวภาพทางการเกษตร (ต่อเนื่อง)</option>
-        <option value="ครุศาสตร์เกษตร (หลักสูตร 4 ปี)" {{ "selected" if selected_major=="ครุศาสตร์เกษตร (หลักสูตร 4 ปี)" else "" }}>ครุศาสตร์เกษตร (หลักสูตร 4 ปี)</option>
-      </optgroup>
-
-      <optgroup label="หมวดอื่น ๆ">
-        <option value="ภาษาและสังคม" {{ "selected" if selected_major=="ภาษาและสังคม" else "" }}>ภาษาและสังคม</option>
-        <option value="สำนักงานมาตราฐานครุศาสตร์อุตสาหกรรมและเทคโนโลยี" {{ "selected" if selected_major=="สำนักงานมาตราฐานครุศาสตร์อุตสาหกรรมและเทคโนโลยี" else "" }}>สำนักงานมาตราฐานครุศาสตร์อุตสาหกรรมและเทคโนโลยี</option>
-        <option value="เทคโนโลยีบัณฑิต (บูรณาการนวัตกรรมเพื่อสินค้าและบริการ)" {{ "selected" if selected_major=="เทคโนโลยีบัณฑิต (บูรณาการนวัตกรรมเพื่อสินค้าและบริการ)" else "" }}>เทคโนโลยีบัณฑิต (บูรณาการนวัตกรรมเพื่อสินค้าและบริการ)</option>
-      </optgroup>
-    </select>
-  </div>
-
-
-      <div class="form-group">
-        <label>ประเภทสมาชิก:</label>
-        <select name="member_type">
-          <option value="student"  {% if user.member_type=='student' %}selected{% endif %}>นักศึกษา</option>
-          <option value="teacher"  {% if user.member_type=='teacher' %}selected{% endif %}>อาจารย์</option>
-          <option value="officer"  {% if user.member_type=='officer' %}selected{% endif %}>เจ้าหน้าที่</option>
-        </select>
-      </div>
-
-      <div class="form-group">
-        <label>เพศ:</label>
-        <select name="gender">
-          <option value="male"   {% if user.gender=='male' %}selected{% endif %}>ชาย</option>
-          <option value="female" {% if user.gender=='female' %}selected{% endif %}>หญิง</option>
-          <option value="other"  {% if user.gender=='other' %}selected{% endif %}>อื่นๆ</option>
-        </select>
-      </div> 
-{% set selected_role =
-    (old.role if (old is defined and old and old.get('role')) else
-     (user.role if (user is defined and user and user.role) else "member")) %}
-
-<div class="form-group">
-  <label for="role">สิทธิ์การใช้งาน:</label>
-  <select id="role" class="auth__input" name="role" required>
-    <option value="member" {{ "selected" if selected_role=="member" else "" }}>สมาชิกทั่วไป</option>
-    <option value="staff"  {{ "selected" if selected_role=="staff" else "" }}>ผู้ดูแลระบบ</option>
-  </select>
-</div>
-
-      <div class="form-actions">
-        <button type="submit" class="btn btn-save">บันทึก</button>
-        <a href="{{ url_for('admin_users.index') }}" class="btn btn-cancel">ยกเลิก</a>
-      </div>
-    </form>
-  </div>
-</div>
+  function toggleIdFields() {
+    const val = memberSelect.value;
+    if (val === 'student') {
+      studentGroup.style.display = 'flex';   // ✅ เหมือนฟอร์มกรุ๊ปปกติ
+      employeeGroup.style.display = 'none';
+    } else {
+      studentGroup.style.display = 'none';
+      employeeGroup.style.display = 'flex';
+    }
+  }
+  toggleIdFields();
+  memberSelect.addEventListener('change', toggleIdFields);
+</script>
 
 {% endblock %}

@@ -27,5 +27,7 @@ ENV/
 .DS_Store
 Thumbs.db
 
-app.db
-app.db-journal
+# datebase
+
+.app.db
+

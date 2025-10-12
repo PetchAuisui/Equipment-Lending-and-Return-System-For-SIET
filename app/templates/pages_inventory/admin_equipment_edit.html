@@ -1,0 +1,134 @@
+{% extends 'base/base_admin.html' %}
+{% block title %}แก้ไขอุปกรณ์{% endblock %}
+{% set CATEGORIES = ["IT & คอมพิวเตอร์","อุปกรณ์อิเล็กทรอนิกส์/วิศวกรรม","โสตทัศนศึกษา","กีฬา","สำนักงาน "] %}
+
+{# วิธีที่ 1: ถ้า base มี block 'head' #}
+{% block head %}
+  {{ super() }}
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/admin_equipment_edit.css') }}?v=1">
+{% endblock %}
+
+{# วิธีที่ 2: ถ้า base ใช้ชื่อ 'extra_head' แทน #}
+{% block extra_head %}
+  {{ super() }}
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/admin_equipment_edit.css') }}?v=1">
+{% endblock %}
+
+{% block content %}
+
+{# วิธีที่ 3 (fallback): โหลดผ่าน @import ใน content เผื่อ base ไม่มีบล็อกหัวเลย #}
+<style>@import url("{{ url_for('static', filename='css/admin_equipment_edit.css') }}?v=1");</style>
+
+<div class="eqedit-page">
+  <div class="eqedit-container">
+    <div class="eqedit-header">
+      <h1 class="eqedit-header__title">แก้ไขข้อมูลอุปกรณ์</h1>
+    </div>
+
+    <div class="eqedit-card">
+      <form action="{{ url_for('inventory.admin_equipment_edit', eid=item.equipment_id) }}"
+            method="post" enctype="multipart/form-data">
+
+        <div class="eqedit-row">
+          <label class="eqedit-label">ชื่ออุปกรณ์ *</label>
+          <input class="eqedit-ctrl" type="text" name="name" value="{{ item.name or '' }}" required>
+        </div>
+
+        <div class="eqedit-row">
+          <label class="eqedit-label">รหัส/หมายเลข *</label>
+          <input class="eqedit-ctrl" type="text" name="code" value="{{ item.code or '' }}" required>
+        </div>
+
+        <div class="eqedit-row">
+          <label class="eqedit-label">หมวดหมู่</label>
+          <select class="eqedit-ctrl" name="category">
+            <option value="">— เลือกหมวดหมู่ —</option>
+            {% for c in CATEGORIES %}
+              <option value="{{ c }}" {% if item.category == c %}selected{% endif %}>{{ c }}</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div class="eqedit-row">
+          <label class="eqedit-label">ยี่ห้อ</label>
+          <input class="eqedit-ctrl" type="text" name="brand" value="{{ item.brand or '' }}">
+        </div>
+
+        <div class="eqedit-row">
+          <label class="eqedit-label">รายละเอียด</label>
+          <textarea class="eqedit-ctrl eqedit-ctrl--textarea" name="detail">{{ item.detail or '' }}</textarea>
+        </div>
+
+        <div class="eqedit-row">
+          <label class="eqedit-label">วันที่ซื้อ</label>
+          <input class="eqedit-ctrl" type="date" name="buy_date"
+                 value="{{ item.buy_date.strftime('%Y-%m-%d') if item.buy_date else '' }}">
+        </div>
+
+        <div class="eqedit-row">
+          <label class="eqedit-label">สถานะ</label>
+          <select class="eqedit-ctrl" name="status">
+            {% set s = item.status or '' %}
+            <option value="">— เลือกสถานะ —</option>
+            <option value="available" {{ 'selected' if s=='available' else '' }}>พร้อมใช้งาน</option>
+            <option value="in_use"    {{ 'selected' if s=='in_use'    else '' }}>กำลังถูกยืม</option>
+            <option value="broken"    {{ 'selected' if s=='broken'    else '' }}>ชำรุด</option>
+            <option value="lost"      {{ 'selected' if s=='lost'      else '' }}>สูญหาย</option>
+          </select>
+        </div>
+
+          <div class="row">
+            <label style="font-weight:600;">การอนุมัติจากอาจารย์</label>
+            <div style="display:flex; gap:20px; margin-top:6px;">
+              <label style="display:flex; align-items:center; gap:8px;">
+                <input type="radio" name="require_teacher_approval" value="1">
+                ต้องขออนุมัติอนุมัติ
+              </label>
+
+              <label style="display:flex; align-items:center; gap:8px;">
+                <input type="radio" name="require_teacher_approval" value="0" checked>
+                ไม่ต้องขออนุมัติ
+              </label>
+            </div>
+          </div>
+
+        {% if item.images and item.images|length > 0 %}
+          {% set latest = (item.images|sort(attribute='created_at', reverse=True))|first %}
+          <div class="eqedit-row">
+            <label class="eqedit-label">รูปภาพปัจจุบัน</label>
+            <div class="eqedit-preview">
+              <img
+                src="{{ url_for('static', filename=(latest.image_path|replace('\\','/'))) }}?v={{ (item.updated_at.timestamp() if item.updated_at else 0) }}"
+                alt="รูปปัจจุบัน"
+                class="eqedit-preview__img">
+            </div>
+          </div>
+        {% endif %}
+
+        <div class="eqedit-row">
+          <label class="eqedit-label">แนบรูปภาพใหม่ (ถ้ามี)</label>
+          <input class="eqedit-ctrl" type="file" name="image" accept="image/*">
+        </div>
+
+        <div class="eqedit-actions">
+
+          <button type="submit"
+                  class="btn btn--danger"
+                  formaction="{{ url_for('inventory.admin_equipment_delete', eid=item.equipment_id) }}"
+                  formmethod="post"
+                  formnovalidate
+                  onclick="return confirm('❌ ต้องการลบอุปกรณ์นี้ออกจากระบบใช่ไหม?');">
+            🗑️ ลบอุปกรณ์นี้
+          </button>
+
+          <div class="eqedit-actions__right">
+
+            <a class="btn" href="{{ url_for('inventory.admin_equipment_list') }}">ยกเลิก</a>
+            <button type="submit" class="btn btn--primary">บันทึก</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

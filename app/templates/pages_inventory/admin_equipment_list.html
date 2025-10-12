@@ -1,0 +1,71 @@
+{% extends 'base/base_admin.html' %}
+{% block title %}home_admin{% endblock %}
+  {% block content %}
+<div class="page-wrap">
+
+  <!-- Header + Search -->
+  <div class="page-header">
+    <div class="page-title">
+      <h1>จัดการอุปกรณ์</h1>
+    </div>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/admin_equipment.css') }}">
+    <form action="{{ url_for('inventory.admin_equipment_list') }}" method="get" class="search-form">
+      <input
+        type="search"
+        name="q"
+        value="{{ request.args.get('q','') }}"
+        placeholder="ค้นหาอุปกรณ์ / หมายเลข"
+        class="search-input">
+      <button class="search-btn">ค้นหา</button>
+    </form>
+  </div>
+
+  <!-- กล่องหลัก -->
+  <div class="panel">
+    {% if items and items|length > 0 %}
+      <div class="equip-grid">
+        {% for e in items %}
+          <a href="{{ url_for('inventory.admin_equipment_detail', eid=e.equipment_id) }}" class="equip-card">
+            <div class="equip-thumb">
+              {% if e.images and e.images|length > 0 %}
+                {% set latest = (e.images|sort(attribute='created_at', reverse=True))|first %}
+                <img
+                  src="{{ url_for('static', filename=(latest.image_path|replace('\\','/'))) }}?v={{ (e.updated_at.timestamp() if e.updated_at else 0) }}"
+                  alt="ภาพอุปกรณ์">
+              {% else %}
+                <span class="no-image">ไม่มีรูป</span>
+              {% endif %}
+            </div>
+
+            <div class="equip-info">
+              <div><strong>หมายเลข:</strong> {{ e.code or '—' }}</div>
+              <div><strong>อุปกรณ์:</strong> {{ e.name or '—' }}</div>
+              <div><strong>ยี่ห้อ:</strong> {{ e.brand or '—' }}</div>
+
+              <div class="equip-status">
+                <strong>สถานะ:</strong>
+                {% if e.status == "available" %}
+                  <span class="badge badge-ok">พร้อมใช้งาน</span>
+                {% elif e.status == "in_use" %}
+                  <span class="badge badge-warn">กำลังใช้งาน</span>
+                {% elif e.status == "broken" %}
+                  <span class="badge badge-error">ชำรุด</span>
+                {% elif e.status == "lost" %}
+                  <span class="badge badge-dim">สูญหาย</span>
+                {% else %}
+                  <span class="badge badge-dim">{{ e.status or '—' }}</span>
+                {% endif %}
+
+              </div>
+            </div>
+          </a>
+        {% endfor %}
+      </div>
+    {% else %}
+
+      <div class="empty-hint">— ยังไม่มีอุปกรณ์ในระบบ —</div>
+    {% endif %}
+    <a href="{{ url_for('inventory.admin_equipment_new') }}" class="fab-add">➕ เพิ่มอุปกรณ์</a>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,203 @@
+/* ===== Reset ===== */
+* { box-sizing: border-box; }
+
+/* ===== Page ===== */
+.eqedit-page {
+  background: #ffffff;          /* ✅ เปลี่ยนเป็นพื้นหลังขาว */
+  min-height: calc(100vh - 60px);
+  padding: 24px 0 48px;         /* เอา padding ข้างซ้ายออก */
+}
+
+/* ===== Container ===== */
+:root {
+  --sidebar-w: 240px; /* กำหนดกว้าง sidebar */
+  --gap: 32px;
+}
+
+.eqedit-container {
+  width: min(100%, 900px);
+  margin-left: calc(var(--sidebar-w) + var(--gap)); /* ชิดซ้ายตรงกับ sidebar */
+  margin-right: auto;
+}
+
+/* ===== Header ===== */
+.eqedit-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin: 12px 0 24px;
+  justify-content: flex-start;
+}
+
+.eqedit-header__icon {
+  width: 48px;
+  height: 48px;
+}
+
+.eqedit-header__title {
+  font-size: 26px;
+  font-weight: 700;
+  margin: 0;
+  color: #111;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+}
+
+/* ===== Card ===== */
+.eqedit-card {
+  background: #f6f6f6;
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  padding: 28px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+}
+
+/* ===== Form ===== */
+.eqedit-row {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 18px;
+}
+
+.eqedit-label {
+  font-weight: 600;
+  font-size: 15px;
+  margin-bottom: 6px;
+}
+
+.eqedit-ctrl {
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 15px;
+  width: 100%;
+  background: #fff;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.eqedit-ctrl:focus {
+  border-color: #4caf50;
+  box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.2);
+}
+
+.eqedit-ctrl--textarea {
+  resize: vertical;
+  min-height: 100px;
+  line-height: 1.5;
+}
+
+/* ===== Image preview ===== */
+.eqedit-preview {
+  width: 150px;
+  height: 150px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #fafafa;
+}
+
+.eqedit-preview__img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* ===== Actions ===== */
+.eqedit-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 24px;
+}
+
+.eqedit-actions__right {
+  display: flex;
+  gap: 12px;
+}
+
+/* ===== Buttons ===== */
+.btn {
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background: #fff;
+  padding: 10px 20px;
+  cursor: pointer;
+  font-size: 15px;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s, filter 0.2s;
+}
+
+.btn:hover {
+  filter: brightness(0.97);
+}
+
+.btn--primary {
+  background: #4caf50;
+  color: #fff;
+  border-color: #4caf50;
+  font-weight: 600;
+}
+
+.btn--primary:hover {
+  background: #43a047;
+}
+
+.btn--danger {
+  background: #dc3545;
+  color: #fff;
+  border-color: #dc3545;
+  font-weight: 600;
+}
+
+.btn--danger:hover {
+  background: #c82333;
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 1024px) {
+  .eqedit-container {
+    margin-left: 24px; /* เมื่อ sidebar ซ่อน */
+  }
+}
+
+@media (max-width: 640px) {
+  .eqedit-card {
+    padding: 22px;
+  }
+  .eqedit-header__title {
+    font-size: 22px;
+  }
+}
+
+.eqedit-container {
+  margin-left: calc(var(--sidebar-w) + var(--gap) + 80px); /* ขยับฟอร์มไปทางขวา 80px */
+}
+
+/* ===== จัดหัวข้อ + รูปไอคอน ให้อยู่ตรงกลาง ===== */
+.eqedit-header {
+  display: flex;
+  align-items: center;
+  justify-content: center !important; /* ✅ ให้อยู่กลางแนวนอน */
+  gap: 12px;
+  margin-bottom: 24px;
+  text-align: center;
+}
+
+.eqedit-header__icon {
+  width: 48px;
+  height: 48px;
+  display: block;
+}
+
+.eqedit-header__title {
+  font-size: 26px;
+  font-weight: 700;
+  color: #111;
+  margin: 0;
+  text-align: center;
+}

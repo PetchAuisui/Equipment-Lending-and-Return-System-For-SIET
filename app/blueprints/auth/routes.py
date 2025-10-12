@@ -34,7 +34,7 @@ def register_action():
             return jsonify({"error": err}), 400
         return render_template("auth/register.html", error=err, old=payload), 400
 
-    user = svc.register(payload)  # บริการคืน dict พร้อมฟิลด์ผู้ใช้
+    user = svc.register(payload)  # คืน dict พร้อมฟิลด์ผู้ใช้
 
     if request.is_json:
         return jsonify({"user": user}), 201
@@ -57,29 +57,14 @@ def login_action():
     svc = _svc()
     ok, err, user = svc.login(email, password)
 
-    # ---- JSON Mode ----
-    if request.is_json:
-        if not ok:
-            return jsonify({"error": err}), 401
-        return jsonify({
-            "ok": True,
-            "user": {
-                "email": _get(user, "email"),
-                "name": _get(user, "name"),
-                "student_id": _get(user, "student_id"),
-                "employee_id": _get(user, "employee_id"),
-                "role": _get(user, "role", "member"),
-                "member_type": _get(user, "member_type"),
-            }
-        }), 200
-
-    # ---- Form Mode ----
     if not ok:
+        if request.is_json:
+            return jsonify({"error": err}), 401
         return render_template("auth/login.html", error=err, old={"email": email}), 401
-    
-    # ---- เก็บ session ----
-    student_id   = _get(user, "student_id")
-    employee_id  = _get(user, "employee_id")
+
+    # ✅ ---- เก็บ session ----
+    student_id = _get(user, "student_id")
+    employee_id = _get(user, "employee_id")
 
     session.update({
         "user_id": _get(user, "user_id"),
@@ -87,12 +72,29 @@ def login_action():
         "user_name": _get(user, "name") or email.split("@")[0],
         "student_id": student_id,
         "employee_id": employee_id,
-        "role": _get(user, "role", "member"),          # เก็บ role (ไม่แสดง)
-        "member_type": _get(user, "member_type"),      # เก็บ member_type (ไม่แสดง)
-        "identity": student_id or employee_id,         # ใช้โชว์รหัสใน navbar
+        "role": _get(user, "role", "member"),
+        "member_type": _get(user, "member_type"),
+        "identity": student_id or employee_id,
+        "phone": _get(user, "phone"),   # ✅ เพิ่มเบอร์โทรศัพท์
         "is_authenticated": True,
     })
 
+    # ✅ ---- JSON Mode ----
+    if request.is_json:
+        return jsonify({
+            "ok": True,
+            "user": {
+                "email": _get(user, "email"),
+                "name": _get(user, "name"),
+                "student_id": student_id,
+                "employee_id": employee_id,
+                "role": _get(user, "role", "member"),
+                "member_type": _get(user, "member_type"),
+                "phone": _get(user, "phone"), 
+            }
+        }), 200
+
+    # ✅ ---- Form Mode ----
     return redirect(url_for("pages.home"))
 
 
@@ -106,11 +108,15 @@ def logout_action():
 
 @auth_bp.app_context_processor
 def inject_current_user():
+    """Inject current user info into all templates."""
     return {
         "current_user": {
+            "id": session.get("user_id"),
             "email": session.get("user_email"),
             "name": session.get("user_name"),
-            "identity": session.get("identity"),  # โชว์แค่ identity (student_id / emp_id)
+            "identity": session.get("identity"),
+            "phone": session.get("phone"),   
+            "member_type": session.get("member_type"),
             "is_authenticated": session.get("is_authenticated", False),
         }
     }
