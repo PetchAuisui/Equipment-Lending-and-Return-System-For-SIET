@@ -23,8 +23,7 @@ def create_app():
     from .blueprints.auth import auth_bp
     from .blueprints.inventory import inventory_bp
     from .blueprints.tracking import tracking_bp
-    from .blueprints.admin import admin_users_bp
-    from .blueprints.admin import admin_bp                     # root: "/"
+    from app.blueprints.admin.routes import admin_bp, admin_users_bp, admin_history_bp                  # root: "/"
     from app.blueprints.pages.routes import pages_bp
     from app.blueprints.history.routes import history_bp
 
@@ -35,5 +34,5 @@ def create_app():
     app.register_blueprint(admin_users_bp)
     app.register_blueprint(admin_bp)
     app.register_blueprint(history_bp)
-
+    app.register_blueprint(admin_history_bp)
     return app

@@ -1,6 +1,7 @@
 from __future__ import annotations
 from functools import wraps
 from flask import render_template, session, redirect, url_for, current_app
+from sqlalchemy import text
 
 from . import history_bp
 from app.db.db import SessionLocal
@@ -25,3 +26,4 @@ def my_borrow_history():
 
     items = _svc().get_for_user(user["user_id"])
     return render_template("pages_history/my_history.html", items=items)
+

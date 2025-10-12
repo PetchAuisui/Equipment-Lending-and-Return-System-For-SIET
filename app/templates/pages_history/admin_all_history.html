@@ -1,0 +1,47 @@
+{% extends 'base/base_admin.html' %}
+{% block title %}ประวัติการยืมคืนทั้งหมด{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/home_admin.css') }}">
+
+<div class="dashboard">
+  <section class="dashboard__grid" aria-label="ประวัติการยืมคืนทั้งหมด">
+
+    <div class="card-wide">
+      <div class="header-row">
+        <h1>📜 ประวัติการยืม-คืนของผู้ใช้ทั้งหมด</h1>
+      </div>
+
+      <table class="table table-striped" style="width:100%; border-collapse: collapse;">
+        <thead>
+          <tr style="background:#f3f3f3;">
+            <th>ชื่อผู้ใช้</th>
+            <th>รหัส</th>
+            <th>อุปกรณ์</th>
+            <th>วันที่ยืม</th>
+            <th>กำหนดคืน</th>
+            <th>วันที่คืน</th>
+            <th>สถานะ</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for item in items %}
+          <tr>
+            <td>{{ item.user_name }}</td>
+            <td>{{ item.student_id or item.employee_id or '-' }}</td>
+            <td>{{ item.equipment_name }}</td>
+            <td>{{ item.start_date.strftime('%d/%m/%Y') if item.start_date else '-' }}</td>
+            <td>{{ item.due_date.strftime('%d/%m/%Y') if item.due_date else '-' }}</td>
+            <td>{{ item.return_date.strftime('%d/%m/%Y') if item.return_date else '-' }}</td>
+            <td><span style="color:{{ item.status_color or '#333' }}">{{ item.status_name or '-' }}</span></td>
+          </tr>
+          {% else %}
+          <tr><td colspan="7" class="text-center">ไม่มีข้อมูลการยืม</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+  </section>
+</div>
+{% endblock %}
