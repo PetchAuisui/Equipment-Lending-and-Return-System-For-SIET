@@ -32,9 +32,12 @@ def is_pending_request_exists(rent_id):
     """
     db = SessionLocal()
     try:
-        return db.query(Renewal).filter(
+        exists = db.query(Renewal).filter(
             Renewal.rent_id == rent_id,
             Renewal.status == "pending"
         ).first() is not None
+        if exists:
+            print(f"⚠️ พบคำขอ pending สำหรับ rent_id={rent_id}")
+        return exists
     finally:
         db.close()

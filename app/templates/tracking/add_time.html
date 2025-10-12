@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="th">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -12,7 +12,6 @@
 {% block content %}
 <body>
 
-<!-- ✅ หัวข้ออยู่นอก detail-container -->
 <h1 class="page-title">ขยายเวลาการยืมอุปกรณ์</h1>
 
 <div class="detail-container">
@@ -27,7 +26,9 @@
     {% endif %}
 
     <h2>{{ rent.equipment_name }} ({{ rent.equipment_code }})</h2>
-    <div class="status">สถานะ: <span style="color: {{ rent.status_color }}">{{ rent.status_name }}</span></div>
+    <div class="status">
+      สถานะ: <span style="color: {{ rent.status_color }}">{{ rent.status_name }}</span>
+    </div>
 
     <div class="date-row">
       <p><strong>วันที่ยืม:</strong> {{ rent.start_date.strftime('%d %B %Y') }}</p>
@@ -35,19 +36,22 @@
     </div>
   </div>
 
-  <!-- ✅ ส่วนขยายเวลาคืน -->
-  <form action="#" method="post" class="extend-section">
+  <!-- ✅ ฟอร์มส่งข้อมูล -->
+  <form action="{{ url_for('tracking.add_time_submit') }}" method="POST" class="extend-section">
+    <input type="hidden" name="rent_id" value="{{ rent.rent_id }}">
+    <input type="hidden" name="old_due" value="{{ rent.due_date.strftime('%Y-%m-%d') }}">
+    <input type="hidden" name="created_at" value="{{ now().strftime('%Y-%m-%d %H:%M:%S') }}">
+
     <div class="input-block">
       <label for="extend_date"><strong>กำหนดคืนใหม่:</strong></label>
-      <input type="date" id="extend_date" name="extend_date" class="extend-input" required>
+      <input type="date" id="extend_date" name="new_due" class="extend-input" required>
     </div>
 
     <div class="input-block">
       <label for="extend_reason"><strong>เหตุผลในการขยายเวลา:</strong></label>
-      <textarea id="extend_reason" name="extend_reason" rows="6" class="extend-textarea" placeholder="กรอกเหตุผลที่ต้องการขยายเวลาคืน..." required></textarea>
+      <textarea id="extend_reason" name="reason" rows="6" class="extend-textarea" placeholder="กรอกเหตุผลที่ต้องการขยายเวลาคืน..." required></textarea>
     </div>
 
-    <!-- ✅ ปุ่มยืนยันและยกเลิก -->
     <div class="button-group">
       <a href="{{ url_for('tracking.track_index') }}" class="btn btn-cancel">ยกเลิก</a>
       <button type="submit" class="btn btn-submit">ยืนยันการขยายเวลา</button>
@@ -60,16 +64,15 @@
 </div>
 
 </body>
-<!-- ✅ JS ควบคุมวันขยายเวลาคืน -->
+
 <script>
   document.addEventListener("DOMContentLoaded", function() {
-    const extendInput = document.querySelector('input[name="extend_date"]');
-    const dueDate = "{{ rent.due_date.strftime('%Y-%m-%d') }}"; // ดึงจาก backend
-
-    if (extendInput) {
-      extendInput.min = dueDate;  // ตั้งให้วันต่ำสุดเป็นวันคืนเดิม
+    const extendInput = document.querySelector('input[name="new_due"]');
+    const dueDate = "{{ rent.due_date.strftime('%Y-%m-%d') if rent and rent.due_date else '' }}";
+    if (extendInput && dueDate) {
+      extendInput.min = dueDate;
     }
   });
 </script>
-</html>
 {% endblock %}
+</html>
