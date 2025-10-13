@@ -1,4 +1,8 @@
-/* ===== Reset & Base ===== */
+/* ============================================
+   Navbar (Mobile-first, clean & responsive)
+   ============================================ */
+
+/* Base */
 * { box-sizing: border-box; }
 html, body {
   margin: 0;
@@ -7,519 +11,398 @@ html, body {
   font-family: 'Kanit','Poppins',sans-serif;
 }
 
-/* ===== Navbar Container ===== */
-.navbar {
-  display: block;
-  width: 100%;
+/* Colors & sizing */
+:root{
+  --pink: #ffadd0;
+  --ink: #1f2937;
+  --ink-2: #111827;
+  --muted: #374151;
+  --green: #6b8f6b;
+  --menu-link: #273135;
+  --white: #ffffff;
+
+  --nav-pad-x: 16px;     /* mobile default */
+  --nav-pad-y: 10px;
+  --gap: 10px;
+  --radius: 12px;
+}
+
+/* ===== Navbar container (sticky) ===== */
+.navbar{
   position: sticky;
   top: 0;
   z-index: 1000;
+  width: 100%;
 }
 
-/* ===== แถวบน (ชมพู) ===== */
+/* ===== Row 1: Pink (login + brand) ===== */
+.navbar_login{
+  background: var(--pink);
+  display: grid;
+  grid-template-columns: 1fr auto;   /* brand left, actions right */
+  align-items: center;
+  padding: var(--nav-pad-y) var(--nav-pad-x);
+  gap: var(--gap);
+}
+
+/* Brand (left) */
+.nav-left .brand img{
+  height: 40px;                /* mobile size */
+  object-fit: contain;
+  vertical-align: middle;
+}
+
+/* Right area: buttons / user capsule */
+.navbar_login .nav-right{
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Capsule user (if logged in) */
+.user_identity{
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #ffd6e8;
+  padding: 6px 12px;
+  border-radius: 999px;
+  color: var(--ink);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+/* Small action buttons (admin/logout) */
+.btn-nav{
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 18px;
+  color: var(--white);
+  transition: transform .15s ease, filter .15s ease;
+}
+.btn-nav:hover{ filter: brightness(.95); transform: translateY(-1px); }
+.btn-admin{ background:#3b82f6; text-decoration: none ; }
+.btn-logout{ background:#ef4444; text-decoration: none; }
+
+/* Login | Sign in (as links) */
+.navbar_login_text{
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.navbar_login_text a{
+  color: var(--ink);
+  font-weight: 600;
+  font-size: 18px;
+  text-decoration: none;                 /* no underline by default */
+  padding: 4px 6px;
+  -webkit-tap-highlight-color: transparent;
+  transition: color .15s ease;
+}
+.navbar_login_text a:hover{
+  color: var(--ink-2);
+  text-decoration: underline;            /* underline on hover */
+  text-decoration-color: var(--ink-2);
+  text-underline-offset: 3px;
+  text-decoration-thickness: 1.5px;
+}
+.navbar_login_text a:visited{ color: var(--ink); text-decoration: none; }
+.navbar_login_text a:focus,
+.navbar_login_text a:active{
+  outline: none;
+  box-shadow: none;
+  color: var(--ink-2);
+}
+.navbar_login_text .divider{
+  color: var(--muted);
+  user-select: none;
+  pointer-events: none;
+}
+
+/* ===== Row 2: Green (main menu) ===== */
+.navbar_menu{
+  background: var(--green);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px var(--nav-pad-x);
+  gap: 12px;
+}
+
+/* Left menu: scrollable on mobile to avoid wrap */
+.navbar_menu .menu-left{
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  overflow-x: auto;          /* mobile horizontal scroll */
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+.navbar_menu .menu-left::-webkit-scrollbar{ display: none; }
+
+/* Menu links */
+.navbar_menu a{
+  color: var(--menu-link);
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 17px;           /* mobile size */
+  padding: 6px 0;
+  border-bottom: 3px solid transparent;  /* reserve height to prevent jump */
+  transition: color .15s ease, border-bottom .15s ease;
+  white-space: nowrap;       /* keep in one line in scroller */
+}
+.navbar_menu a:hover,
+.navbar_menu a:focus{
+  color: var(--white);
+  border-bottom: 3px solid var(--white);
+  outline: none;
+}
+
+/* Right actions (e.g., bell) */
+.btn-bell{
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: 50%;
+  background: var(--white);
+  color: #6b7280;
+  font-size: 20px;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0,0,0,.12);
+  transition: transform .15s ease, background .15s ease, box-shadow .15s ease, color .15s ease;
+}
+.btn-bell:hover{
+  background: #f3f4f6;
+  color: var(--ink-2);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px rgba(0,0,0,.18);
+}
+
+/* ============================================
+   Responsive breakpoints
+   ============================================ */
+
+/* ≥ 480px: slightly larger tap targets */
+@media (min-width: 480px){
+  :root{ --nav-pad-x: 18px; }
+  .nav-left .brand img{ height: 44px; }
+  .navbar_menu a{ font-size: 18px; }
+  .btn-bell{ width: 38px; height: 38px; font-size: 22px; }
+}
+
+/* ≥ 768px: tablet & up — more spacing, grid tune */
+@media (min-width: 768px){
+  :root{ --nav-pad-x: 24px; --gap: 12px; }
+  .navbar_login{
+    grid-template-columns: auto 1fr auto; /* brand | (spacer) | actions */
+    column-gap: 16px;
+  }
+  .nav-left .brand img{ height: 46px; }
+  .user_identity{ font-size: 20px; padding: 6px 14px; }
+  .btn-nav{ font-size: 16px; padding: 8px 14px; }
+
+  .navbar_menu{ padding: 8px var(--nav-pad-x); }
+  .navbar_menu .menu-left{ gap: 24px; overflow-x: visible; }
+  .navbar_menu a{ font-size: 19px; }
+  .btn-bell{ width: 36px; height: 36px; font-size: 20px; }
+}
+
+/* ≥ 1024px: desktop — bigger type & spacing */
+@media (min-width: 1024px){
+  :root{ --nav-pad-x: 28px; }
+  .nav-left .brand img{ height: 48px; }
+  .navbar_menu a{ font-size: 20px; }
+  .navbar_login_text a{ font-size: 16px; }
+}
+
+/* Reduce motion preference */
+@media (prefers-reduced-motion: reduce){
+  .btn-nav, .btn-bell, .navbar_menu a, .navbar_login_text a{
+    transition: none !important;
+    transform: none !important;
+  }
+}
+
+/* ===== แก้ปัญหาขอบขาวขวาบนแถบชมพูบนมือถือ ===== */
 .navbar_login {
   background: #ffadd0;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 10px 24px;
+  padding: 10px 16px;
+  flex-wrap: nowrap;          /* ✅ ไม่ให้ขึ้นบรรทัดใหม่ */
+  overflow-x: hidden;         /* ✅ กัน element ล้นออกขวา */
+  max-width: 100vw;           /* ✅ จำกัดความกว้างไม่ให้เกินจอ */
+  box-sizing: border-box;     /* ✅ คำนวณ padding รวมใน width */
 }
 
-/* โลโก้ซ้าย */
 .nav-left .brand img {
-  height: 45px;
-  object-fit: contain;
-  vertical-align: middle;
+  height: 40px;
+  flex-shrink: 0;             /* ✅ ไม่ให้โลโก้โดนบีบหรือดันออก */
 }
 
-/* ด้านขวา (ปุ่ม + user) */
 .navbar_login .nav-right {
   display: flex;
   align-items: center;
-  gap: 10px;
-}
-
-/* ปุ่มทั่วไปใน navbar */
-.btn-nav {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 8px 14px;
-  border-radius: 8px;
-  border: none;
-  cursor: pointer;
-  font-weight: 600;
-  font-size: 15px;
-  text-decoration: none;
-  transition: all 0.2s ease;
-  color: #fff;
-}
-.btn-admin { background: #3b82f6; }
-.btn-logout { background: #ef4444; }
-.btn-nav:hover {
-  filter: brightness(0.95);
-  transform: translateY(-1px);
-}
-
-/* Capsule แสดงชื่อผู้ใช้ */
-.user_identity {
-  display: inline-flex;
-  align-items: center;
   gap: 6px;
-  background: #ffd6e8;
-  padding: 6px 14px;
-  border-radius: 999px;
-  color: #1f2937;
-  font-size: 16px;
-  font-weight: 600;
+  flex-shrink: 0;             /* ✅ ป้องกันกลุ่ม Login|Sign in โดนบีบ */
 }
 
-/* ===== แถวล่าง (เขียว) ===== */
-.navbar_menu {
-  background: #6b8f6b;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 7px 28px;
-  text-decoration: none;    
+.navbar_login_text {
+  white-space: nowrap;        /* ✅ ไม่ให้ Login | Sign in ขึ้นบรรทัดใหม่ */
 }
 
-/* เมนูด้านซ้าย */
-.navbar_menu .menu-left {
-  display: flex;
-  gap: 28px;
+/* ลดช่องไฟบนจอเล็กให้พอดี */
+@media (max-width: 400px) {
+  .navbar_login { padding: 8px 10px; }
+  .nav-left .brand img { height: 34px; }
+  .navbar_login_text a { font-size: 16px; }
 }
 
-/* ลิงก์เมนู */
-.navbar_menu a {
-  color: #273135;
-  text-decoration: none;           /* ❌ ไม่มีเส้นใต้ */
-  font-weight: 600;
-  font-size: 20px;
-  padding: 6px 0;
-  transition: color 0.2s, border-bottom 0.2s;
-  border-bottom: 3px solid transparent;  /* 👈 กันเลย์เอาต์กระโดด */
+/* กัน overflow ทั้งแถบสีชมพู */
+.navbar {
+  overflow-x: hidden;          /* ✅ กัน scrollbar แนวนอน */
+}
+/* ====== Hamburger base ====== */
+.menu-toggle{
+  display:none;               /* เดสก์ท็อปไม่โชว์ */
+  width:44px; height:36px;
+  border:none; background:transparent;
+  border-radius:10px;
+  align-items:center; justify-content:center;
+  cursor:pointer;
+}
+.menu-toggle .bar{
+  display:block; width:22px; height:2.5px; background:#fff;
+  margin:3.5px 0; border-radius:2px;
+  transition:transform .2s ease, opacity .2s ease;
 }
 
-/* Hover / Focus / Active state */
-.navbar_menu a:hover {
-  color: #fff;
-  border-bottom: 3px solid #fff;   /* ✅ เส้นขาวตอน hover (ลบได้ถ้าไม่อยากให้มีเลย) */
+/* panel สำหรับเมนูตอนยุบ */
+.menu-panel{
+  display:flex; align-items:center; gap:24px;
 }
-.navbar_menu a:focus,
-.navbar_menu a:active {
-  outline: none;                  /* ❌ ตัดเส้น focus สีม่วงของ browser */
-  text-decoration: none;
-  border-bottom: 3px solid #fff;
+.menu-right{ display:flex; align-items:center; gap:10px; }
+
+/* ====== Mobile: ยุบเมนูเป็น drawer ====== */
+/* ===== Mobile: แปลงเมนูเป็นแบบดันเลย์เอาต์ (ยาวลงมา) ===== */
+@media (max-width: 768px){
+  .navbar_menu{
+    padding: 8px 12px;
+    flex-direction: row;            /* แถวหลัก: ปุ่มซ้าย + ขวา */
+    align-items: center;
+    gap: 10px;
+  }
+
+  /* แสดงปุ่ม hamburger */
+  .menu-toggle{ display:flex; }
+
+  /* ให้ปุ่มด้านขวาติดขอบขวา */
+  .menu-right{ margin-left:auto; }
+
+  /* ================ เมนูที่พับได้ (ดันเลย์เอาต์) ================ */
+  .menu-panel{
+    position: static;               /* ❗ เปลี่ยนจาก absolute เป็น static */
+    display: none;                  /* ปิดไว้ก่อน */
+    width: 100%;
+    margin-top: 8px;
+    background: #6b8f6b;
+    border-top: 1px solid rgba(255,255,255,.25);
+    overflow: visible;              /* ไม่ตัดความสูง */
+  }
+
+  /* เปิดเมนู: โชว์บล็อกเต็ม กินความสูงตามเนื้อหา → ดันคอนเทนต์ลง */
+  .navbar_menu.open .menu-panel{
+    display: block;
+  }
+
+  .menu-panel a{
+    display: block;
+    padding: 12px 14px;
+    font-size: 18px;
+    color: #fff;
+    border-bottom: 1px solid rgba(255,255,255,.15);
+    text-decoration: none;
+  }
+  .menu-panel a:last-child{ border-bottom:none; }
+
+  /* แอนิเมชันไอคอนเป็นกากบาท */
+  .navbar_menu.open .menu-toggle .bar:nth-child(1){ transform: translateY(6px) rotate(45deg); }
+  .navbar_menu.open .menu-toggle .bar:nth-child(2){ opacity:0; }
+  .navbar_menu.open .menu-toggle .bar:nth-child(3){ transform: translateY(-6px) rotate(-45deg); }
+
+  /* ซ่อน .menu-left เดิมถ้ามี */
+  .navbar_menu .menu-left{ display:none; }
 }
 
-/* ถ้าอยาก “ไม่มีเส้นอะไรเลย” แม้ hover ก็ใช้ส่วนนี้แทน (ยกเลิก comment) */
-/*
-.navbar_menu a,
-.navbar_menu a:hover,
-.navbar_menu a:focus,
-.navbar_menu a:active {
-  text-decoration: none !important;
-  outline: none !important;
-  border: none !important;
-  box-shadow: none !important;
+/* กันจอเล็กมาก */
+@media (max-width: 360px){
+  .menu-panel a{ font-size:16px; padding:11px 12px; }
 }
-*/
 
-/* ===== ปุ่มกระดิ่ง (Notifications) ===== */
-.btn-bell {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 35px;
-  height: 35px;
+.menu-toggle{
+  display: none;               /* เดสก์ท็อปซ่อนไว้ */
+  background: transparent;
   border: none;
-  border-radius: 50%;
-  background: #fff;
-  color: #6b7280;
-  font-size: 22px;
+  padding: 6px;
+  border-radius: 10px;
   cursor: pointer;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
-  transition: all 0.2s ease;
+  line-height: 0;
 }
-.btn-bell:hover {
-  background: #f3f4f6;
-  color: #111827;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+.menu-toggle svg{
+  width: 28px;
+  height: 28px;
+  display: block;
 }
 
-/* ===== Responsive (มือถือ / แท็บเล็ต) ===== */
-@media (max-width: 768px) {
-  .navbar_login { padding: 8px 16px; }
-  .navbar_menu { padding: 8px 16px; }
-  .navbar_menu a { font-size: 17px; gap: 16px; }
-  .btn-bell { width: 38px; height: 38px; font-size: 20px; }
-  .user_identity { font-size: 14px; padding: 4px 10px; }
+@media (max-width: 768px){
+  .menu-toggle{ display: inline-flex; align-items:center; justify-content:center; }
+  .menu-right{ margin-left: auto; }
+}
+@media (max-width: 480px) {
+  .navbar_login_text { display: none; } /* ซ่อน Login/Sign in */
 }
 
-/* --- ลิงก์ในแถวบน (ชมพู) ปิดสีม่วง/ขีดเส้นใต้ --- */
-.navbar_login a,
-.navbar_login a:visited {
-  color: #273135;           /* กำหนดสีเอง จะไม่เป็นม่วงอีก */
-  text-decoration: none;    /* ปิดขีดเส้นใต้ */
+/* มือถือ: ซ่อนทุกอย่างฝั่งขวาบนแถบชมพู (ทั้งตอนล็อกอิน/ไม่ล็อกอิน) */
+@media (max-width: 768px){
+  .navbar_login .nav-right{ 
+    display: none !important;   /* ซ่อน Admin / Logout / user capsule / Login | Sign in */
+  }
+
+  /* ย่อโลโก้ให้พอดี */
+  .nav-left .brand img{ height: 38px; }
+  .navbar_login{ padding: 8px 12px; }
+}
+@media (max-width: 480px){
+  .nav-left .brand img{ height: 34px; }
+}
+/* ===== ซ่อนเมนูซ้ำในแถบเขียว เมื่ออยู่บน Desktop ===== */
+@media (min-width: 769px) {
+  .navbar_menu .menu-panel a[href*="admin"],
+  .navbar_menu .menu-panel a[href*="logout"],
+  .navbar_menu .menu-panel a[href*="login"],
+  .navbar_menu .menu-panel a[href*="register"] {
+    display: none !important;   /* ซ่อนเมนูพวกนี้ตอนจอใหญ่ */
+  }
+}
+/* ===== ปรับขนาดฟอนต์ในปุ่มบนแถบชมพู ===== */
+.navbar_login .btn-nav {
+  font-size: 16px !important;   /* เดิมประมาณ 14-15px → ขยายขึ้น */
+  padding: 9px 16px;            /* เพิ่ม padding ให้สมดุล */
 }
 
-.navbar_login a:hover {
-  color: #111827;
-}
-
-.navbar_login a:focus,
-.navbar_login a:active {
-  outline: none;            /* ตัดเส้น focus ของเบราว์เซอร์ */
-  text-decoration: none;
-  box-shadow: none;
-}
-
-/* กันบางเบราว์เซอร์เติมไฮไลต์ตอนแตะ */
-.navbar_login a {
-  -webkit-tap-highlight-color: transparent;
-}
-
-.navbar .navbar_login .nav-right a,
-.navbar .navbar_login .nav-right a:visited { 
-  color:#273135 !important; 
-  text-decoration:none !important; 
-  font-size: 20px;
-}
-
-/* ===== ปุ่ม Login / Sign in แถวบน (ชมพู) ===== */
-.navbar_login_text {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-/* ปุ่มธรรมดาให้ดูเหมือนลิงก์ */
-.navbar_login_text button {
-  background: none;
-  border: none;
-  color: #1f2937;
-  font-weight: 600;
-  font-size: 16px;
-  cursor: pointer;
-  padding: 4px 8px;
-  transition: color 0.2s, transform 0.1s;
-}
-
-/* hover แล้วเปลี่ยนสีเล็กน้อย */
-.navbar_login_text button:hover {
-  color: #000;
-  transform: translateY(-1px);
-}
-
-/* ❌ ปิดเส้น outline สีม่วง / ฟ้า เวลา focus หรือ active */
-.navbar_login_text button:focus,
-.navbar_login_text button:active {
-  outline: none;
-  box-shadow: none;
-  border: none;
-  text-decoration: none;
-}
-
-/* เส้นแบ่ง | */
-.navbar_login_text .divider {
-  color: #374151;
-  font-weight: 400;
-  user-select: none;
-  pointer-events: none;
-}
-
-/* ป้องกันแสงไฮไลต์ตอนแตะบนมือถือ */
-.navbar_login_text button {
-  -webkit-tap-highlight-color: transparent;
-}
-/* ===== ลิงก์ Login / Sign in (แถวบนสีชมพู) ===== */
-.navbar_login_text {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.navbar_login_text a {
-  color: #1f2937;               /* สีเทาเข้มอ่านง่าย */
-  font-weight: 600;
-  font-size: 16px;
-  text-decoration: none;        /* ❌ ปิดเส้นใต้ */
-  cursor: pointer;
-  padding: 4px 8px;
-  transition: color 0.2s, transform 0.1s;
-}
-
-/* Hover แล้วให้สีเข้มขึ้นนิด */
-.navbar_login_text a:hover {
-  color: #000;
-  transform: translateY(-1px);
-  text-decoration: underline;
-}
-
-/* ปิดเส้น focus สีม่วง / ขอบน้ำเงิน */
-.navbar_login_text a:focus,
-.navbar_login_text a:active {
-  outline: none;
-  text-decoration: none;
-  box-shadow: none;
-  color: #000;
-  
-}
-
-/* ปิดสีม่วงลิงก์ที่เคยเข้า (visited) */
-.navbar_login_text a:visited {
-  color: #1f2937;
-  text-decoration: none;
-}
-
-/* เส้นแบ่ง | */
-.navbar_login_text .divider {
-  color: #374151;
-  font-weight: 400;
-  user-select: none;
-  pointer-events: none;
-}
-
-/* ปิดแสงไฮไลต์ตอนแตะบนมือถือ */
-.navbar_login_text a {
-  -webkit-tap-highlight-color: transparent;
-}
-
-/* ============================================
-   Login | Sign in (บนแถบชมพูมุมขวาบน)
-   ============================================ */
-.navbar_login_text {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-/* ===== ลิงก์ Login & Sign in ===== */
-.navbar_login_text a {
-  color: #1f2937;                /* สีเทาเข้มอ่านง่าย */
-  font-weight: 600;
-  font-size: 16px;
-  text-decoration: none;         /* ❌ ไม่ขีดเส้นใต้ปกติ */
-  cursor: pointer;
-  padding: 4px 8px;
-  transition: color 0.2s, text-decoration-color 0.2s;
-}
-
-/* ===== Hover แล้วค่อยมีเส้นใต้ ===== */
-.navbar_login_text a:hover {
-  color: #000;                   /* สีเข้มขึ้นเล็กน้อย */
-  text-decoration-line: underline;   /* ✅ แสดงเส้นใต้ตอน hover */
-  text-underline-offset: 3px;        /* เว้นระยะเส้นจากตัวอักษร */
-  text-decoration-thickness: 1.5px;  /* ความหนาเส้น */
-  text-decoration-color: #000;       /* สีเส้นใต้เหมือนข้อความ */
-}
-
-/* Focus / Active — ตัดขอบม่วงออก */
-.navbar_login_text a:focus,
-.navbar_login_text a:active {
-  outline: none;
-  box-shadow: none;
-  text-decoration-color: #000;
-}
-
-/* Visited — ไม่ให้เป็นสีม่วง */
-.navbar_login_text a:visited {
-  color: #1f2937;
-  text-decoration: none;
-}
-
-/* เส้นแบ่ง | */
-.navbar_login_text .divider {
-  color: #374151;
-  font-weight: 400;
-  user-select: none;
-  pointer-events: none;
-}
-
-/* ปิดแสงไฮไลต์บนมือถือ */
-.navbar_login_text a {
-  -webkit-tap-highlight-color: transparent;
-}
-
-/* ============================================
-   Login | Sign in (บนแถบชมพูมุมขวาบน)
-   ============================================ */
-.navbar_login_text {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-/* ===== ลิงก์ Login / Sign in ===== */
-.navbar_login_text a {
-  position: relative;
-  color: #1f2937;               /* สีเทาเข้ม */
-  font-weight: 600;
-  font-size: 16px;
-  text-decoration: none;        /* ❌ ไม่ขีดเส้นใต้ปกติ */
-  cursor: pointer;
-  padding: 4px 8px;
-  transition: color 0.2s ease;
-}
-
-/* ===== เส้นใต้ (สร้างด้วย pseudo-element) ===== */
-.navbar_login_text a::after {
-  content: "";
-  position: absolute;
-  left: 0;
-  bottom: 0;
-  width: 0%;
-  height: 2px;
-  background-color: #1f2937;    /* สีเส้น */
-  transition: width 0.25s ease-in-out;
-}
-
-/* ===== Hover: เปลี่ยนสีและโชว์เส้นใต้ ===== */
-.navbar_login_text a:hover {
-  color: #000;                  /* ตัวอักษรเข้มขึ้น */
-}
-.navbar_login_text a:hover::after {
-  width: 100%;                  /* ✅ เส้นใต้ค่อย ๆ ขยายเต็ม */
-}
-
-/* Focus / Active: ตัดขอบม่วงออก */
-.navbar_login_text a:focus,
-.navbar_login_text a:active {
-  outline: none;
-  box-shadow: none;
-}
-
-/* Visited: ไม่เป็นสีม่วง */
-.navbar_login_text a:visited {
-  color: #1f2937;
-}
-
-/* เส้นแบ่ง | */
-.navbar_login_text .divider {
-  color: #374151;
-  font-weight: 400;
-  user-select: none;
-  pointer-events: none;
-}
-
-/* ปิดแสงไฮไลต์ตอนแตะบนมือถือ */
-.navbar_login_text a {
-  -webkit-tap-highlight-color: transparent;
-}
-
-/* ============================================
-   Login | Sign in (บนแถบชมพูมุมขวาบน)
-   ============================================ */
-.navbar_login_text {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-/* ===== ลิงก์ Login / Sign in ===== */
-.navbar_login_text a {
-  color: #1f2937;                 /* สีเทาเข้ม */
-  font-weight: 600;
-  font-size: 16px;
-  text-decoration: none;          /* ❌ ปกติไม่มีเส้นใต้ */
-  cursor: pointer;
-  padding: 4px 8px;
-  transition: color 0.2s ease;
-}
-
-/* ===== Hover: ขึ้นเส้นใต้ทันที ===== */
-.navbar_login_text a:hover {
-  color: #000;                    /* ตัวอักษรเข้มขึ้นเล็กน้อย */
-  text-decoration-line: underline;/* ✅ ขีดเส้นใต้ */
-  text-decoration-color: #000;    /* สีเส้นใต้ */
-  text-underline-offset: 3px;     /* ระยะห่างจากตัวอักษร */
-  text-decoration-thickness: 1.5px;/* ความหนาเส้น */
-}
-
-/* Focus / Active */
-.navbar_login_text a:focus,
-.navbar_login_text a:active {
-  outline: none;
-  box-shadow: none;
-  color: #000;
-  text-decoration-line: underline;
-  text-decoration-color: #000;
-}
-
-/* Visited (ไม่เป็นสีม่วง) */
-.navbar_login_text a:visited {
-  color: #1f2937;
-  text-decoration: none;
-}
-
-/* เส้นแบ่ง | */
-.navbar_login_text .divider {
-  color: #374151;
-  font-weight: 400;
-  user-select: none;
-  pointer-events: none;
-}
-
-/* ปิดแสงไฮไลต์บนมือถือ */
-.navbar_login_text a {
-  -webkit-tap-highlight-color: transparent;
-}
-
-/* ============================================
-   Login | Sign in (บนแถบชมพูมุมขวาบน)
-   ============================================ */
-.navbar_login_text {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-/* ลิงก์ Login / Sign in */
-.navbar_login_text a {
-  color: #1f2937;
-  font-weight: 600;
-  font-size: 16px;
-  text-decoration: none;           /* ปกติไม่มีเส้น */
-  cursor: pointer;
-  padding: 4px 8px;
-  transition: color 0.15s ease;    /* แค่เปลี่ยนสี */
-}
-
-/* Hover → ขึ้นเส้นใต้ทันที */
-.navbar_login_text a:hover {
-  color: #000;
-  text-decoration: underline;       /* ✅ เส้นใต้ทันที */
-  text-decoration-color: #000;
-  text-decoration-thickness: 1.5px;
-  text-underline-offset: 3px;
-}
-
-/* Focus / Active (ตัดขอบม่วง) */
-.navbar_login_text a:focus,
-.navbar_login_text a:active {
-  outline: none;
-  box-shadow: none;
-  color: #000;
-  text-decoration: underline;
-}
-
-/* Visited (ไม่ให้เป็นสีม่วง) */
-.navbar_login_text a:visited {
-  color: #1f2937;
-  text-decoration: none;
-}
-
-/* เส้นแบ่ง | */
-.navbar_login_text .divider {
-  color: #374151;
-  font-weight: 400;
-  user-select: none;
-  pointer-events: none;
-}
-
-/* ปิดแสงไฮไลต์บนมือถือ */
-.navbar_login_text a {
-  -webkit-tap-highlight-color: transparent;
+/* ปรับ capsule ชื่อผู้ใช้ */
+.navbar_login .user_identity {
+  font-size: 20px !important;   /* เดิม 14px */
+  padding: 6px 16px;            /* เพิ่มความกว้างเล็กน้อย */
+  font-style:normal;
 }
