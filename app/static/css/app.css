@@ -96,15 +96,16 @@ html, body {
   align-items: center;
   gap: 8px;
 }
-.navbar_login_text a{
+.navbar_login_text a {
   color: var(--ink);
   font-weight: 600;
-  font-size: 18px;
-  text-decoration: none;                 /* no underline by default */
-  padding: 4px 6px;
+  font-size: 18px;         /* ✅ ขยายจาก 16 → 18 */
+  text-decoration: none;
+  padding: 6px 8px;        /* ✅ เพิ่มระยะห่างรอบข้อความ */
   -webkit-tap-highlight-color: transparent;
   transition: color .15s ease;
 }
+
 .navbar_login_text a:hover{
   color: var(--ink-2);
   text-decoration: underline;            /* underline on hover */
@@ -265,7 +266,7 @@ html, body {
 @media (max-width: 400px) {
   .navbar_login { padding: 8px 10px; }
   .nav-left .brand img { height: 34px; }
-  .navbar_login_text a { font-size: 16px; }
+  .navbar_login_text a { font-size: 20px; }
 }
 
 /* กัน overflow ทั้งแถบสีชมพู */
@@ -405,4 +406,14 @@ html, body {
   font-size: 20px !important;   /* เดิม 14px */
   padding: 6px 16px;            /* เพิ่มความกว้างเล็กน้อย */
   font-style:normal;
+}
+
+.navbar_login_text a {
+  color: var(--ink);
+  font-weight: 600;
+  font-size: 20px;         /* ✅ ขยายจาก 16 → 18 */
+  text-decoration: none;
+  padding: 6px 8px;        /* ✅ เพิ่มระยะห่างรอบข้อความ */
+  -webkit-tap-highlight-color: transparent;
+  transition: color .15s ease;
 }
