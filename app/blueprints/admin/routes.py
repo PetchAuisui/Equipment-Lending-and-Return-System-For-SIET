@@ -83,6 +83,26 @@ def edit_user_action(user_id: int):
     flash("อัปเดตข้อมูลเรียบร้อยแล้ว ✅", "success")
     return redirect(url_for("admin_users.index"))
 
+@admin_users_bp.post("/<int:user_id>/set-password")
+@staff_required
+def admin_set_password(user_id: int):
+    new_password = (request.form.get("new_password") or "").strip()
+    confirm      = (request.form.get("confirm_password") or "").strip()
+    actor_id     = session.get("user_id")
+
+    ok, err = _svc().set_password_for_user(
+        user_id=user_id,
+        new_password=new_password,
+        confirm_password=confirm,
+        actor_id=actor_id,
+    )
+    if not ok:
+        flash(err or "ตั้งรหัสผ่านไม่สำเร็จ", "error")
+    else:
+        flash("ตั้งรหัสผ่านใหม่เรียบร้อย", "success")
+
+    # กลับไปยังหน้าแก้ไขผู้ใช้เดิม
+    return redirect(url_for("admin_users.edit_user_page", user_id=user_id))
 
 
 

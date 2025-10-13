@@ -4,6 +4,67 @@
 
 <link rel="stylesheet" href="{{ url_for('static', filename='css/admin_user.css') }}">
 
+<!-- ✅ เสริมเฉพาะหน้า: ทำให้ปุ่ม Actions ลงล่าง/ขึ้นบรรทัดใหม่เมื่อแคบ
+     (ย้ายไปไฟล์ admin_user.css ได้ตามสะดวก) -->
+<style>
+  /* ตารางอ่านง่ายขึ้นบนจอเล็ก + ตอน sidebar ขยาย */
+  @media (max-width: 1200px) {
+    .admin-users .table-wrap { overflow-x: auto; }
+  }
+
+  /* กล่องปุ่มในคอลัมน์ Actions ให้ wrap อัตโนมัติ */
+  .admin-users .actions {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    flex-wrap: nowrap;           /* จอปกติไม่ขึ้นบรรทัดใหม่ */
+  }
+
+  /* ถ้าจอแคบ หรือมี sidebar-expanded → อนุญาตให้ขึ้นบรรทัดใหม่และกินพื้นที่เต็มแถว */
+  @media (max-width: 1024px) {
+    .admin-users .actions { flex-wrap: wrap; }
+    .admin-users .actions .btn { flex: 1 1 48%; } /* 2 ปุ่มต่อแถว */
+  }
+
+  /* เมื่อมีคลาสนี้ที่ <body> (เวลาคุณกดปุ่มขยาย sidebar ตามที่เราทำใน base)
+     ให้ปุ่มยอม wrap เช่นเดียวกับจอแคบ */
+  body.sidebar-expanded .admin-users .actions {
+    flex-wrap: wrap;
+  }
+  body.sidebar-expanded .admin-users .actions .btn {
+    flex: 1 1 48%;
+  }
+
+  /* ให้เซลล์ข้อมูลมี label ตอนจอเล็ก (ไม่บังคับ แต่ช่วยอ่านง่าย) */
+  @media (max-width: 768px) {
+    .admin-users thead { display: none; }
+    .admin-users table { width: 100%; border-collapse: separate; border-spacing: 0 12px; }
+    .admin-users tbody tr {
+      display: grid;
+      grid-template-columns: 1fr;
+      background: #fff;
+      box-shadow: 0 6px 18px rgba(0,0,0,.06);
+      border-radius: 12px;
+      padding: 12px 14px;
+    }
+    .admin-users tbody td {
+      display: block;
+      border: 0;
+      padding: 8px 4px;
+    }
+    .admin-users tbody td[data-label]::before {
+      content: attr(data-label);
+      display: block;
+      font-weight: 700;
+      color: #6b7280;
+      margin-bottom: 4px;
+    }
+    /* แถวปุ่มให้ชิดกันสวย ๆ */
+    .admin-users td.col-actions { padding-top: 10px; }
+  }
+</style>
+
 <div class="admin-users">
   <div class="container">
 
@@ -13,7 +74,6 @@
 
       <form class="searchbar" method="get" action="{{ url_for('admin_users.index') }}">
         <input type="text" name="q" placeholder="รหัส/ชื่อ/อีเมล" value="{{ q or '' }}">
-        <!-- เพิ่ม class="btn-search" -->
         <button type="submit" class="btn-search">ค้นหา</button>
 
         {% if q %}
@@ -37,7 +97,7 @@
               <th>อีเมล</th>
               <th class="col-major">ภาควิชา</th>
               <th class="col-phone">เบอร์โทรศัพท์</th>
-              <th class="col-actions">actions</th>
+              <th class="col-actions">Actions</th>
             </tr>
           </thead>
 
@@ -45,26 +105,20 @@
             {% if users and users|length %}
               {% for u in users %}
               <tr>
-                <!-- รหัส -->
-                <td>{{ u.code or ('U' ~ u.user_id) }}</td>
+                <td data-label="รหัส">{{ u.code or ('U' ~ u.user_id) }}</td>
+                <td class="col-name" data-label="ชื่อ">{{ u.name }}</td>
 
-                <!-- ชื่อ -->
-                <td class="col-name">{{ u.name }}</td>
-
-                <!-- บทบาท -->
-                <td>
+                <td data-label="บทบาท">
                   {% set role = (u.role or 'member') %}
                   <span class="badge
-                    {{ 'badge--admin' if role=='admin'
-                       else 'badge--student' if role=='student'
-                       else 'badge--staff' if role=='staff'
+                    {{ 'badge--staff' if role=='staff'
+                       else 'badge--member' if role=='member'
                        else 'badge--default' }}">
                     {{ role }}
                   </span>
                 </td>
 
-                <!-- ประเภทสมาชิก -->
-                <td>
+                <td data-label="ประเภทสมาชิก">
                   {% set mtype = (u.member_type or '-') %}
                   <span class="badge
                     {{ 'badge--student' if mtype=='student'
@@ -75,40 +129,42 @@
                   </span>
                 </td>
 
-                <!-- อีเมล -->
-                <td>{{ u.email }}</td>
-
-                <!-- ภาควิชา -->
-                <td>{{ u.major or '-' }}</td>
-
-                <!-- เบอร์โทร -->
-                <td>{{ u.phone or '-' }}</td>
+                <td data-label="อีเมล">{{ u.email }}</td>
+                <td data-label="ภาควิชา">{{ u.major or '-' }}</td>
+                <td data-label="เบอร์โทรศัพท์">{{ u.phone or '-' }}</td>
 
                 <!-- Actions -->
-                <td class="col-actions">
+                <td class="col-actions" data-label="การจัดการ">
+                  <div class="actions">
                     <a class="btn btn--sm btn-edit"
-                      href="{{ url_for('admin_users.edit_user_page', user_id=u.user_id) }}">
+                       href="{{ url_for('admin_users.edit_user_page', user_id=u.user_id) }}">
                       แก้ไข
                     </a>
 
-                    <a href="#" 
-                      class="btn btn--sm btn-delete" 
-                      onclick="return confirmDelete({{ u.user_id }});">
+                    <button type="button"
+                            class="btn btn--sm btn-reset"
+                            onclick="openResetModal('{{ u.user_id }}', '{{ u.name }}')">
+                      เปลี่ยนรหัสผ่าน
+                    </button>
+
+                    <a href="#"
+                       class="btn btn--sm btn-delete"
+                       onclick="return confirmDelete({{ u.user_id }});">
                       ลบ
-                    </a>                
+                    </a>
+                  </div>
                 </td>
+
               </tr>
               {% endfor %}
             {% else %}
-              <tr>
-                <td colspan="8" class="empty">ไม่พบข้อมูล</td>
-              </tr>
+              <tr><td colspan="8" class="empty">ไม่พบข้อมูล</td></tr>
             {% endif %}
           </tbody>
         </table>
       </div>
 
-      <!-- Footer / Pager -->
+      <!-- Footer -->
       <div class="table-footer">
         <div class="meta">
           แสดงหน้า {{ page or 1 }}/{{ total_pages or 1 }} (ทั้งหมด {{ total or 0 }} รายการ)
@@ -117,8 +173,8 @@
         {% set base = request.path %}
         <nav class="pager">
           {% if page and total_pages and page > 1 %}
-            <a href="{{ base }}?q={{ q or '' }}&page=1&per_page={{ per_page or 10 }}">« หน้าแรก</a>
-            <a href="{{ base }}?q={{ q or '' }}&page={{ page-1 }}&per_page={{ per_page or 10 }}">ก่อนหน้า</a>
+            <a href="{{ base }}?q={{ q or '' }}&page=1">« หน้าแรก</a>
+            <a href="{{ base }}?q={{ q or '' }}&page={{ page-1 }}">ก่อนหน้า</a>
           {% else %}
             <span class="disabled">« หน้าแรก</span>
             <span class="disabled">ก่อนหน้า</span>
@@ -127,8 +183,8 @@
           <span class="current">หน้า {{ page or 1 }}</span>
 
           {% if page and total_pages and page < total_pages %}
-            <a href="{{ base }}?q={{ q or '' }}&page={{ page+1 }}&per_page={{ per_page or 10 }}">ถัดไป</a>
-            <a href="{{ base }}?q={{ q or '' }}&page={{ total_pages }}&per_page={{ per_page or 10 }}">หน้าสุดท้าย »</a>
+            <a href="{{ base }}?q={{ q or '' }}&page={{ page+1 }}">ถัดไป</a>
+            <a href="{{ base }}?q={{ q or '' }}&page={{ total_pages }}">หน้าสุดท้าย »</a>
           {% else %}
             <span class="disabled">ถัดไป</span>
             <span class="disabled">หน้าสุดท้าย »</span>
@@ -136,11 +192,95 @@
         </nav>
       </div>
     </section>
-
   </div>
 </div>
 
-<!-- ✅ JS -->
-<script src="{{ url_for('static', filename='js/admin_user.js') }}"></script>
+<!-- ===== Modal: Reset Password ===== -->
+<div class="modal" id="reset-modal" aria-hidden="true">
+  <div class="modal__backdrop" data-close></div>
 
+  <div class="modal__dialog">
+    <header class="modal__header">
+      <h3>รีเซ็ตรหัสผ่าน</h3>
+      <button type="button" class="modal__close" data-close>&times;</button>
+    </header>
+
+    <div class="modal__body">
+      <p>ตั้งรหัสผ่านใหม่: <strong id="modal-username"></strong></p>
+
+      <form method="post"
+            action="{{ url_for('admin_users.admin_set_password', user_id=0) }}"
+            id="reset-form"
+            class="set-password">
+        <div class="form-group">
+          <label>รหัสผ่านใหม่:</label>
+          <input type="password" name="new_password" minlength="6" required placeholder="อย่างน้อย 6 ตัวอักษร">
+        </div>
+
+        <div class="form-group">
+          <label>ยืนยันรหัสผ่าน:</label>
+          <input type="password" name="confirm_password" minlength="6" required placeholder="พิมพ์ซ้ำอีกครั้ง">
+        </div>
+
+        <div class="modal__actions">
+          <button type="button" class="btn btn-soft" id="btn-toggle-pw">แสดง/ซ่อน</button>
+          <button type="submit" class="btn btn-danger">บันทึกรหัสผ่านใหม่</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- ✅ Scripts -->
+<script>
+  // ===== Modal logic =====
+  const modal = document.getElementById('reset-modal');
+  const form = document.getElementById('reset-form');
+  const nameEl = document.getElementById('modal-username');
+  const closeEls = modal.querySelectorAll('[data-close]');
+
+  function openResetModal(uid, uname) {
+    nameEl.textContent = uname;
+    form.action = "{{ url_for('admin_users.admin_set_password', user_id=0) }}".replace('0', uid);
+    modal.classList.add('is-open');
+    modal.setAttribute('aria-hidden', 'false');
+  }
+
+  function closeModal() {
+    modal.classList.remove('is-open');
+    modal.setAttribute('aria-hidden', 'true');
+  }
+
+  closeEls.forEach(el => el.addEventListener('click', closeModal));
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape' && modal.classList.contains('is-open')) closeModal();
+  });
+
+  // ===== Password helpers =====
+  function genRandomPassword(len = 12) {
+    const chars = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789!@#$%^&*?";
+    let out = "";
+    for (let i = 0; i < len; i++) out += chars[Math.floor(Math.random() * chars.length)];
+    return out;
+  }
+
+  const btnGen = document.getElementById('btn-gen-pw');
+  const btnToggle = document.getElementById('btn-toggle-pw');
+  if (btnGen) {
+    btnGen.addEventListener('click', () => {
+      const pw1 = form.querySelector('[name=new_password]');
+      const pw2 = form.querySelector('[name=confirm_password]');
+      const rand = genRandomPassword(12);
+      pw1.value = rand; pw2.value = rand;
+    });
+  }
+  if (btnToggle) {
+    btnToggle.addEventListener('click', () => {
+      ['new_password', 'confirm_password'].forEach(name => {
+        const el = form.querySelector(`[name=${name}]`);
+        el.type = el.type === 'password' ? 'text' : 'password';
+      });
+    });
+  }
+</script>
 {% endblock %}
