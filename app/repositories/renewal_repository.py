@@ -57,7 +57,6 @@ def is_pending_request_exists(rent_id):
         db.close()
 
 
-
 # ------------------------------------------------------------------
 # ✅ ของใหม่: ดึงข้อมูล RentReturn พร้อมข้อมูลการต่ออายุ (Renewal)
 # ------------------------------------------------------------------
@@ -74,7 +73,6 @@ def get_all_rent_returns_with_renewal():
                 joinedload(RentReturn.user),
                 joinedload(RentReturn.subject),
                 joinedload(RentReturn.teacher_confirm),
-                # ✅ โหลดข้อมูล Renewal (ต่ออายุ)
                 joinedload(RentReturn.renewals)
                     .joinedload(Renewal.approver)
             )
@@ -121,13 +119,53 @@ def get_all_rent_returns_with_renewal():
                     "name": getattr(r.user, "name", None),
                     "phone": getattr(r.user, "phone", None),
                 },
-                "renewals": renewals_data  # ✅ ต่ออายุทั้งหมด
+                "renewals": renewals_data
             })
 
         return data
 
     except Exception as e:
         print("❌ Database Error:", e)
+        raise
+    finally:
+        db.close()
+
+
+# ------------------------------------------------------------------
+# ✅ ของใหม่: อัปเดตสถานะอนุมัติ/ไม่อนุมัติ
+# ------------------------------------------------------------------
+def update_renewal_status(renewal_id, new_status, rent_status_id, update_due_date=False, approved_by=None):
+    """
+    ✅ อัปเดตสถานะการต่ออายุ (Renewal)
+       และอัปเดตข้อมูลใน RentReturn ตามผลการอนุมัติ
+       - approved_by: user_id ของผู้อนุมัติ
+    """
+    db = SessionLocal()
+    try:
+        renewal = db.query(Renewal).filter(Renewal.renewal_id == renewal_id).first()
+        if not renewal:
+            print(f"⚠️ ไม่พบ renewal_id={renewal_id}")
+            return False
+
+        # ✅ เปลี่ยนสถานะของคำขอ
+        renewal.status = new_status
+        if approved_by:
+            renewal.approved_by = approved_by  # ✅ ใส่ user_id ของผู้อนุมัติ
+
+        # ✅ ดึง rent ที่เกี่ยวข้อง
+        rent = db.query(RentReturn).filter(RentReturn.rent_id == renewal.rent_id).first()
+        if rent:
+            rent.status_id = rent_status_id
+            if update_due_date:
+                rent.due_date = renewal.new_due
+
+        db.commit()
+        print(f"📝 อัปเดต renewal_id={renewal_id} → {new_status}, RentReturn.status_id={rent_status_id}, approved_by={approved_by}")
+        return True
+
+    except Exception as e:
+        db.rollback()
+        print("❌ Database Error ใน update_renewal_status:", e)
         raise
     finally:
         db.close()
