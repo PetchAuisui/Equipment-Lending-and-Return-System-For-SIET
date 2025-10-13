@@ -1,5 +1,16 @@
-/* ===== Admin Users page (scoped) ===== */
-.admin-users {
+/* =====================================================
+   Admin Users (scoped) — clean & responsive
+   ===================================================== */
+
+/* ---- Layout variables (global) ---- */
+:root{
+  /* ความกว้าง sidebar: หดขยายอัตโนมัติตามจอ (56px ↔ 80px) */
+  --sb: clamp(56px, 6vw, 80px);
+}
+
+/* ---- Page scope ---- */
+.admin-users{
+  /* theme tokens */
   --pink: #f6a6bf;
   --ink: #1f2937;
   --muted: #6b7280;
@@ -9,35 +20,42 @@
   --chip-tx: #334155;
   --radius: 12px;
   --shadow: 0 6px 18px rgba(0,0,0,.06);
+
+  /* layout */
+  box-sizing: border-box;
+  width: 100%;
   padding: 20px 24px 32px;
-  margin-left: 72px;
+  padding-left: calc(var(--sb) + 10px);  /* ✅ เว้นพื้นที่ sidebar แบบยืดหยุ่น */
+
   color: var(--ink);
   font-size: 16px;
 }
 
-.admin-users .container {
-  max-width: 1300px;
+/* center content block */
+.admin-users .container{
+  width: min(1300px, 100%);
   margin: 0 auto;
 }
 
-/* ===== Header ===== */
-.admin-users .page-header {
+/* ================= Header ================= */
+.admin-users .page-header{
   display: grid;
   grid-template-columns: 1fr auto;
   align-items: center;
   gap: 16px;
   margin-bottom: 12px;
 }
-.admin-users .page-title { font-size: 20px; font-weight: 700; }
-.admin-users .searchbar { display: flex; align-items: center; gap: 10px; }
-.admin-users .searchbar input[type="text"] {
+.admin-users .page-title{ font-size: 20px; font-weight: 700; }
+
+.admin-users .searchbar{ display: flex; align-items: center; gap: 10px; }
+.admin-users .searchbar input[type="text"]{
   width: 320px;
   padding: 10px 12px;
   border: 1px solid var(--line);
   border-radius: 10px;
   outline: none;
 }
-.admin-users .searchbar .btn-search {
+.admin-users .searchbar .btn-search{
   padding: 10px 14px;
   border: 0;
   border-radius: 10px;
@@ -46,499 +64,232 @@
   cursor: pointer;
   transition: transform .04s ease, filter .2s ease;
 }
-.admin-users .searchbar .btn-search:active { transform: translateY(1px); }
-.admin-users .searchbar .btn-search:hover  { filter: brightness(.95); }
+.admin-users .searchbar .btn-search:hover{ filter: brightness(.95); }
+.admin-users .searchbar .btn-search:active{ transform: translateY(1px); }
 
-/* ✅ ปุ่มล้างการค้นหา */
-.admin-users .searchbar .btn-clear {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 10px 14px;
-  border-radius: 10px;
-  background: #9ca3af;      /* เทา */
-  color: #fff;
-  text-decoration: none;
-  line-height: 1;
+/* ปุ่มล้างการค้นหา */
+.admin-users .searchbar .btn-clear{
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 10px 14px; border-radius: 10px;
+  background: #9ca3af; color: #fff; text-decoration: none; line-height: 1;
   transition: transform .04s ease, filter .2s ease;
 }
-.admin-users .searchbar .btn-clear:hover  { filter: brightness(.95); }
-.admin-users .searchbar .btn-clear:active { transform: translateY(1px); }
+.admin-users .searchbar .btn-clear:hover{ filter: brightness(.95); }
+.admin-users .searchbar .btn-clear:active{ transform: translateY(1px); }
 
-/* ===== Card/Table ===== */
-.admin-users .card {
+/* ================= Card/Table ================= */
+.admin-users .card{
   background: var(--card);
   border-radius: var(--radius);
   box-shadow: var(--shadow);
   overflow: hidden;
 }
-.admin-users .table-wrap {
+
+/* ความสูง table ภายใน viewport (กันล้น) */
+.admin-users .table-wrap{
   max-height: calc(100vh - 220px);
   overflow: auto;
   border-top-left-radius: var(--radius);
   border-top-right-radius: var(--radius);
 }
-.admin-users table {
+
+/* Table base */
+.admin-users table{
   width: 100%;
+  border-collapse: collapse;
+  table-layout: auto;
+  min-width: 920px; /* ป้องกันหัวตารางบีบจนแตกบรรทัด */
+}
+
+.admin-users thead th{
+  position: sticky; top: 0; z-index: 1;
+  background: #fff5f8;
+  color: var(--ink);
+  text-align: center; font-weight: 700;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--line);
+}
+
+.admin-users tbody td{
+  padding: 12px 16px;
+  border-bottom: 1px solid #f0f2f5;
+  vertical-align: middle;
+  color: var(--ink);
+}
+.admin-users tbody tr:nth-child(odd){ background: #fcfcfd; }
+.admin-users tbody tr:hover{ background: #f8fafc; }
+
+/* Column widths */
+.admin-users th.col-code{ width: 120px; }
+.admin-users th.col-role{ width: 140px; }
+.admin-users th.col-phone{ width: 150px; }
+.admin-users th.col-actions{ width: 140px; }
+
+.admin-users th.col-name,
+.admin-users td.col-name{
+  min-width: 155px; width: 20%;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.admin-users th.col-major,
+.admin-users td.col-major{
+  min-width: 190px; width: 10%;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+
+/* Actions column */
+.admin-users td.col-actions{
+  display: flex; justify-content: center; align-items: center;
+  gap: 8px; white-space: nowrap; flex-wrap: nowrap;
+}
+
+/* ================= Badges ================= */
+.admin-users .badge{
+  display: inline-block; padding: 5px 10px; font-size: 14px; font-weight: 700;
+  border-radius: 999px; background: var(--chip-bg); color: var(--chip-tx);
+}
+.admin-users .badge--member { background:#dcfce7; color:#166534; }
+.admin-users .badge--student{ background:#e0f2fe; color:#0369a1; }
+.admin-users .badge--teacher{ background:#ede9fe; color:#5b21b6; }
+.admin-users .badge--officer{ background:#dcfce7; color:#166534; }
+.admin-users .badge--staff  { background:#fff4e6; color:#b45309; }
+.admin-users .badge--admin  { background:#fee2e2; color:#b91c1c; }
+
+/* ================= Buttons ================= */
+.admin-users .btn{
+  display:inline-flex; align-items:center; justify-content:center;
+  min-width:70px; padding:8px 14px; height:38px;
+  border-radius:10px; border:1px solid transparent;
+  font: 600 14px 'Kanit','Prompt','Noto Sans Thai',sans-serif;
+  cursor:pointer; text-decoration:none; transition:all .15s ease;
+}
+
+/* edit */
+.admin-users .btn-edit{ background:#fef3c7; border:1px solid #facc15; color:#92400e; }
+.admin-users .btn-edit:hover{ background:#fde68a; }
+
+/* delete */
+.admin-users .btn-delete{ background:#fecaca; border:1px solid #ef4444; color:#991b1b; }
+.admin-users .btn-delete:hover{ background:#f87171; }
+
+/* reset password (blue) */
+.admin-users .btn-reset{
+  background:#dbeafe; border:1px solid #3b82f6; color:#1e3a8a; font-weight:700;
+  min-width:110px; box-shadow:0 2px 0 rgba(59,130,246,.15);
+}
+.admin-users .btn-reset:hover{ background:#bfdbfe; transform:translateY(-1px); box-shadow:0 3px 8px rgba(59,130,246,.25); }
+.admin-users .btn-reset:active{ transform:none; box-shadow:none; background:#93c5fd; }
+
+/* table footer / pager */
+.admin-users .table-footer{
+  display:flex; justify-content:space-between; align-items:center; gap:12px;
+  padding:12px 16px; border-top:1px solid var(--line);
+}
+.admin-users .pager{ display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+.admin-users .pager a, .admin-users .pager span{ padding:6px 10px; border-radius:8px; }
+.admin-users .pager a{ color:#1d4ed8; text-decoration:none; }
+.admin-users .pager a:hover{ background:#e6eefc; }
+.admin-users .pager .disabled{ color:#9ca3af; }
+.admin-users .pager .current{ font-weight:700; }
+
+/* Empty state */
+.admin-users .empty{
+  text-align:center; color:var(--muted); padding:22px 16px;
+}
+.admin-users .empty::before{ content:"ไม่พบข้อมูล —"; margin-right:6px; color:#9aa1ab; }
+
+/* ================= Modal (Reset Password) ================= */
+.modal{ position:fixed; inset:0; display:none; z-index:1000; }
+.modal.is-open{ display:block; }
+.modal__backdrop{ position:absolute; inset:0; background:rgba(0,0,0,.45); backdrop-filter:blur(1px); }
+.modal__dialog{
+  position:relative; width:min(480px, 92vw); margin:10vh auto 0; background:#fff;
+  border-radius:14px; box-shadow:0 20px 50px rgba(0,0,0,.18); overflow:hidden;
+  animation:fadeInUp .25s ease;
+}
+.modal__header{ display:flex; justify-content:space-between; align-items:center; padding:14px 16px; border-bottom:1px solid #f1f1f1; }
+.modal__header h3{ margin:0; font-size:18px; font-weight:700; color:var(--ink); }
+.modal__close{ border:0; background:transparent; font-size:22px; line-height:1; cursor:pointer; color:var(--muted); transition:color .15s; }
+.modal__close:hover{ color:var(--ink); }
+.modal__body{ padding:16px 18px 20px; }
+.modal__body p{ margin-bottom:12px; color:var(--muted); }
+.set-password .form-group{ margin-bottom:14px; }
+.set-password input[type="password"], .set-password input[type="text"]{
+  width:100%; padding:10px 12px; border:1px solid #d1d5db; border-radius:10px; font-size:15px; color:var(--ink); outline:none;
+}
+.set-password input:focus{ border-color:var(--pink); box-shadow:0 0 0 2px rgba(246,166,191,.25); }
+.modal__actions{ display:flex; justify-content:flex-end; gap:10px; margin-top:12px; }
+.btn-soft{ background:#ffe5ed; border:1px solid #ffd1dc; border-radius:8px; padding:8px 12px; cursor:pointer; font-size:14px; color:#b91c1c; transition:filter .15s, transform .04s; }
+.btn-soft:hover{ filter:brightness(.95); }
+.btn-soft:active{ transform:translateY(1px); }
+.btn-danger{ background:#ff6b6b; border:none; border-radius:8px; color:#fff; font-weight:600; padding:9px 16px; cursor:pointer; transition:background .15s; }
+.btn-danger:hover{ background:#ef4444; }
+
+@keyframes fadeInUp{
+  from{ opacity:0; transform:translateY(16px); }
+  to  { opacity:1; transform:translateY(0); }
+}
+
+/* ================= Responsive ================= */
+@media (max-width: 1200px){
+  .admin-users .searchbar input[type="text"]{ width: 260px; }
+}
+@media (max-width: 1024px){
+  /* sidebar แคบลงเองจาก clamp(); content ไม่ต้องขยับอะไรเพิ่ม */
+  .admin-users .searchbar input[type="text"]{ width: 220px; }
+}
+@media (max-width: 640px){
+  .admin-users{
+    padding: 16px 14px 24px;
+    padding-left: calc(var(--sb) + 14px);
+  }
+  .admin-users .page-header{
+    grid-template-columns: 1fr;
+    align-items: start;
+    gap: 10px;
+  }
+  .admin-users .searchbar{ width: 100%; }
+  .admin-users .searchbar input[type="text"]{ width: 100%; }
+  /* ทำให้กรอบตารางเลื่อนได้ทั้งแกน X/Y */
+/* ===== Scrollable Table Wrapper (ทุกขนาดจอ) ===== */
+.admin-users .table-wrap {
+  max-height: calc(100vh - 220px);
+  overflow-x: auto;   /* ✅ เพิ่มสกรอลล์แนวนอน */
+  overflow-y: auto;   /* ✅ ยังคงแนวตั้ง */
+  border-top-left-radius: var(--radius);
+  border-top-right-radius: var(--radius);
+  -webkit-overflow-scrolling: touch; /* นุ่มบนมือถือ */
+}
+
+/* ให้ตารางกว้างกว่ากล่องได้ → จะเกิดแถบสกรอลล์แนวนอน */
+.admin-users table {
+  width: max(100%, 1200px);
   border-collapse: collapse;
   table-layout: auto;
   min-width: 920px;
 }
-.admin-users thead th {
-  position: sticky;
-  top: 0;
-  z-index: 1;
-  background: #fff5f8;
-  color: var(--ink);
-  text-align: center;
-  font-weight: 700;
-  padding: 14px 16px;
-  border-bottom: 1px solid var(--line);
-}
-.admin-users tbody td {
-  padding: 12px 16px;
-  border-bottom: 1px solid #f0f2f5;  /* เส้นอ่อนลงจากสีเดิม */
-  vertical-align: middle;
-  color: var(--ink);
-}
-.admin-users tbody tr:nth-child(odd) { background: #fcfcfd; }
-.admin-users tbody tr:hover          { background: #f8fafc; }
 
-/* ===== Columns ===== */
-.admin-users th.col-code   { width: 120px; }
-.admin-users th.col-role   { width: 140px; }
-.admin-users th.col-major,
-.admin-users td.col-major {
-  min-width: 190px;
-  width: 10%;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-.admin-users th.col-phone  { width: 150px; }
-.admin-users th.col-actions{ width: 140px; }
-.admin-users th.col-name,
-.admin-users td.col-name {
-  min-width: 155px;
-  width: 20%;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+/* สไตล์ scrollbar ให้เห็นชัด */
+.admin-users .table-wrap::-webkit-scrollbar { height: 10px; width: 10px; }
+.admin-users .table-wrap::-webkit-scrollbar-track { background: #f3f4f6; border-radius: 8px; }
+.admin-users .table-wrap::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 8px; }
+.admin-users .table-wrap::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+
+/* ให้ตารางกว้างกว่ากล่องได้ → จะเกิดแถบสกรอลล์แนวนอน */
+.admin-users table{
+  width: max(100%, 1200px);  /* หรือใช้ min-width เดิมก็ได้ */
+  border-collapse: collapse;
+  table-layout: auto;
+  min-width: 920px;
 }
 
-/* ===== Actions column ===== */
-.admin-users td.col-actions {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 10px;
-}
+/* สไตล์แถบสกรอลล์ (ไม่บังคับ แต่ช่วยให้เห็นชัด) */
+.admin-users .table-wrap::-webkit-scrollbar{ height: 10px; width: 10px; }
+.admin-users .table-wrap::-webkit-scrollbar-track{ background: #f3f4f6; border-radius: 8px; }
+.admin-users .table-wrap::-webkit-scrollbar-thumb{ background: #cbd5e1; border-radius: 8px; }
+.admin-users .table-wrap::-webkit-scrollbar-thumb:hover{ background: #94a3b8; }
 
-/* ===== Badges ===== */
-.admin-users .badge {
-  display: inline-block;
-  padding: 5px 10px;
-  font-size: 14px;
-  font-weight: 700;
-  border-radius: 999px;
-  background: var(--chip-bg);
-  color: var(--chip-tx);
-}
-.admin-users .badge--admin   { background: #ffe8e8; color: #b91c1c;  }
-.admin-users .badge--student { background: #e7f3ff; color: #075985; }
-.admin-users .badge--staff   { background: #fff4e6; color: #b45309; }
-.admin-users .badge--member  { background: #f3f4f6; color: #59aa61; }
-
-/* ===== Buttons ===== */
-.admin-users .btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 70px;
-  padding: 8px 14px;
-  border-radius: 8px;
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-  border: 1px solid transparent;
-  transition: all 0.2s ease;
-  text-decoration: none;
-}
-
-/* ปุ่มแก้ไข */
-.admin-users .btn-edit {
-  background: #fef3c7;   /* เหลืองนวล */
-  border: 1px solid #facc15;
-  color: #92400e;
-}
-.admin-users .btn-edit:hover {
-  background: #fcd34d;   /* hover เข้ม */
-}
-
-/* ปุ่มลบ */
-.admin-users .btn-delete {
-  background: #fecaca;   /* แดงอ่อน */
-  border: 1px solid #ef4444;
-  color: #991b1b;
-}
-.admin-users .btn-delete:hover {
-  background: #f87171;   /* hover แดงสด */
-}
-
-/* ===== Footer / Pager ===== */
-.admin-users .table-footer {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 12px;
-  padding: 12px 16px;
-  border-top: 1px solid var(--line);
-}
-.admin-users .pager { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
-.admin-users .pager a,
-.admin-users .pager span {
-  padding: 6px 10px;
-  border-radius: 8px;
-}
-.admin-users .pager a { color: #1d4ed8; text-decoration: none; }
-.admin-users .pager a:hover { background: #e6eefc; }
-.admin-users .pager .disabled { color: #9ca3af; }
-.admin-users .pager .current  { font-weight: 700; }
-
-/* ===== Empty state ===== */
-.admin-users .empty {
-  text-align: center;
-  color: var(--muted);
-  padding: 22px 16px;
-}
-.admin-users .empty::before {
-  content: "ไม่พบข้อมูล —";
-  margin-right: 6px;
-  color: #9aa1ab;
-}
-
-/* ===== Responsive ===== */
-@media (max-width: 1024px) {
-  .admin-users { margin-left: 64px; }
-  .admin-users .searchbar input[type="text"] { width: 240px; }
-}
-@media (max-width: 640px) {
-  .admin-users { margin-left: 56px; padding: 16px 14px 24px; }
-  .admin-users .page-header { grid-template-columns: 1fr; align-items: start; gap: 10px; }
-  .admin-users .searchbar { width: 100%; }
-  .admin-users .searchbar input[type="text"] { width: 100%; }
-  .admin-users .table-wrap { max-height: calc(100vh - 260px); }
-}
-
-/* ===== Member Types ===== */
-.admin-users .badge--student {
-  background: #e0f2fe;  /* ฟ้าอ่อน */
-  color: #0369a1;
-  font-size: 14px;
-}
-.admin-users .badge--teacher {
-  background: #ede9fe;  /* ม่วงอ่อน */
-  color: #5b21b6;
-  font-size: 14px;
-}
-.admin-users .badge--officer {
-  background: #dcfce7;  /* เขียวอ่อน */
-  color: #166534;
-  font-size: 14px;
-}
-.admin-users .badge--staff {
-  background: #fff4e6;  /* ส้มอ่อน */
-  color: #b45309;
-  font-size: 14px;
-}
-.admin-users .badge--admin {
-  background: #fee2e2;  /* แดงอ่อน */
-  color: #b91c1c;
-  font-size: 14px;
 }
 
 
-/* ==========================================================
-   🔐 Reset Password Modal (popup) — สำหรับหน้า Admin Users
-   ========================================================== */
-
-/* ปุ่ม Reset Password */
-.admin-users .btn-warn {
-  background: #fde68a;          /* เหลืองนวล */
-  border: 1px solid #facc15;
-  color: #92400e;
-}
-.admin-users .btn-warn:hover {
-  background: #fcd34d;
-  filter: brightness(.95);
-}
-
-/* ===== Modal base ===== */
-.modal {
-  position: fixed;
-  inset: 0;
-  display: none;
-  z-index: 1000;
-}
-.modal.is-open {
-  display: block;
-}
-
-.modal__backdrop {
-  position: absolute;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.45);
-  backdrop-filter: blur(1px);
-}
-
-.modal__dialog {
-  position: relative;
-  width: min(480px, 92vw);
-  margin: 10vh auto 0;
-  background: #fff;
-  border-radius: 14px;
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.18);
-  overflow: hidden;
-  animation: fadeInUp .25s ease;
-}
-
-/* Header */
-.modal__header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 14px 16px;
-  border-bottom: 1px solid #f1f1f1;
-}
-.modal__header h3 {
-  margin: 0;
-  font-size: 18px;
-  font-weight: 700;
-  color: var(--ink);
-}
-.modal__close {
-  border: 0;
-  background: transparent;
-  font-size: 22px;
-  line-height: 1;
-  cursor: pointer;
-  color: var(--muted);
-  transition: color .15s ease;
-}
-.modal__close:hover {
-  color: var(--ink);
-}
-
-/* Body */
-.modal__body {
-  padding: 16px 18px 20px;
-}
-.modal__body p {
-  margin-bottom: 12px;
-  color: var(--muted);
-}
-
-/* Fields */
-.set-password .form-group {
-  margin-bottom: 14px;
-}
-.set-password input[type="password"],
-.set-password input[type="text"] {
-  width: 100%;
-  padding: 10px 12px;
-  border: 1px solid #d1d5db;
-  border-radius: 10px;
-  font-size: 15px;
-  color: var(--ink);
-  outline: none;
-}
-.set-password input:focus {
-  border-color: var(--pink);
-  box-shadow: 0 0 0 2px rgba(246, 166, 191, 0.25);
-}
-
-/* Action buttons */
-.modal__actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 10px;
-  margin-top: 12px;
-}
-
-.btn-soft {
-  background: #ffe5ed;
-  border: 1px solid #ffd1dc;
-  border-radius: 8px;
-  padding: 8px 12px;
-  cursor: pointer;
-  font-size: 14px;
-  color: #b91c1c;
-  transition: filter .15s ease, transform .04s ease;
-}
-.btn-soft:hover {
-  filter: brightness(.95);
-}
-.btn-soft:active {
-  transform: translateY(1px);
-}
-
-.btn-danger {
-  background: #ff6b6b;
-  border: none;
-  border-radius: 8px;
-  color: #fff;
-  font-weight: 600;
-  padding: 9px 16px;
-  cursor: pointer;
-  transition: background .15s ease;
-}
-.btn-danger:hover {
-  background: #ef4444;
-}
-
-/* ===== Animation ===== */
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(16px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-/* =======================================================
-   🔑 ปุ่ม "เปลี่ยนรหัสผ่าน" (ให้เหมือนเพื่อน)
-   ======================================================= */
-/* ===== ปุ่มเปลี่ยนรหัสผ่าน: โทนฟ้า SIET ===== */
-.admin-users .btn-reset {
-  background: #dbeafe;        /* ฟ้าอ่อน */
-  border: 2px solid #3b82f6;  /* ฟ้าน้ำเงินสด */
-  color: #1e3a8a;             /* ตัวหนังสือฟ้าเข้ม */
-  font-weight: 700;
-  border-radius: 10px;
-  padding: 8px 14px;
-  min-width: 110px;
-  box-shadow: 0 2px 0 rgba(59,130,246,0.15);
-  transition: all .15s ease;
-}
-.admin-users .btn-reset:hover {
-  background: #bfdbfe;        /* ฟ้าเข้มขึ้นนิดตอน hover */
-  transform: translateY(-1px);
-  box-shadow: 0 4px 8px rgba(59,130,246,0.25);
-  
-}
-.admin-users .btn-reset:active {
-  transform: translateY(0);
-  box-shadow: none;
-  background: #93c5fd;
-}
-
-.admin-users .btn-reset:active {
-  transform: translateY(0);
-  box-shadow: none;
-}
-
-/* ให้ปุ่มเรียงสวยในคอลัมน์ Actions */
-.admin-users td.col-actions .btn-reset {
-  min-width: 100px;
-}
-
-/* ===== ปุ่มในคอลัมน์ Actions ให้เรียงแนวนอน ===== */
-.admin-users td.col-actions {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 8px;                    /* ระยะห่างระหว่างปุ่ม */
-  white-space: nowrap;
-}
-
-/* ===== ปุ่มพื้นฐาน (ฟอนต์กลาง) ===== */
-.admin-users .btn {
-  font-family: 'Kanit', 'Prompt', 'Noto Sans Thai', sans-serif;  /* ฟอนต์อ่านง่าย */
-  font-size: 14px;
-  font-weight: 600;
-  border-radius: 10px;
-  padding: 8px 14px;
-  cursor: pointer;
-  border: 1px solid transparent;
-  text-decoration: none;
-  transition: all 0.15s ease;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  height: 38px;                /* ความสูงเท่ากันทุกปุ่ม */
-}
-
-/* ===== ปุ่มแก้ไข (เหลือง) ===== */
-.admin-users .btn-edit {
-  background: #fef3c7;
-  border: 1px solid #facc15;
-  color: #92400e;
-}
-.admin-users .btn-edit:hover {
-  background: #fde68a;
-}
-
-/* ===== ปุ่มเปลี่ยนรหัสผ่าน (ฟ้า) ===== */
-.admin-users .btn-reset {
-  background: #dbeafe;        /* ฟ้าอ่อน */
-  border: 2px solid #3b82f6;  /* ฟ้าขอบสด */
-  color: #1e3a8a;
-  font-weight: 700;
-  min-width: 120px;
-}
-.admin-users .btn-reset:hover {
-  background: #bfdbfe;
-  transform: translateY(-1px);
-  box-shadow: 0 2px 6px rgba(59,130,246,0.25);
-}
-.admin-users .btn-reset:active {
-  transform: translateY(0);
-  box-shadow: none;
-}
-
-/* ===== ปุ่มลบ (แดง) ===== */
-.admin-users .btn-delete {
-  background: #fecaca;
-  border: 1px solid #ef4444;
-  color: #991b1b;
-}
-.admin-users .btn-delete:hover {
-  background: #f87171;
-}
-
-/* ให้ปุ่มทั้งหมดอยู่ในบรรทัดเดียว ไม่แตกแถว */
-.admin-users td.col-actions {
-  flex-wrap: nowrap;
-}
-
-/* ===== ปุ่มเปลี่ยนรหัสผ่าน (ฟ้า - ขอบเท่ากับปุ่มอื่น) ===== */
-.admin-users .btn-reset {
-  background: #dbeafe;         /* ฟ้าอ่อน */
-  border: 1px solid #3b82f6;   /* ปรับจาก 2px → 1px */
-  color: #1e3a8a;
-  font-weight: 700;
-  border-radius: 10px;
-  padding: 8px 14px;
-  min-width: 110px;
-  box-shadow: 0 2px 0 rgba(59,130,246,0.15);
-  transition: all 0.15s ease;
-  height: 38px;                /* ให้เท่ากับปุ่มอื่น */
-}
-.admin-users .btn-reset:hover {
-  background: #bfdbfe;
-  transform: translateY(-1px);
-  box-shadow: 0 3px 8px rgba(59,130,246,0.25);
-}
-.admin-users .btn-reset:active {
-  transform: translateY(0);
-  box-shadow: none;
-  background: #93c5fd;
-}
-
-.admin-users .badge--member {
-  background: #dcfce7;  /* เขียวอ่อน */
-  color: #166534;       /* เขียวเข้ม */
-}
-
+/* ===== Safety: prevent accidental horizontal scroll on some zoom levels ===== */
