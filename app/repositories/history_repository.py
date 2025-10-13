@@ -1,136 +1,154 @@
+# =============================================
+# app/repositories/history_repository.py
+# =============================================
 from __future__ import annotations
-from typing import List, Dict
-from sqlalchemy.orm import Session, aliased
-from sqlalchemy import and_
+from typing import List, Dict, Optional
+from sqlalchemy.orm import Session
+from sqlalchemy import select, func
 
-# ⬇️ เปลี่ยนแหล่งอิมพอร์ตโมเดลตามโครงสร้างใหม่
-from app.db.models import (
-    User,            # ผู้ยืม / ผู้รับคืน / อาจารย์ที่รับรอง (ใช้ alias)
-    Equipment,
-    RentReturn,      # ตารางหลัก (start_date, due_date, return_date, status_id, user_id, check_by, teacher_confirmed, ...)
-    StatusRent,
-)
-
-from app.services.history_service import HistoryFilter
+from app.db.db import SessionLocal
+from app.db.models import RentReturn, Equipment, StatusRent, EquipmentImage
 
 
 class RentHistoryRepository:
-    def __init__(self, session: Session):
-        self.session = session
+    """
+    ชั้น Repository สำหรับอ่านประวัติการยืมคืนของผู้ใช้
+    """
 
-    # ---------- helpers ----------
-    @staticmethod
-    def _row_to_dict(row) -> Dict:
-        return {
-            "user_name":        row.user_name,
-            "student_id":       row.student_id,
-            "employee_id":      row.employee_id,
-            "equipment_name":   row.equipment_name,
-            "start_date":       row.start_date,
-            "due_date":         row.due_date,
-            "return_date":      row.return_date,
-            "status_name":      row.status_name,
-            "status_color":     row.status_color,
-            "receiver_name":    getattr(row, "receiver_name", None),
-            "instructor_name":  getattr(row, "instructor_name", None),
-        }
+    def __init__(self, session: Optional[Session] = None):
+        self.session: Session = session or SessionLocal()
 
-    def _apply_date_filter(self, query, f: HistoryFilter):
-        # เลือก field สำหรับกรองช่วงวันที่
-        field = RentReturn.start_date if f.date_field == "start_date" else RentReturn.return_date
-        conds = []
-        if f.start_date:
-            conds.append(field >= f.start_date)
-        if f.end_date:
-            conds.append(field <= f.end_date)
-        if conds:
-            query = query.filter(and_(*conds))
-        return query
-
-    # ---------- main readers ----------
-    def fetch_all(self, f: HistoryFilter) -> List[Dict]:
+    # ---------- โค้ดเดิมที่เคยใช้แล้วรูปขึ้น ----------
+    def list_by_user(self, user_id: int, returned_only: bool = True) -> List[Dict]:
         """
-        รวมประวัติทุกผู้ใช้ (JOIN ครบ) ตามสคีมาใหม่ที่ใช้ RentReturn ตารางเดียว
+        ดึงประวัติการยืมของ user_id
+        ถ้า returned_only=True → แสดงเฉพาะที่คืนแล้ว (return_date != NULL)
         """
-        borrower   = aliased(User)  # ผู้ยืม
-        receiver   = aliased(User)  # ผู้รับคืน (RentReturn.check_by)
-        instructor = aliased(User)  # อาจารย์ที่รับรอง (RentReturn.teacher_confirmed)
-
-        q = (
+        img_subq = (
             self.session.query(
-                borrower.name.label("user_name"),
-                borrower.student_id,
-                borrower.employee_id,
-                Equipment.name.label("equipment_name"),
+                EquipmentImage.equipment_id,
+                func.min(EquipmentImage.equipment_image_id).label("min_id")
+            )
+            .group_by(EquipmentImage.equipment_id)
+            .subquery()
+        )
+
+        stmt = (
+            select(
+                RentReturn.rent_id,
                 RentReturn.start_date,
                 RentReturn.due_date,
                 RentReturn.return_date,
+                RentReturn.reason,
+                Equipment.equipment_id,
+                Equipment.name.label("equipment_name"),
+                Equipment.code.label("equipment_code"),
+                Equipment.category,
                 StatusRent.name.label("status_name"),
                 StatusRent.color_code.label("status_color"),
-                receiver.name.label("receiver_name"),
-                instructor.name.label("instructor_name"),
+                EquipmentImage.image_path.label("cover_image"),
             )
-            .join(RentReturn, RentReturn.user_id == borrower.user_id)
-            .join(Equipment, Equipment.equipment_id == RentReturn.equipment_id)
-            .join(StatusRent, StatusRent.status_id == RentReturn.status_id)
-            .outerjoin(receiver,   receiver.user_id   == RentReturn.check_by)
-            .outerjoin(instructor, instructor.user_id == RentReturn.teacher_confirmed)
+            .outerjoin(Equipment, Equipment.equipment_id == RentReturn.equipment_id)
+            .outerjoin(StatusRent, StatusRent.status_id == RentReturn.status_id)
+            .outerjoin(img_subq, img_subq.c.equipment_id == Equipment.equipment_id)
+            .outerjoin(EquipmentImage, EquipmentImage.equipment_image_id == img_subq.c.min_id)
+            .where(RentReturn.user_id == user_id)
+            .order_by(RentReturn.start_date.desc())
         )
 
-        if f.returned_only:
-            q = q.filter(RentReturn.return_date.isnot(None))
+        if returned_only:
+            stmt = stmt.where(RentReturn.return_date.isnot(None))
 
-        q = self._apply_date_filter(q, f)
+        rows = self.session.execute(stmt).all()
+        return [dict(r._mapping) for r in rows]
 
-        # เรียงลำดับ
-        if f.order == "asc":
-            order_exp = (RentReturn.start_date.asc() if f.date_field == "start_date"
-                         else RentReturn.return_date.asc())
-        else:
-            order_exp = (RentReturn.start_date.desc() if f.date_field == "start_date"
-                         else RentReturn.return_date.desc())
-        q = q.order_by(order_exp)
+    # ---------- อินเตอร์เฟซใหม่: ทำงานเทียบเท่าโค้ดเดิม ----------
+    def fetch_for_user(self, user_id: int, f) -> List[Dict]:
+        """
+        รองรับ HistoryFilter แบบโค้ดใหม่
+        map ไปใช้ list_by_user() เพื่อคงพฤติกรรมเดิมให้รูปขึ้นแน่ๆ
+        """
+        returned_only = bool(getattr(f, "returned_only", False))
+        rows = self.list_by_user(user_id, returned_only=returned_only)
 
-        return [self._row_to_dict(r) for r in q.all()]
+        # กรองช่วงวันที่/เรียงลำดับตาม f ถ้าต้องการ (optional)
+        start_date = getattr(f, "start_date", None)
+        end_date   = getattr(f, "end_date", None)
+        date_field = getattr(f, "date_field", "start_date") or "start_date"
+        order      = (getattr(f, "order", "desc") or "desc").lower()
 
-    def fetch_for_user(self, user_id: int, f: HistoryFilter) -> List[Dict]:
-        borrower   = aliased(User)
-        receiver   = aliased(User)
-        instructor = aliased(User)
+        if start_date or end_date:
+            def in_range(row_dt):
+                if row_dt is None:
+                    return False
+                ok = True
+                if start_date:
+                    ok = ok and (row_dt >= start_date)
+                if end_date:
+                    ok = ok and (row_dt <= end_date)
+                return ok
 
-        q = (
+            key = "start_date" if date_field == "start_date" else "return_date"
+            rows = [r for r in rows if in_range(r.get(key))]
+
+        # เรียง
+        key = "start_date" if date_field == "start_date" else "return_date"
+        rows.sort(key=lambda r: (r.get(key) or r.get("start_date") or r.get("return_date")), reverse=(order!="asc"))
+        return rows
+
+    # ---------- เผื่อมีหน้า all users ใช้งาน ----------
+    def fetch_all(self, f) -> List[Dict]:
+        """
+        แบบง่าย: ดึงทุก user (จะไม่มีชื่อผู้ยืม ถ้าต้องการให้เพิ่ม join User เอง)
+        ใช้ pattern เดียวกับ list_by_user แต่ไม่ where user_id
+        """
+        img_subq = (
             self.session.query(
-                borrower.name.label("user_name"),
-                borrower.student_id,
-                borrower.employee_id,
-                Equipment.name.label("equipment_name"),
+                EquipmentImage.equipment_id,
+                func.min(EquipmentImage.equipment_image_id).label("min_id")
+            )
+            .group_by(EquipmentImage.equipment_id)
+            .subquery()
+        )
+
+        stmt = (
+            select(
+                RentReturn.rent_id,
+                RentReturn.user_id,
                 RentReturn.start_date,
                 RentReturn.due_date,
                 RentReturn.return_date,
+                RentReturn.reason,
+                Equipment.equipment_id,
+                Equipment.name.label("equipment_name"),
+                Equipment.code.label("equipment_code"),
+                Equipment.category,
                 StatusRent.name.label("status_name"),
                 StatusRent.color_code.label("status_color"),
-                receiver.name.label("receiver_name"),
-                instructor.name.label("instructor_name"),
+                EquipmentImage.image_path.label("cover_image"),
             )
-            .join(RentReturn, RentReturn.user_id == borrower.user_id)
-            .join(Equipment, Equipment.equipment_id == RentReturn.equipment_id)
-            .join(StatusRent, StatusRent.status_id == RentReturn.status_id)
-            .outerjoin(receiver,   receiver.user_id   == RentReturn.check_by)
-            .outerjoin(instructor, instructor.user_id == RentReturn.teacher_confirmed)
-            .filter(borrower.user_id == user_id)
+            .outerjoin(Equipment, Equipment.equipment_id == RentReturn.equipment_id)
+            .outerjoin(StatusRent, StatusRent.status_id == RentReturn.status_id)
+            .outerjoin(img_subq, img_subq.c.equipment_id == Equipment.equipment_id)
+            .outerjoin(EquipmentImage, EquipmentImage.equipment_image_id == img_subq.c.min_id)
         )
 
-        if f.returned_only:
-            q = q.filter(RentReturn.return_date.isnot(None))
+        # filter คืนแล้ว
+        if getattr(f, "returned_only", False):
+            stmt = stmt.where(RentReturn.return_date.isnot(None))
 
-        q = self._apply_date_filter(q, f)
+        # filter ช่วงวันที่
+        start_date = getattr(f, "start_date", None)
+        end_date   = getattr(f, "end_date", None)
+        field_col  = RentReturn.start_date if getattr(f, "date_field", "start_date") == "start_date" else RentReturn.return_date
+        if start_date:
+            stmt = stmt.where(field_col >= start_date)
+        if end_date:
+            stmt = stmt.where(field_col <= end_date)
 
-        if f.order == "asc":
-            order_exp = (RentReturn.start_date.asc() if f.date_field == "start_date"
-                         else RentReturn.return_date.asc())
-        else:
-            order_exp = (RentReturn.start_date.desc() if f.date_field == "start_date"
-                         else RentReturn.return_date.desc())
-        q = q.order_by(order_exp)
+        # order
+        order = (getattr(f, "order", "desc") or "desc").lower()
+        stmt = stmt.order_by(field_col.asc() if order == "asc" else field_col.desc())
 
-        return [self._row_to_dict(r) for r in q.all()]
+        rows = self.session.execute(stmt).all()
+        return [dict(r._mapping) for r in rows]
