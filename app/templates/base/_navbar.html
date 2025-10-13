@@ -1,13 +1,13 @@
 <nav class="navbar">
   <!-- แถวบน: Brand + ปุ่ม user (แถบสีชมพู) -->
   <div class="navbar_login">
-<div class="nav-left">
-  <a class="brand" href="{{ url_for('pages.home') }}">
-    <img src="{{ url_for('static', filename='images/logo.png') }}"
-         alt="SEIT Equipment"
-         style="height: 45px; vertical-align: middle; object-fit: contain;">
-  </a>
-</div>
+    <div class="nav-left">
+      <a class="brand" href="{{ url_for('pages.home') }}">
+        <img src="{{ url_for('static', filename='images/logo.png') }}"
+             alt="SEIT Equipment"
+             style="height: 45px; vertical-align: middle; object-fit: contain;">
+      </a>
+    </div>
 
     <div class="nav-right">
       {% if current_user.is_authenticated %}
@@ -19,10 +19,10 @@
           {% endif %}
         {% endif %}
         <a href="{{ url_for('auth.logout_action') }}" class="btn-nav btn-logout">Logout</a>
-      <span class="user_identity">
-        {{ current_user.email | replace('@kmitl.ac.th','') }}
-        <i class="ri-user-line"></i>
-      </span>
+        <span class="user_identity">
+          {{ current_user.email | replace('@kmitl.ac.th','') }}
+          <i class="ri-user-line"></i>
+        </span>
 
       {% else %}
         <div class="navbar_login_text">
@@ -34,17 +34,44 @@
     </div>
   </div>
 
-  <!-- แถวล่าง: เมนูหลัก + Search (ซ่อนเมื่ออยู่ใน /admin) -->
+  <!-- แถวล่าง (เขียว): เมนูหลัก -->
   {% if not request.path.startswith('/admin') %}
   <div class="navbar_menu">
-    <div class="menu-left">
+    <!-- ปุ่ม hamburger -->
+    <button class="menu-toggle" aria-label="Toggle menu" aria-expanded="false">
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M3 6h18M3 12h18M3 18h18"
+              stroke="white" stroke-width="2.4" stroke-linecap="round" fill="none"/>
+      </svg>
+    </button>
+
+    <!-- เมนูซ้าย (drawer สำหรับมือถือ) -->
+    <nav class="menu-panel" id="mainMenu">
       <a href="{{ url_for('pages.home') }}">Home</a>
       <a href="{{ url_for('inventory.lend_device') }}">Equipment</a>
       <a href="{{ url_for('tracking.track_index') }}">Track Status</a>
       <a href="{{ url_for('pages.policy') }}">Policy</a>
       <a href="{{ url_for('pages.about_us') }}">About Us</a>
-    </div>
 
+      <!-- เมนู Login / Logout -->
+      {% if not current_user.is_authenticated %}
+        <hr style="border:none;height:1px;background:rgba(255,255,255,.25);margin:6px 0;">
+        <a href="{{ url_for('auth.login_page') }}">Login</a>
+        <a href="{{ url_for('auth.register_page') }}">Sign in</a>
+      {% else %}
+        <hr style="border:none;height:1px;background:rgba(255,255,255,.25);margin:6px 0;">
+        {% if session.get('role') in ['staff','admin'] %}
+          {% if request.path.startswith('/admin') %}
+            <a href="{{ url_for('pages.home') }}">Member</a>
+          {% else %}
+            <a href="{{ url_for('admin.admin_home') }}">Admin</a>
+          {% endif %}
+        {% endif %}
+        <a href="{{ url_for('auth.logout_action') }}">Logout</a>
+      {% endif %}
+    </nav>
+
+    <!-- ปุ่มกระดิ่ง -->
     <div class="navbar_light">
       <button class="btn-bell" aria-label="Notifications">
         <i class="ri-notification-4-line"></i>
@@ -53,3 +80,22 @@
   </div>
   {% endif %}
 </nav>
+
+<script>
+  (function(){
+    const navbarMenu = document.querySelector('.navbar_menu');
+    const toggleBtn  = navbarMenu?.querySelector('.menu-toggle');
+    if(!toggleBtn) return;
+    toggleBtn.addEventListener('click', function(){
+      const isOpen = navbarMenu.classList.toggle('open');
+      toggleBtn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+    });
+    // ปิดเมนูเมื่อคลิกลิงก์
+    navbarMenu.querySelectorAll('.menu-panel a').forEach(a=>{
+      a.addEventListener('click', ()=> {
+        navbarMenu.classList.remove('open');
+        toggleBtn.setAttribute('aria-expanded','false');
+      });
+    });
+  })();
+</script>
