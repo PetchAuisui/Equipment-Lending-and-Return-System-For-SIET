@@ -203,7 +203,13 @@
   content:"";
   position:absolute; left:8px; top:8px; bottom:8px;
   width:4px; border-radius:4px;
-  background:#f1ffa3;            /* ชมพูอ่อน */
+  background:#f1ffa3;  
 }
+/* ===== ขยับ card ขึ้นใกล้หัวข้อ ===== */
+.my-history{
+  padding-top: 5px !important;   /* จาก 60 → 30px */
+}
+
+/* หรือถ้าอยากขยับน้อยกว่านี้ (เช่นแค่เล็กน้อย) ใช้ 40px */
 
 </style>
