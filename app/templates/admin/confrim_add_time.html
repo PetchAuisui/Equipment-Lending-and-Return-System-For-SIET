@@ -11,12 +11,16 @@
 
 {% block content %}
 <body>
-    <div class="title-wrapper" style="text-align: center; margin-bottom: 25px;">
+    <div class="title-wrapper">
         <h2 class="track-title">รายการคำขอขยายเวลาการยืมอุปกรณ์</h2>
 
         <!-- ✅ ปุ่มดูประวัติ -->
-        <a href="{{ url_for('admin.confrim_add_time_history') }}" >ดูประวัติ</a>
+        <a href="{{ url_for('admin.confrim_add_time_history') }}" class="btn btn-blue"  style="margin-left: 20px;">
+            ดูประวัติ
+        </a>
     </div>
+
+
 
     <div class="track-container">
         {% if renewals %}
