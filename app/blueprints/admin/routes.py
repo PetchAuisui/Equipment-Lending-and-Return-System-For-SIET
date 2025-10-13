@@ -4,6 +4,8 @@ from app.db.db import SessionLocal
 from app.repositories.user_repository import UserRepository
 from app.services.admin_user_service import AdminUserService
 from app.utils.decorators import staff_required
+from app.services import renewal_service
+
 
 # ---- สำหรับประวัติยืม-คืน (admin) ----
 from app.repositories.history_repository import RentHistoryRepository
@@ -139,7 +141,19 @@ AdminHistoryController(
     staff_guard=staff_required,
 )
 
+
 @admin_bp.get("/confrim_add_time")
 @staff_required
 def confrim_add_time():
-    return render_template("admin/confrim_add_time.html")
+    """
+    ✅ แสดงหน้ารายการคำขอขยายเวลา (Renewal Summary)
+    """
+    success, renewals = renewal_service.get_renewal_summary_service()
+
+    if not success:
+        renewals = []
+        print("❌ โหลดข้อมูล renewals ไม่สำเร็จ")
+
+    # ✅ ส่งข้อมูลไปยังหน้า confrim_add_time.html
+    return render_template("admin/confrim_add_time.html", renewals=renewals)
+

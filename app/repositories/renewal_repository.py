@@ -1,7 +1,7 @@
 from datetime import datetime
 from sqlalchemy.orm import joinedload
 from app.db.db import SessionLocal
-from app.db.models import Renewal, RentReturn, Equipment
+from app.db.models import RentReturn, Equipment, EquipmentImage, StatusRent, Subject, User, Renewal
 
 
 def insert_renewal(data):

@@ -10,7 +10,38 @@
 {% block title %}หน้าหลักของแอดมิน{% endblock %}
 {% block content %}
 <body>
-    cronfrim add data
+<div class="container mt-4">
+    <h2 class="mb-3">📅 รายการคำขอขยายเวลาการยืมอุปกรณ์</h2>
+
+    {% if renewals %}
+        <table class="table table-bordered table-striped align-middle">
+            <thead class="table-primary">
+                <tr>
+                    <th>#</th>
+                    <th>ชื่ออุปกรณ์</th>
+                    <th>ชื่อผู้ยืม</th>
+                    <th>วันที่ยืม</th>
+                    <th>วันที่คืนเดิม</th>
+                    <th>วันที่คืนใหม่</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in renewals %}
+                <tr>
+                    <td>{{ loop.index }}</td>
+                    <td>{{ item.equipment_name }}</td>
+                    <td>{{ item.borrower_name }}</td>
+                    <td>{{ item.start_date }}</td>
+                    <td>{{ item.old_due }}</td>
+                    <td>{{ item.new_due }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <div class="alert alert-warning">ไม่พบข้อมูลคำขอขยายเวลา</div>
+    {% endif %}
+</div>
 </body>
 {% endblock %}
 </html>
