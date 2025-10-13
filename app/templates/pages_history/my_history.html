@@ -1,20 +1,7 @@
 {% extends 'base/base.html' %}
 {% block title %}ประวัติการยืมของฉัน{% endblock %}
 {% block content %}
-<style>
-  .my-history *{ box-sizing: border-box; }
-  .my-history{ margin-left:260px; padding:24px; color:#222; }
-  .hist-grid{ display:grid; grid-template-columns: 1fr 1fr; gap:16px; }
-  @media (max-width: 992px){ .my-history{ margin:0; padding:16px; } .hist-grid{ grid-template-columns: 1fr; } }
-  .card{ background:#fff; border:1px solid #e8e8eb; border-radius:14px; padding:16px; box-shadow:0 6px 16px rgba(0,0,0,.05); }
-  .title{ font-weight:700; font-size:18px; margin:0 0 6px; display:flex; align-items:center; gap:10px; }
-  .muted{ color:#666; font-size:13px; }
-  .meta{ display:flex; gap:14px; flex-wrap:wrap; font-size:13px; color:#444; }
-  .badge{ display:inline-block; padding:4px 10px; border-radius:999px; font-size:12px; border:1px solid #e0e0e0; }
-  .status-dot{ display:inline-block; width:10px; height:10px; border-radius:50%; vertical-align:middle; margin-right:6px; }
-  .thumb{ width:80px; height:80px; border-radius:12px; object-fit:cover; border:1px solid #eee; }
-</style>
-
+<link rel="stylesheet" href="{{ url_for('static', filename='css/my_history.css') }}">
 <div class="my-history">
   <h2>ประวัติการยืมของฉัน</h2>
 
@@ -34,15 +21,33 @@
                 <span class="muted">({{ it.equipment_code }})</span>
               </div>
               <div class="muted">{{ it.category or '-' }}</div>
-              <div class="meta" style="margin-top:6px;">
-                <span>เริ่ม: {{ it.start_date }}</span>
-                <span>ครบกำหนด: {{ it.due_date }}</span>
-                {% if it.return_date %}
-                  <span>คืน: {{ it.return_date }}</span>
-                {% else %}
-                  <span class="badge">ยังไม่คืน</span>
-                {% endif %}
-              </div>
+<div class="meta split">
+  <div class="row">
+    <strong class="label dot dot-start">เริ่ม:</strong>
+    <span class="chip">วันที่: {{ it.start_date.strftime('%Y-%m-%d') }}</span>
+    <span class="chip">เวลา: {{ it.start_date.strftime('%H:%M') }}</span>
+  </div>
+
+  <div class="row">
+    <strong class="label dot dot-due">ครบกำหนด:</strong>
+    <span class="chip">วันที่: {{ it.due_date.strftime('%Y-%m-%d') }}</span>
+    <span class="chip">เวลา: {{ it.due_date.strftime('%H:%M') }}</span>
+  </div>
+
+  {% if it.return_date %}
+  <div class="row">
+    <strong class="label dot dot-ret">คืนจริง:</strong>
+    <span class="chip">วันที่: {{ it.return_date.strftime('%Y-%m-%d') }}</span>
+    <span class="chip">เวลา: {{ it.return_date.strftime('%H:%M') }}</span>
+  </div>
+  {% else %}
+  <div class="row">
+    <strong class="label dot dot-ret">คืนจริง:</strong>
+    <span class="chip warn">ยังไม่คืน</span>
+  </div>
+  {% endif %}
+</div>
+
             </div>
           </div>
 
