@@ -15,8 +15,16 @@
           {% if error %}
             <div class="alert alert-error">{{ error }}</div>
           {% endif %}
+          {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+              {% for cat, msg in messages %}
+                <div class="alert alert-{{ cat }}">{{ msg }}</div>
+              {% endfor %}
+            {% endif %}
+          {% endwith %}
         </div>
 
+        {# ================== ฟอร์มหลัก: แก้ไขข้อมูลผู้ใช้ ================== #}
         <form method="post"
               action="{{ url_for('admin_users.edit_user_action', user_id=user.user_id) }}">
 
@@ -26,7 +34,6 @@
             <input id="student_id" type="text" name="student_id"
                    value="{{ (old.student_id if old else user.student_id) or '' }}"
                    placeholder="เช่น 65070xxxx">
-  
           </div>
 
           <div class="form-group" id="group-employee-id">
@@ -127,18 +134,48 @@
             </select>
           </div>
 
+          <!-- ปุ่มของฟอร์มหลัก -->
           <div class="form-actions">
             <button type="submit" class="btn btn-save">บันทึก</button>
             <a href="{{ url_for('admin_users.index') }}" class="btn btn-cancel">ยกเลิก</a>
           </div>
 
-        </form>
+        </form>  {# ===== END ฟอร์มหลัก ===== #}
+
+        {# ================== ฟอร์ม B: แอดมินตั้งรหัสใหม่ให้เลย ================== #}
+        <section class="form-section security" style="margin-top:20px">
+          <h3>ความปลอดภัย / รหัสผ่าน</h3>
+          <p class="muted">ตั้งรหัสผ่านใหม่</p>
+
+          <form method="post"
+                action="{{ url_for('admin_users.admin_set_password', user_id=user.user_id) }}"
+                class="security-row set-password">
+            {# <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"> #}
+
+            <div class="form-group" style="flex:1">
+              <label>รหัสผ่านใหม่:</label>
+              <input type="password" name="new_password" minlength="6" placeholder="อย่างน้อย 6 ตัวอักษร" required>
+            </div>
+
+            <div class="form-group" style="flex:1">
+              <label>ยืนยันรหัสผ่าน:</label>
+              <input type="password" name="confirm_password" minlength="6" placeholder="พิมพ์ซ้ำอีกครั้ง" required>
+            </div>
+
+            <div class="form-group" style="display:flex; gap:8px; align-items:flex-end">
+              <button type="button" class="btn btn-soft" id="btn-toggle-pw">แสดง/ซ่อน</button>
+              <button type="submit" class="btn btn-danger">บันทึกรหัสผ่านใหม่</button>
+            </div>
+          </form>
+        </section>
+
       </div>
     </div>
   </main>
 </div>
 
 <script>
+  // ==== toggle ช่องรหัสนักศึกษา/บุคลากร ตามประเภทสมาชิก ====
   const memberSelect = document.getElementById('member_type');
   const studentGroup = document.getElementById('group-student-id');
   const employeeGroup = document.getElementById('group-employee-id');
@@ -146,15 +183,49 @@
   function toggleIdFields() {
     const val = memberSelect.value;
     if (val === 'student') {
-      studentGroup.style.display = 'flex';   // ✅ เหมือนฟอร์มกรุ๊ปปกติ
+      studentGroup.style.display = 'flex';
       employeeGroup.style.display = 'none';
     } else {
       studentGroup.style.display = 'none';
       employeeGroup.style.display = 'flex';
     }
   }
-  toggleIdFields();
-  memberSelect.addEventListener('change', toggleIdFields);
+  if (memberSelect) {
+    toggleIdFields();
+    memberSelect.addEventListener('change', toggleIdFields);
+  }
+
+  // ==== Helpers: สุ่มรหัส / แสดง-ซ่อนรหัส ====
+  function genRandomPassword(len = 12) {
+    const chars = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789!@#$%^&*?";
+    let out = "";
+    for (let i = 0; i < len; i++) out += chars[Math.floor(Math.random() * chars.length)];
+    return out;
+  }
+
+  const btnGen = document.getElementById('btn-gen-pw');
+  const btnToggle = document.getElementById('btn-toggle-pw');
+
+  if (btnGen) {
+    btnGen.addEventListener('click', () => {
+      const pw1 = document.querySelector('.set-password input[name="new_password"]');
+      const pw2 = document.querySelector('.set-password input[name="confirm_password"]');
+      const rand = genRandomPassword(12);
+      pw1.value = rand;
+      pw2.value = rand;
+      pw1.focus();
+      pw1.select();
+    });
+  }
+
+  if (btnToggle) {
+    btnToggle.addEventListener('click', () => {
+      document.querySelectorAll('.set-password input[name="new_password"], .set-password input[name="confirm_password"]')
+        .forEach(inp => {
+          inp.type = (inp.type === 'password') ? 'text' : 'password';
+        });
+    });
+  }
 </script>
 
 {% endblock %}
