@@ -148,18 +148,29 @@ AdminHistoryController(
 @admin_bp.get("/confrim_add_time")
 @staff_required
 def confrim_add_time():
-    """
-    ✅ แสดงหน้ารายการคำขอขยายเวลา (Renewal Summary)
-    """
-    success, renewals = renewal_service.get_renewal_summary_service()
-
+    success, data = renewal_service.get_renewal_summary_service()
     if not success:
-        renewals = []
-        print("❌ โหลดข้อมูล renewals ไม่สำเร็จ")
+        flash("เกิดข้อผิดพลาดในการโหลดข้อมูล", "danger")
+        data = {"renewals": [], "history_renewals": []}
 
-    # ✅ ส่งข้อมูลไปยังหน้า confrim_add_time.html
-    return render_template("admin/confrim_add_time.html", renewals=renewals)
+    # ✅ ต้องส่งเฉพาะ list ของ pending
+    return render_template(
+        "admin/confrim_add_time.html",
+        renewals=data["renewals"]  # ❗️อย่าส่ง data ตรง ๆ
+    )
 
+@admin_bp.get("/confrim_add_time_history")
+@staff_required
+def confrim_add_time_history():
+    success, data = renewal_service.get_renewal_summary_service()
+    if not success:
+        flash("เกิดข้อผิดพลาดในการโหลดข้อมูล", "danger")
+        data = {"renewals": [], "history_renewals": []}
+
+    return render_template(
+        "admin/confrim_add_time_history.html",
+        history_renewals=data["history_renewals"]
+    )
 
 
 from flask import request, session, redirect, url_for, flash

@@ -31,24 +31,43 @@ def create_renewal(data):
         return False, str(e)
 
 
-# ✅ ดึงข้อมูลทั้งหมด
+# ✅ ดึงข้อมูลทั้งหมด (แยก pending / history)
 def get_renewal_summary_service():
+    """
+    ✅ ดึงข้อมูลคำขอทั้งหมด
+    - renewals: เฉพาะ status = pending
+    - history_renewals: เฉพาะ status = approved หรือ cancle
+    """
     try:
         rent_data = renewal_repository.get_all_rent_returns_with_renewal()
-        summary = []
+        renewals = []          # ✅ pending เท่านั้น
+        history_renewals = []  # 🕓 approved + cancle
+
         for rent in rent_data:
             if rent.get("renewals"):
                 for rn in rent["renewals"]:
-                    summary.append({
+                    item = {
                         "renewal_id": rn["renewal_id"],
+                        "status": rn["status"],  # ✅ เพิ่มสถานะมาด้วย
                         "equipment_name": rent["equipment"]["name"],
                         "borrower_name": rent["user"]["name"],
                         "start_date": rent["start_date"].strftime("%Y-%m-%d") if rent["start_date"] else None,
                         "old_due": rn["old_due"].strftime("%Y-%m-%d") if rn["old_due"] else None,
                         "new_due": rn["new_due"].strftime("%Y-%m-%d") if rn["new_due"] else None,
-                    })
-        print(f"📦 ดึงข้อมูลสรุป Renewal ทั้งหมด {len(summary)} รายการ")
-        return True, summary
+                    }
+
+                    # ✅ แยกตามสถานะ
+                    if rn["status"] == "pending":
+                        renewals.append(item)
+                    elif rn["status"] in ["approved", "cancle"]:
+                        history_renewals.append(item)
+
+        print(f"📦 pending = {len(renewals)} รายการ | history = {len(history_renewals)} รายการ")
+        return True, {
+            "renewals": renewals,
+            "history_renewals": history_renewals
+        }
+
     except Exception as e:
         print("❌ Error:", e)
         return False, str(e)
@@ -62,7 +81,7 @@ def approve_renewal_service(renewal_id, user_id):
             new_status="approved",
             rent_status_id=6,
             update_due_date=True,
-            approved_by=user_id  # ✅ เพิ่มตรงนี้
+            approved_by=user_id  # ✅ บันทึกผู้อนุมัติ
         )
         print(f"✅ อนุมัติ renewal_id={renewal_id} โดย user_id={user_id}")
         return True, "อนุมัติคำขอขยายเวลาเรียบร้อยแล้ว"
@@ -79,7 +98,7 @@ def reject_renewal_service(renewal_id, user_id):
             new_status="cancle",
             rent_status_id=7,
             update_due_date=False,
-            approved_by=user_id  # ✅ เพิ่มตรงนี้ด้วย
+            approved_by=user_id  # ✅ บันทึกผู้อนุมัติ
         )
         print(f"❌ ไม่อนุมัติ renewal_id={renewal_id} โดย user_id={user_id}")
         return True, "ไม่อนุมัติคำขอเรียบร้อยแล้ว"

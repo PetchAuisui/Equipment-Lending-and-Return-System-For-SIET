@@ -7,19 +7,21 @@
 </head>
 
 {% extends 'base/base_admin.html' %}
-{% block title %}คำขอขยายเวลาการยืมอุปกรณ์{% endblock %}
+{% block title %}ประวัติคำขอขยายเวลาการยืมอุปกรณ์{% endblock %}
 
 {% block content %}
 <body>
     <div class="title-wrapper" style="text-align: center; margin-bottom: 25px;">
-        <h2 class="track-title">รายการคำขอขยายเวลาการยืมอุปกรณ์</h2>
+        <h2 class="track-title">ประวัติคำขอขยายเวลาการยืมอุปกรณ์</h2>
 
-        <!-- ✅ ปุ่มดูประวัติ -->
-        <a href="{{ url_for('admin.confrim_add_time_history') }}" >ดูประวัติ</a>
+        <!-- 🔙 ปุ่มกลับไปหน้าหลัก -->
+        <a href="{{ url_for('admin.confrim_add_time') }}" class="btn btn-blue" style="margin-left: 20px;">
+            กลับไปหน้าคำขอ
+        </a>
     </div>
 
     <div class="track-container">
-        {% if renewals %}
+        {% if history_renewals %}
         <div class="track-box">
             <table class="track-table">
                 <thead>
@@ -30,11 +32,12 @@
                         <th>วันที่ยืม</th>
                         <th>วันที่คืนเดิม</th>
                         <th>วันที่คืนใหม่</th>
+                        <th>สถานะ</th>
                         <th>การจัดการ</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {% for item in renewals %}
+                    {% for item in history_renewals %}
                     <tr>
                         <td>{{ loop.index }}</td>
                         <td>{{ item.equipment_name }}</td>
@@ -42,18 +45,16 @@
                         <td>{{ item.start_date }}</td>
                         <td>{{ item.old_due }}</td>
                         <td>{{ item.new_due }}</td>
+                        <td>
+                            {% if item.status == "approved" %}
+                                <span style="color: green; font-weight: bold;">อนุมัติ</span>
+                            {% elif item.status == "cancle" %}
+                                <span style="color: red; font-weight: bold;">ไม่อนุมัติ</span>
+                            {% else %}
+                                <span>{{ item.status }}</span>
+                            {% endif %}
+                        </td>
                         <td class="actions">
-                            <!-- ✅ ปุ่มอนุมัติ -->
-                            <form action="{{ url_for('admin.approve_renewal', renewal_id=item.renewal_id) }}" method="POST" style="display:inline;">
-                                <button type="submit" class="btn btn-green">อนุมัติ</button>
-                            </form>
-
-                            <!-- ❌ ปุ่มไม่อนุมัติ -->
-                            <form action="{{ url_for('admin.reject_renewal', renewal_id=item.renewal_id) }}" method="POST" style="display:inline;">
-                                <button type="submit" class="btn btn-red">ไม่อนุมัติ</button>
-                            </form>
-
-                            <!-- 🔍 ปุ่มรายละเอียด (ปลอม) -->
                             <a href="#" class="btn btn-yellow">รายละเอียด</a>
                         </td>
                     </tr>
@@ -62,7 +63,7 @@
             </table>
         </div>
         {% else %}
-            <div class="no-data">ไม่พบข้อมูลคำขอขยายเวลา</div>
+            <div class="no-data">ไม่พบประวัติการขอขยายเวลา</div>
         {% endif %}
     </div>
 </body>
