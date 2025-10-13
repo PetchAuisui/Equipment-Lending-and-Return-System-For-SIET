@@ -54,3 +54,7 @@ def add_time_submit():
         flash(f"❌ {msg}", "error")
 
     return redirect(url_for("tracking.track_index"))
+
+@tracking_bp.get("/comfirm_add_time")
+def comfirm_add_time():
+    return render_template("tracking/comfirm_add_time.html")

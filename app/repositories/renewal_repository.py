@@ -1,6 +1,7 @@
 from datetime import datetime
 from app.db.db import SessionLocal
-from app.db.models import Renewal, RentReturn
+from app.db.models import Renewal, RentReturn, User, Equipment, EquipmentImage
+
 
 def insert_renewal(data):
     """
@@ -51,5 +52,68 @@ def is_pending_request_exists(rent_id):
         if exists:
             print(f"⚠️ พบคำขอ pending สำหรับ rent_id={rent_id}")
         return exists
+    finally:
+        db.close()
+
+
+def get_renewal_info(rent_id: int):
+    """
+    ✅ ดึงข้อมูลคำขอขยายเวลาล่าสุดของ rent_id
+    รวมข้อมูลชื่อผู้ยืม, ชื่ออุปกรณ์, วันที่ยืม, วันที่ครบกำหนด, วันที่ขอขยายเวลา, พาธรูป
+    """
+    db = SessionLocal()
+    try:
+        # 🔹 Join ตารางที่เกี่ยวข้องทั้งหมด
+        latest = (
+            db.query(
+                Renewal.renewal_id,
+                User.name.label("borrower_name"),
+                Equipment.name.label("equipment_name"),
+                RentReturn.start_date,
+                RentReturn.due_date.label("old_due"),
+                Renewal.new_due.label("new_due"),
+                Renewal.status,
+                Renewal.note,
+                Equipment.equipment_id
+            )
+            .join(RentReturn, Renewal.rent_id == RentReturn.rent_id)
+            .join(User, RentReturn.user_id == User.user_id)
+            .join(Equipment, RentReturn.equipment_id == Equipment.equipment_id)
+            .filter(Renewal.rent_id == rent_id)
+            .order_by(Renewal.renewal_id.desc())
+            .first()
+        )
+
+        if not latest:
+            print(f"⚠️ ไม่พบคำขอขยายเวลาสำหรับ rent_id={rent_id}")
+            return None
+
+        # 🔹 ดึง path รูปทั้งหมดของอุปกรณ์
+        image_paths = (
+            db.query(EquipmentImage.image_path)
+            .filter(EquipmentImage.equipment_id == latest.equipment_id)
+            .all()
+        )
+        images = [img.image_path for img in image_paths]
+
+        # ✅ รวมข้อมูลเป็น dict
+        result = {
+            "renewal_id": latest.renewal_id,
+            "borrower_name": latest.borrower_name,
+            "equipment_name": latest.equipment_name,
+            "images": images,
+            "start_date": latest.start_date.strftime("%Y-%m-%d %H:%M"),
+            "old_due": latest.old_due.strftime("%Y-%m-%d %H:%M"),
+            "new_due": latest.new_due.strftime("%Y-%m-%d %H:%M"),
+            "status": latest.status,
+            "note": latest.note,
+        }
+
+        print(f"📦 ดึงข้อมูลคำขอขยายเวลา rent_id={rent_id} สำเร็จ")
+        return result
+
+    except Exception as e:
+        print("❌ Database Error:", e)
+        raise
     finally:
         db.close()
