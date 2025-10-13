@@ -11,7 +11,7 @@
 
     <div class="nav-right">
       {% if current_user.is_authenticated %}
-        {% if session.get('role') in ['staff', 'admin'] %}
+        {% if session.get('role') in ['staff'] %}
           {% if request.path.startswith('/admin') %}
             <a href="{{ url_for('pages.home') }}" class="btn-nav btn-admin">Member</a>
           {% else %}
