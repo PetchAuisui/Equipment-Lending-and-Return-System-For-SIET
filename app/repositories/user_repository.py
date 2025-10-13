@@ -140,6 +140,25 @@ class UserRepository:
                 raise
 
     # ---------- readers ----------
+# === ใส่เพิ่มใน class UserRepository ===
+
+    def get_user_by_id(self, user_id: int) -> dict | None:
+        """
+        ดึงผู้ใช้ตาม user_id; คืน dict หรือ None ถ้าไม่พบ
+        """
+        row = self.session.execute(
+            text("SELECT * FROM users WHERE user_id = :uid LIMIT 1"),
+            {"uid": user_id},
+        ).first()
+        if not row:
+            return None
+        # ถ้ามี helper แปลง row => dict อยู่แล้วก็ใช้เลย
+        try:
+            return self._row_to_dict(row)  # ใช้ helper เดิมใน repo
+        except Exception:
+            return dict(row._mapping)      # fallback
+
+
     def find_by_id(self, user_id: int) -> Optional[Dict]:
         return self._get_by_id(user_id)
 
