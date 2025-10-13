@@ -23,6 +23,8 @@
     color: #fff;
     font-weight: bold;
     padding: 10px 25px;
+    width: 500px;
+    text-align: center;
     display: inline-block;
     border-radius: 15px;
     margin: 0; /* ✅ ตัด margin บน-ล่างของ h2 ออก */
