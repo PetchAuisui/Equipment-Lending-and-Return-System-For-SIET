@@ -7,7 +7,7 @@
 
 .admin-scope{
   --ink:#222; --muted:#555;
-  --panel:#f3f3f3; --card:#fff; --border:#e8e8eb;
+  --panel:#f3f3f3; --card:#fff; --border:#828282;
   --shadow:0 4px 12px rgba(0,0,0,.05);     /* เงอบางลง */
   --accent:#3bf679; --accent-hover:#26a228; /* ปุ่มบันทึก */
   --radius:14px;

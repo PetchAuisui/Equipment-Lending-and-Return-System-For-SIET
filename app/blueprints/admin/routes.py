@@ -1,11 +1,18 @@
 from flask import Blueprint, render_template, request, flash, redirect, url_for, session  # ✅ เพิ่ม session
+from sqlalchemy import text  
 from app.db.db import SessionLocal
 from app.repositories.user_repository import UserRepository
 from app.services.admin_user_service import AdminUserService
 from app.utils.decorators import staff_required
 
+# ---- สำหรับประวัติยืม-คืน (admin) ----
+from app.repositories.history_repository import RentHistoryRepository
+from app.services.history_service import BorrowHistoryService
 
-# ----- /admin (dashboard) -----
+
+# ==============================
+# /admin (dashboard)
+# ==============================
 admin_bp = Blueprint("admin", __name__, url_prefix="/admin")
 
 @admin_bp.get("/")
@@ -13,9 +20,11 @@ admin_bp = Blueprint("admin", __name__, url_prefix="/admin")
 def admin_home():
     return render_template("admin/home_admin.html")
 
-# ----- /admin/users (จัดการสมาชิก) -----
-admin_users_bp = Blueprint("admin_users", __name__, url_prefix="/admin/users")
 
+# ==============================
+# /admin/users (จัดการสมาชิก)
+# ==============================
+admin_users_bp = Blueprint("admin_users", __name__, url_prefix="/admin/users")
 
 def _svc():
     return AdminUserService(UserRepository(SessionLocal()))
@@ -73,3 +82,59 @@ def edit_user_action(user_id: int):
 
     flash("อัปเดตข้อมูลเรียบร้อยแล้ว ✅", "success")
     return redirect(url_for("admin_users.index"))
+
+
+
+
+admin_history_bp = Blueprint("admin_history", __name__, url_prefix="/admin/history")
+
+def _hist_svc():
+    """Service layer สำหรับดึงประวัติยืม-คืน"""
+    return BorrowHistoryService(RentHistoryRepository(SessionLocal()))
+
+def _user_repo():
+    return UserRepository(SessionLocal())
+
+
+@admin_history_bp.get("/", endpoint="index")
+@staff_required
+def admin_history_index():
+    """
+    แสดงประวัติการยืม-คืนของผู้ใช้ทุกคน (สำหรับแอดมิน/เจ้าหน้าที่)
+    URL: /admin/history/
+    """
+    repo = _user_repo()
+    svc = _hist_svc()
+
+    # ดึง user ทั้งหมด (เฉพาะคอลัมน์ที่ต้องใช้)
+    users = repo.session.execute(
+        text("SELECT user_id, name, email, student_id, employee_id FROM users")
+    ).fetchall()
+
+    all_items = []
+    for u in users:
+        u = dict(u._mapping)
+        histories = svc.get_for_user(u["user_id"], returned_only=False)
+        for h in histories:
+            h.update({
+                "user_name": u["name"],
+                "student_id": u["student_id"],
+                "employee_id": u["employee_id"],
+            })
+            all_items.append(h)
+
+    # เรียงจากล่าสุด
+    all_items.sort(key=lambda x: x.get("start_date") or "", reverse=True)
+
+    # ใช้ template เดิมที่คุณมีอยู่แล้ว
+    return render_template("pages_history/admin_all_history.html", items=all_items)
+
+from app.controllers.admin_history_controller import AdminHistoryController
+
+# ใช้ factory/guard เดิมของคุณ
+AdminHistoryController(
+    bp=admin_history_bp,
+    hist_svc_factory=_hist_svc,
+    user_repo_factory=_user_repo,
+    staff_guard=staff_required,
+)
