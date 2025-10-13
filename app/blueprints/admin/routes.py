@@ -138,3 +138,8 @@ AdminHistoryController(
     user_repo_factory=_user_repo,
     staff_guard=staff_required,
 )
+
+@admin_bp.get("/confrim_add_time")
+@staff_required
+def confrim_add_time():
+    return render_template("admin/confrim_add_time.html")
