@@ -1,6 +1,11 @@
 /* ===== Reset & Base ===== */
 * { box-sizing: border-box; }
-html, body { margin: 0; padding: 0; background: #fff; font-family: 'Kanit','Poppins',sans-serif; }
+html, body {
+  margin: 0;
+  padding: 0;
+  background: #fff;
+  font-family: 'Kanit','Poppins',sans-serif;
+}
 
 /* ===== Navbar Container ===== */
 .navbar {
@@ -76,6 +81,7 @@ html, body { margin: 0; padding: 0; background: #fff; font-family: 'Kanit','Popp
   align-items: center;
   justify-content: space-between;
   padding: 7px 28px;
+  text-decoration: none;    
 }
 
 /* เมนูด้านซ้าย */
@@ -84,17 +90,41 @@ html, body { margin: 0; padding: 0; background: #fff; font-family: 'Kanit','Popp
   gap: 28px;
 }
 
+/* ลิงก์เมนู */
 .navbar_menu a {
   color: #273135;
-  text-decoration: none;
+  text-decoration: none;           /* ❌ ไม่มีเส้นใต้ */
   font-weight: 600;
-  font-size: 20px;      /* ✅ ฟอนต์ใหญ่ขึ้น */
+  font-size: 20px;
   padding: 6px 0;
-  transition: color 0.2s;
+  transition: color 0.2s, border-bottom 0.2s;
+  border-bottom: 3px solid transparent;  /* 👈 กันเลย์เอาต์กระโดด */
 }
+
+/* Hover / Focus / Active state */
 .navbar_menu a:hover {
   color: #fff;
+  border-bottom: 3px solid #fff;   /* ✅ เส้นขาวตอน hover (ลบได้ถ้าไม่อยากให้มีเลย) */
 }
+.navbar_menu a:focus,
+.navbar_menu a:active {
+  outline: none;                  /* ❌ ตัดเส้น focus สีม่วงของ browser */
+  text-decoration: none;
+  border-bottom: 3px solid #fff;
+}
+
+/* ถ้าอยาก “ไม่มีเส้นอะไรเลย” แม้ hover ก็ใช้ส่วนนี้แทน (ยกเลิก comment) */
+/*
+.navbar_menu a,
+.navbar_menu a:hover,
+.navbar_menu a:focus,
+.navbar_menu a:active {
+  text-decoration: none !important;
+  outline: none !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+*/
 
 /* ===== ปุ่มกระดิ่ง (Notifications) ===== */
 .btn-bell {
@@ -126,4 +156,370 @@ html, body { margin: 0; padding: 0; background: #fff; font-family: 'Kanit','Popp
   .navbar_menu a { font-size: 17px; gap: 16px; }
   .btn-bell { width: 38px; height: 38px; font-size: 20px; }
   .user_identity { font-size: 14px; padding: 4px 10px; }
+}
+
+/* --- ลิงก์ในแถวบน (ชมพู) ปิดสีม่วง/ขีดเส้นใต้ --- */
+.navbar_login a,
+.navbar_login a:visited {
+  color: #273135;           /* กำหนดสีเอง จะไม่เป็นม่วงอีก */
+  text-decoration: none;    /* ปิดขีดเส้นใต้ */
+}
+
+.navbar_login a:hover {
+  color: #111827;
+}
+
+.navbar_login a:focus,
+.navbar_login a:active {
+  outline: none;            /* ตัดเส้น focus ของเบราว์เซอร์ */
+  text-decoration: none;
+  box-shadow: none;
+}
+
+/* กันบางเบราว์เซอร์เติมไฮไลต์ตอนแตะ */
+.navbar_login a {
+  -webkit-tap-highlight-color: transparent;
+}
+
+.navbar .navbar_login .nav-right a,
+.navbar .navbar_login .nav-right a:visited { 
+  color:#273135 !important; 
+  text-decoration:none !important; 
+  font-size: 20px;
+}
+
+/* ===== ปุ่ม Login / Sign in แถวบน (ชมพู) ===== */
+.navbar_login_text {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* ปุ่มธรรมดาให้ดูเหมือนลิงก์ */
+.navbar_login_text button {
+  background: none;
+  border: none;
+  color: #1f2937;
+  font-weight: 600;
+  font-size: 16px;
+  cursor: pointer;
+  padding: 4px 8px;
+  transition: color 0.2s, transform 0.1s;
+}
+
+/* hover แล้วเปลี่ยนสีเล็กน้อย */
+.navbar_login_text button:hover {
+  color: #000;
+  transform: translateY(-1px);
+}
+
+/* ❌ ปิดเส้น outline สีม่วง / ฟ้า เวลา focus หรือ active */
+.navbar_login_text button:focus,
+.navbar_login_text button:active {
+  outline: none;
+  box-shadow: none;
+  border: none;
+  text-decoration: none;
+}
+
+/* เส้นแบ่ง | */
+.navbar_login_text .divider {
+  color: #374151;
+  font-weight: 400;
+  user-select: none;
+  pointer-events: none;
+}
+
+/* ป้องกันแสงไฮไลต์ตอนแตะบนมือถือ */
+.navbar_login_text button {
+  -webkit-tap-highlight-color: transparent;
+}
+/* ===== ลิงก์ Login / Sign in (แถวบนสีชมพู) ===== */
+.navbar_login_text {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.navbar_login_text a {
+  color: #1f2937;               /* สีเทาเข้มอ่านง่าย */
+  font-weight: 600;
+  font-size: 16px;
+  text-decoration: none;        /* ❌ ปิดเส้นใต้ */
+  cursor: pointer;
+  padding: 4px 8px;
+  transition: color 0.2s, transform 0.1s;
+}
+
+/* Hover แล้วให้สีเข้มขึ้นนิด */
+.navbar_login_text a:hover {
+  color: #000;
+  transform: translateY(-1px);
+  text-decoration: underline;
+}
+
+/* ปิดเส้น focus สีม่วง / ขอบน้ำเงิน */
+.navbar_login_text a:focus,
+.navbar_login_text a:active {
+  outline: none;
+  text-decoration: none;
+  box-shadow: none;
+  color: #000;
+  
+}
+
+/* ปิดสีม่วงลิงก์ที่เคยเข้า (visited) */
+.navbar_login_text a:visited {
+  color: #1f2937;
+  text-decoration: none;
+}
+
+/* เส้นแบ่ง | */
+.navbar_login_text .divider {
+  color: #374151;
+  font-weight: 400;
+  user-select: none;
+  pointer-events: none;
+}
+
+/* ปิดแสงไฮไลต์ตอนแตะบนมือถือ */
+.navbar_login_text a {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* ============================================
+   Login | Sign in (บนแถบชมพูมุมขวาบน)
+   ============================================ */
+.navbar_login_text {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* ===== ลิงก์ Login & Sign in ===== */
+.navbar_login_text a {
+  color: #1f2937;                /* สีเทาเข้มอ่านง่าย */
+  font-weight: 600;
+  font-size: 16px;
+  text-decoration: none;         /* ❌ ไม่ขีดเส้นใต้ปกติ */
+  cursor: pointer;
+  padding: 4px 8px;
+  transition: color 0.2s, text-decoration-color 0.2s;
+}
+
+/* ===== Hover แล้วค่อยมีเส้นใต้ ===== */
+.navbar_login_text a:hover {
+  color: #000;                   /* สีเข้มขึ้นเล็กน้อย */
+  text-decoration-line: underline;   /* ✅ แสดงเส้นใต้ตอน hover */
+  text-underline-offset: 3px;        /* เว้นระยะเส้นจากตัวอักษร */
+  text-decoration-thickness: 1.5px;  /* ความหนาเส้น */
+  text-decoration-color: #000;       /* สีเส้นใต้เหมือนข้อความ */
+}
+
+/* Focus / Active — ตัดขอบม่วงออก */
+.navbar_login_text a:focus,
+.navbar_login_text a:active {
+  outline: none;
+  box-shadow: none;
+  text-decoration-color: #000;
+}
+
+/* Visited — ไม่ให้เป็นสีม่วง */
+.navbar_login_text a:visited {
+  color: #1f2937;
+  text-decoration: none;
+}
+
+/* เส้นแบ่ง | */
+.navbar_login_text .divider {
+  color: #374151;
+  font-weight: 400;
+  user-select: none;
+  pointer-events: none;
+}
+
+/* ปิดแสงไฮไลต์บนมือถือ */
+.navbar_login_text a {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* ============================================
+   Login | Sign in (บนแถบชมพูมุมขวาบน)
+   ============================================ */
+.navbar_login_text {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* ===== ลิงก์ Login / Sign in ===== */
+.navbar_login_text a {
+  position: relative;
+  color: #1f2937;               /* สีเทาเข้ม */
+  font-weight: 600;
+  font-size: 16px;
+  text-decoration: none;        /* ❌ ไม่ขีดเส้นใต้ปกติ */
+  cursor: pointer;
+  padding: 4px 8px;
+  transition: color 0.2s ease;
+}
+
+/* ===== เส้นใต้ (สร้างด้วย pseudo-element) ===== */
+.navbar_login_text a::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 0%;
+  height: 2px;
+  background-color: #1f2937;    /* สีเส้น */
+  transition: width 0.25s ease-in-out;
+}
+
+/* ===== Hover: เปลี่ยนสีและโชว์เส้นใต้ ===== */
+.navbar_login_text a:hover {
+  color: #000;                  /* ตัวอักษรเข้มขึ้น */
+}
+.navbar_login_text a:hover::after {
+  width: 100%;                  /* ✅ เส้นใต้ค่อย ๆ ขยายเต็ม */
+}
+
+/* Focus / Active: ตัดขอบม่วงออก */
+.navbar_login_text a:focus,
+.navbar_login_text a:active {
+  outline: none;
+  box-shadow: none;
+}
+
+/* Visited: ไม่เป็นสีม่วง */
+.navbar_login_text a:visited {
+  color: #1f2937;
+}
+
+/* เส้นแบ่ง | */
+.navbar_login_text .divider {
+  color: #374151;
+  font-weight: 400;
+  user-select: none;
+  pointer-events: none;
+}
+
+/* ปิดแสงไฮไลต์ตอนแตะบนมือถือ */
+.navbar_login_text a {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* ============================================
+   Login | Sign in (บนแถบชมพูมุมขวาบน)
+   ============================================ */
+.navbar_login_text {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* ===== ลิงก์ Login / Sign in ===== */
+.navbar_login_text a {
+  color: #1f2937;                 /* สีเทาเข้ม */
+  font-weight: 600;
+  font-size: 16px;
+  text-decoration: none;          /* ❌ ปกติไม่มีเส้นใต้ */
+  cursor: pointer;
+  padding: 4px 8px;
+  transition: color 0.2s ease;
+}
+
+/* ===== Hover: ขึ้นเส้นใต้ทันที ===== */
+.navbar_login_text a:hover {
+  color: #000;                    /* ตัวอักษรเข้มขึ้นเล็กน้อย */
+  text-decoration-line: underline;/* ✅ ขีดเส้นใต้ */
+  text-decoration-color: #000;    /* สีเส้นใต้ */
+  text-underline-offset: 3px;     /* ระยะห่างจากตัวอักษร */
+  text-decoration-thickness: 1.5px;/* ความหนาเส้น */
+}
+
+/* Focus / Active */
+.navbar_login_text a:focus,
+.navbar_login_text a:active {
+  outline: none;
+  box-shadow: none;
+  color: #000;
+  text-decoration-line: underline;
+  text-decoration-color: #000;
+}
+
+/* Visited (ไม่เป็นสีม่วง) */
+.navbar_login_text a:visited {
+  color: #1f2937;
+  text-decoration: none;
+}
+
+/* เส้นแบ่ง | */
+.navbar_login_text .divider {
+  color: #374151;
+  font-weight: 400;
+  user-select: none;
+  pointer-events: none;
+}
+
+/* ปิดแสงไฮไลต์บนมือถือ */
+.navbar_login_text a {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* ============================================
+   Login | Sign in (บนแถบชมพูมุมขวาบน)
+   ============================================ */
+.navbar_login_text {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* ลิงก์ Login / Sign in */
+.navbar_login_text a {
+  color: #1f2937;
+  font-weight: 600;
+  font-size: 16px;
+  text-decoration: none;           /* ปกติไม่มีเส้น */
+  cursor: pointer;
+  padding: 4px 8px;
+  transition: color 0.15s ease;    /* แค่เปลี่ยนสี */
+}
+
+/* Hover → ขึ้นเส้นใต้ทันที */
+.navbar_login_text a:hover {
+  color: #000;
+  text-decoration: underline;       /* ✅ เส้นใต้ทันที */
+  text-decoration-color: #000;
+  text-decoration-thickness: 1.5px;
+  text-underline-offset: 3px;
+}
+
+/* Focus / Active (ตัดขอบม่วง) */
+.navbar_login_text a:focus,
+.navbar_login_text a:active {
+  outline: none;
+  box-shadow: none;
+  color: #000;
+  text-decoration: underline;
+}
+
+/* Visited (ไม่ให้เป็นสีม่วง) */
+.navbar_login_text a:visited {
+  color: #1f2937;
+  text-decoration: none;
+}
+
+/* เส้นแบ่ง | */
+.navbar_login_text .divider {
+  color: #374151;
+  font-weight: 400;
+  user-select: none;
+  pointer-events: none;
+}
+
+/* ปิดแสงไฮไลต์บนมือถือ */
+.navbar_login_text a {
+  -webkit-tap-highlight-color: transparent;
 }
