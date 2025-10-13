@@ -1,22 +1,85 @@
-.action-buttons {
-    margin-top: 20px;
-    display: flex;
-    gap: 15px;
+/* กล่องหลัก */
+.return-container {
+    max-width: 700px;
+    margin: 50px auto;
+    padding: 20px;
 }
 
-.btn-confirm,
-.btn-cancel {
-    padding: 10px 20px;
+/* หัวเรื่อง */
+.return-title {
+    text-align: center;
+    font-size: 28px;
+    color: #222;
+    margin-bottom: 5px;
+}
+
+.subtitle {
+    text-align: center;
+    color: #666;
+    margin-bottom: 25px;
+}
+
+/* กล่องพื้นขาว */
+.return-card {
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    padding: 30px;
+    transition: all 0.3s ease;
+}
+
+.return-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
+}
+
+/* โครงสร้างเนื้อหา */
+.return-content {
+    display: flex;
+    align-items: flex-start;
+    gap: 25px;
+    flex-wrap: wrap;
+}
+
+/* รูปภาพ */
+.return-image img {
+    width: 230px;
+    border-radius: 12px;
+    border: 1px solid #ddd;
+    object-fit: cover;
+}
+
+/* ข้อมูลอุปกรณ์ */
+.return-info p {
+    font-size: 16px;
+    color: #333;
+    margin: 6px 0;
+    line-height: 1.6;
+}
+
+/* ปุ่ม */
+.action-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-top: 25px;
+}
+
+.btn {
+    padding: 10px 22px;
     border: none;
     border-radius: 8px;
     font-size: 16px;
+    color: #fff;
     cursor: pointer;
-    color: white;
-    transition: all 0.2s ease-in-out;
+    transition: background 0.25s ease;
+    text-decoration: none;
+    min-width: 140px;
+    text-align: center;
 }
 
 .btn-confirm {
-    background-color: #28a745; /* เขียว */
+    background-color: #28a745;
 }
 
 .btn-confirm:hover {
@@ -24,9 +87,17 @@
 }
 
 .btn-cancel {
-    background-color: #dc3545; /* แดง */
+    background-color: #dc3545;
 }
 
 .btn-cancel:hover {
     background-color: #c82333;
+}
+
+/* เมื่อไม่พบข้อมูล */
+.no-data {
+    text-align: center;
+    color: #888;
+    font-style: italic;
+    margin-top: 30px;
 }
