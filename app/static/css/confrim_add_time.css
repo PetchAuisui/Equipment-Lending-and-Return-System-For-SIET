@@ -102,3 +102,17 @@
     color: #777;
     padding: 20px;
 }
+
+.btn-blue {
+    background-color: #007bff;
+    color: white;
+    border-radius: 8px;
+    padding: 6px 14px;
+    font-weight: bold;
+    text-decoration: none;
+    transition: 0.3s;
+}
+
+.btn-blue:hover {
+    background-color: #0069d9;
+}

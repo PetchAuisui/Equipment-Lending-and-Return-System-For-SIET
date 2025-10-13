@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/confrim_add_time.css') }}">
+</head>
+
+{% extends 'base/base_admin.html' %}
+{% block title %}ประวัติคำขอขยายเวลาการยืมอุปกรณ์{% endblock %}
+
+{% block content %}
+<body>
+    <div class="title-wrapper" style="text-align: center; margin-bottom: 25px;">
+        <h2 class="track-title">ประวัติคำขอขยายเวลาการยืมอุปกรณ์</h2>
+
+        <!-- 🔙 ปุ่มกลับไปหน้าหลัก -->
+        <a href="{{ url_for('admin.confrim_add_time') }}" class="btn btn-blue" style="margin-left: 20px;">
+            กลับไปหน้าคำขอ
+        </a>
+    </div>
+
+    <div class="track-container">
+        {% if history_renewals %}
+        <div class="track-box">
+            <table class="track-table">
+                <thead>
+                    <tr>
+                        <th>รหัส</th>
+                        <th>ชื่ออุปกรณ์</th>
+                        <th>ชื่อผู้ยืม</th>
+                        <th>วันที่ยืม</th>
+                        <th>วันที่คืนเดิม</th>
+                        <th>วันที่คืนใหม่</th>
+                        <th>สถานะ</th>
+                        <th>การจัดการ</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in history_renewals %}
+                    <tr>
+                        <td>{{ loop.index }}</td>
+                        <td>{{ item.equipment_name }}</td>
+                        <td>{{ item.borrower_name }}</td>
+                        <td>{{ item.start_date }}</td>
+                        <td>{{ item.old_due }}</td>
+                        <td>{{ item.new_due }}</td>
+                        <td>
+                            {% if item.status == "approved" %}
+                                <span style="color: green; font-weight: bold;">อนุมัติ</span>
+                            {% elif item.status == "cancle" %}
+                                <span style="color: red; font-weight: bold;">ไม่อนุมัติ</span>
+                            {% else %}
+                                <span>{{ item.status }}</span>
+                            {% endif %}
+                        </td>
+                        <td class="actions">
+                            <a href="#" class="btn btn-yellow">รายละเอียด</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+            <div class="no-data">ไม่พบประวัติการขอขยายเวลา</div>
+        {% endif %}
+    </div>
+</body>
+{% endblock %}
+</html>

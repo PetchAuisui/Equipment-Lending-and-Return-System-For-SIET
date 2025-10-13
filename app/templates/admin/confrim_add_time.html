@@ -11,56 +11,60 @@
 
 {% block content %}
 <body>
+    <div class="title-wrapper" style="text-align: center; margin-bottom: 25px;">
         <h2 class="track-title">รายการคำขอขยายเวลาการยืมอุปกรณ์</h2>
 
-<div class="track-container">
-
-    {% if renewals %}
-    <div class="track-box">
-        <table class="track-table">
-            <thead>
-                <tr>
-                    <th>รหัส</th>
-                    <th>ชื่ออุปกรณ์</th>
-                    <th>ชื่อผู้ยืม</th>
-                    <th>วันที่ยืม</th>
-                    <th>วันที่คืนเดิม</th>
-                    <th>วันที่คืนใหม่</th>
-                    <th>การจัดการ</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for item in renewals %}
-                <tr>
-                    <td>{{ loop.index }}</td>
-                    <td>{{ item.equipment_name }}</td>
-                    <td>{{ item.borrower_name }}</td>
-                    <td>{{ item.start_date }}</td>
-                    <td>{{ item.old_due }}</td>
-                    <td>{{ item.new_due }}</td>
-                <td class="actions">
-                    <!-- ✅ ปุ่มอนุมัติ -->
-                    <form action="{{ url_for('admin.approve_renewal', renewal_id=item.renewal_id) }}" method="POST" style="display:inline;">
-                        <button type="submit" class="btn btn-green">อนุมัติ</button>
-                    </form>
-
-                    <!-- ❌ ปุ่มไม่อนุมัติ -->
-                    <form action="{{ url_for('admin.reject_renewal', renewal_id=item.renewal_id) }}" method="POST" style="display:inline;">
-                        <button type="submit" class="btn btn-red">ไม่อนุมัติ</button>
-                    </form>
-
-                    <a href="#" class="btn btn-yellow">รายละเอียด</a>
-                </td>
-
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+        <!-- ✅ ปุ่มดูประวัติ -->
+        <a href="{{ url_for('admin.confrim_add_time_history') }}" >ดูประวัติ</a>
     </div>
-    {% else %}
-        <div class="no-data">ไม่พบข้อมูลคำขอขยายเวลา</div>
-    {% endif %}
-</div>
+
+    <div class="track-container">
+        {% if renewals %}
+        <div class="track-box">
+            <table class="track-table">
+                <thead>
+                    <tr>
+                        <th>รหัส</th>
+                        <th>ชื่ออุปกรณ์</th>
+                        <th>ชื่อผู้ยืม</th>
+                        <th>วันที่ยืม</th>
+                        <th>วันที่คืนเดิม</th>
+                        <th>วันที่คืนใหม่</th>
+                        <th>การจัดการ</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in renewals %}
+                    <tr>
+                        <td>{{ loop.index }}</td>
+                        <td>{{ item.equipment_name }}</td>
+                        <td>{{ item.borrower_name }}</td>
+                        <td>{{ item.start_date }}</td>
+                        <td>{{ item.old_due }}</td>
+                        <td>{{ item.new_due }}</td>
+                        <td class="actions">
+                            <!-- ✅ ปุ่มอนุมัติ -->
+                            <form action="{{ url_for('admin.approve_renewal', renewal_id=item.renewal_id) }}" method="POST" style="display:inline;">
+                                <button type="submit" class="btn btn-green">อนุมัติ</button>
+                            </form>
+
+                            <!-- ❌ ปุ่มไม่อนุมัติ -->
+                            <form action="{{ url_for('admin.reject_renewal', renewal_id=item.renewal_id) }}" method="POST" style="display:inline;">
+                                <button type="submit" class="btn btn-red">ไม่อนุมัติ</button>
+                            </form>
+
+                            <!-- 🔍 ปุ่มรายละเอียด (ปลอม) -->
+                            <a href="#" class="btn btn-yellow">รายละเอียด</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+            <div class="no-data">ไม่พบข้อมูลคำขอขยายเวลา</div>
+        {% endif %}
+    </div>
 </body>
 {% endblock %}
 </html>
