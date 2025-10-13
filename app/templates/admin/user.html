@@ -50,9 +50,8 @@
                 <td>
                   {% set role = (u.role or 'member') %}
                   <span class="badge
-                    {{ 'badge--admin' if role=='admin'
-                       else 'badge--staff' if role=='staff'
-                       else 'badge--student' if role=='student'
+                    {{ 'badge--staff' if role=='staff'
+                       else 'badge--member' if role=='member'
                        else 'badge--default' }}">
                     {{ role }}
                   </span>
@@ -74,24 +73,25 @@
                 <td>{{ u.phone or '-' }}</td>
 
                 <!-- Actions -->
-                <td class="col-actions">
-                  <a class="btn btn--sm btn-edit"
-                     href="{{ url_for('admin_users.edit_user_page', user_id=u.user_id) }}">
-                    แก้ไข
-                  </a>
+<td class="col-actions">
+  <a class="btn btn--sm btn-edit"
+     href="{{ url_for('admin_users.edit_user_page', user_id=u.user_id) }}">
+    แก้ไข
+  </a>
 
-                  <button type="button"
-                          class="btn btn--sm btn-warn"
-                          onclick="openResetModal('{{ u.user_id }}', '{{ u.name }}')">
-                    เปลี่ยนรหัสผ่าน
-                  </button>
+  <button type="button"
+          class="btn btn--sm btn-reset"
+          onclick="openResetModal('{{ u.user_id }}', '{{ u.name }}')">
+    เปลี่ยนรหัสผ่าน
+  </button>
 
-                  <a href="#"
-                     class="btn btn--sm btn-delete"
-                     onclick="return confirmDelete({{ u.user_id }});">
-                    ลบ
-                  </a>
-                </td>
+  <a href="#"
+     class="btn btn--sm btn-delete"
+     onclick="return confirmDelete({{ u.user_id }});">
+    ลบ
+  </a>
+</td>
+
               </tr>
               {% endfor %}
             {% else %}

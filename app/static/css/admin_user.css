@@ -138,15 +138,16 @@
 .admin-users .badge {
   display: inline-block;
   padding: 5px 10px;
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 700;
   border-radius: 999px;
   background: var(--chip-bg);
   color: var(--chip-tx);
 }
-.admin-users .badge--admin   { background: #ffe8e8; color: #b91c1c; }
+.admin-users .badge--admin   { background: #ffe8e8; color: #b91c1c;  }
 .admin-users .badge--student { background: #e7f3ff; color: #075985; }
 .admin-users .badge--staff   { background: #fff4e6; color: #b45309; }
+.admin-users .badge--member  { background: #f3f4f6; color: #59aa61; }
 
 /* ===== Buttons ===== */
 .admin-users .btn {
@@ -233,20 +234,311 @@
 .admin-users .badge--student {
   background: #e0f2fe;  /* ฟ้าอ่อน */
   color: #0369a1;
+  font-size: 14px;
 }
 .admin-users .badge--teacher {
   background: #ede9fe;  /* ม่วงอ่อน */
   color: #5b21b6;
+  font-size: 14px;
 }
 .admin-users .badge--officer {
   background: #dcfce7;  /* เขียวอ่อน */
   color: #166534;
+  font-size: 14px;
 }
 .admin-users .badge--staff {
   background: #fff4e6;  /* ส้มอ่อน */
   color: #b45309;
+  font-size: 14px;
 }
 .admin-users .badge--admin {
   background: #fee2e2;  /* แดงอ่อน */
   color: #b91c1c;
+  font-size: 14px;
 }
+
+
+/* ==========================================================
+   🔐 Reset Password Modal (popup) — สำหรับหน้า Admin Users
+   ========================================================== */
+
+/* ปุ่ม Reset Password */
+.admin-users .btn-warn {
+  background: #fde68a;          /* เหลืองนวล */
+  border: 1px solid #facc15;
+  color: #92400e;
+}
+.admin-users .btn-warn:hover {
+  background: #fcd34d;
+  filter: brightness(.95);
+}
+
+/* ===== Modal base ===== */
+.modal {
+  position: fixed;
+  inset: 0;
+  display: none;
+  z-index: 1000;
+}
+.modal.is-open {
+  display: block;
+}
+
+.modal__backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(1px);
+}
+
+.modal__dialog {
+  position: relative;
+  width: min(480px, 92vw);
+  margin: 10vh auto 0;
+  background: #fff;
+  border-radius: 14px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.18);
+  overflow: hidden;
+  animation: fadeInUp .25s ease;
+}
+
+/* Header */
+.modal__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 16px;
+  border-bottom: 1px solid #f1f1f1;
+}
+.modal__header h3 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--ink);
+}
+.modal__close {
+  border: 0;
+  background: transparent;
+  font-size: 22px;
+  line-height: 1;
+  cursor: pointer;
+  color: var(--muted);
+  transition: color .15s ease;
+}
+.modal__close:hover {
+  color: var(--ink);
+}
+
+/* Body */
+.modal__body {
+  padding: 16px 18px 20px;
+}
+.modal__body p {
+  margin-bottom: 12px;
+  color: var(--muted);
+}
+
+/* Fields */
+.set-password .form-group {
+  margin-bottom: 14px;
+}
+.set-password input[type="password"],
+.set-password input[type="text"] {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 10px;
+  font-size: 15px;
+  color: var(--ink);
+  outline: none;
+}
+.set-password input:focus {
+  border-color: var(--pink);
+  box-shadow: 0 0 0 2px rgba(246, 166, 191, 0.25);
+}
+
+/* Action buttons */
+.modal__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.btn-soft {
+  background: #ffe5ed;
+  border: 1px solid #ffd1dc;
+  border-radius: 8px;
+  padding: 8px 12px;
+  cursor: pointer;
+  font-size: 14px;
+  color: #b91c1c;
+  transition: filter .15s ease, transform .04s ease;
+}
+.btn-soft:hover {
+  filter: brightness(.95);
+}
+.btn-soft:active {
+  transform: translateY(1px);
+}
+
+.btn-danger {
+  background: #ff6b6b;
+  border: none;
+  border-radius: 8px;
+  color: #fff;
+  font-weight: 600;
+  padding: 9px 16px;
+  cursor: pointer;
+  transition: background .15s ease;
+}
+.btn-danger:hover {
+  background: #ef4444;
+}
+
+/* ===== Animation ===== */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+/* =======================================================
+   🔑 ปุ่ม "เปลี่ยนรหัสผ่าน" (ให้เหมือนเพื่อน)
+   ======================================================= */
+/* ===== ปุ่มเปลี่ยนรหัสผ่าน: โทนฟ้า SIET ===== */
+.admin-users .btn-reset {
+  background: #dbeafe;        /* ฟ้าอ่อน */
+  border: 2px solid #3b82f6;  /* ฟ้าน้ำเงินสด */
+  color: #1e3a8a;             /* ตัวหนังสือฟ้าเข้ม */
+  font-weight: 700;
+  border-radius: 10px;
+  padding: 8px 14px;
+  min-width: 110px;
+  box-shadow: 0 2px 0 rgba(59,130,246,0.15);
+  transition: all .15s ease;
+}
+.admin-users .btn-reset:hover {
+  background: #bfdbfe;        /* ฟ้าเข้มขึ้นนิดตอน hover */
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(59,130,246,0.25);
+  
+}
+.admin-users .btn-reset:active {
+  transform: translateY(0);
+  box-shadow: none;
+  background: #93c5fd;
+}
+
+.admin-users .btn-reset:active {
+  transform: translateY(0);
+  box-shadow: none;
+}
+
+/* ให้ปุ่มเรียงสวยในคอลัมน์ Actions */
+.admin-users td.col-actions .btn-reset {
+  min-width: 100px;
+}
+
+/* ===== ปุ่มในคอลัมน์ Actions ให้เรียงแนวนอน ===== */
+.admin-users td.col-actions {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;                    /* ระยะห่างระหว่างปุ่ม */
+  white-space: nowrap;
+}
+
+/* ===== ปุ่มพื้นฐาน (ฟอนต์กลาง) ===== */
+.admin-users .btn {
+  font-family: 'Kanit', 'Prompt', 'Noto Sans Thai', sans-serif;  /* ฟอนต์อ่านง่าย */
+  font-size: 14px;
+  font-weight: 600;
+  border-radius: 10px;
+  padding: 8px 14px;
+  cursor: pointer;
+  border: 1px solid transparent;
+  text-decoration: none;
+  transition: all 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 38px;                /* ความสูงเท่ากันทุกปุ่ม */
+}
+
+/* ===== ปุ่มแก้ไข (เหลือง) ===== */
+.admin-users .btn-edit {
+  background: #fef3c7;
+  border: 1px solid #facc15;
+  color: #92400e;
+}
+.admin-users .btn-edit:hover {
+  background: #fde68a;
+}
+
+/* ===== ปุ่มเปลี่ยนรหัสผ่าน (ฟ้า) ===== */
+.admin-users .btn-reset {
+  background: #dbeafe;        /* ฟ้าอ่อน */
+  border: 2px solid #3b82f6;  /* ฟ้าขอบสด */
+  color: #1e3a8a;
+  font-weight: 700;
+  min-width: 120px;
+}
+.admin-users .btn-reset:hover {
+  background: #bfdbfe;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 6px rgba(59,130,246,0.25);
+}
+.admin-users .btn-reset:active {
+  transform: translateY(0);
+  box-shadow: none;
+}
+
+/* ===== ปุ่มลบ (แดง) ===== */
+.admin-users .btn-delete {
+  background: #fecaca;
+  border: 1px solid #ef4444;
+  color: #991b1b;
+}
+.admin-users .btn-delete:hover {
+  background: #f87171;
+}
+
+/* ให้ปุ่มทั้งหมดอยู่ในบรรทัดเดียว ไม่แตกแถว */
+.admin-users td.col-actions {
+  flex-wrap: nowrap;
+}
+
+/* ===== ปุ่มเปลี่ยนรหัสผ่าน (ฟ้า - ขอบเท่ากับปุ่มอื่น) ===== */
+.admin-users .btn-reset {
+  background: #dbeafe;         /* ฟ้าอ่อน */
+  border: 1px solid #3b82f6;   /* ปรับจาก 2px → 1px */
+  color: #1e3a8a;
+  font-weight: 700;
+  border-radius: 10px;
+  padding: 8px 14px;
+  min-width: 110px;
+  box-shadow: 0 2px 0 rgba(59,130,246,0.15);
+  transition: all 0.15s ease;
+  height: 38px;                /* ให้เท่ากับปุ่มอื่น */
+}
+.admin-users .btn-reset:hover {
+  background: #bfdbfe;
+  transform: translateY(-1px);
+  box-shadow: 0 3px 8px rgba(59,130,246,0.25);
+}
+.admin-users .btn-reset:active {
+  transform: translateY(0);
+  box-shadow: none;
+  background: #93c5fd;
+}
+
+.admin-users .badge--member {
+  background: #dcfce7;  /* เขียวอ่อน */
+  color: #166534;       /* เขียวเข้ม */
+}
+
