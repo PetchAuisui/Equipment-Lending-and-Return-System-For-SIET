@@ -46,10 +46,8 @@
       .detail-text{ color:#333; }
       </style>
 
-    <div class="lost-table-card">
-    <table class="table admin-lost-table">
-
-    <table class="table admin-lost-table">
+  <div class="lost-table-card">
+  <table class="table admin-lost-table">
     <thead>
       <tr>
           <th class="col-no">#</th>
@@ -69,7 +67,7 @@
           <td style="padding:8px;">{{ loop.index }}</td>
           <td style="padding:8px;">{{ it.item_broke_id }}</td>
           <td style="padding:8px;">{{ it.rent_id }}</td>
-            <td class="col-equip"><span class="equip-name">{{ it.equipment_name or '-' }}</span></td>
+            <td class="col-equip"><span class="equip-name">{{ it.equipment_name if it.equipment_name else '-' }}</span></td>
             <td class="col-detail"><span class="detail-text">{% if it.detail %}{{ it.detail[:120] }}{% if it.detail|length > 120 %}...{% endif %}{% else %}-{% endif %}</span></td>
           <td style="padding:8px;">
             {% set t = it.type or '' %}
@@ -92,8 +90,7 @@
               <span>{{ it.status }}</span>
             {% endif %}
           </td>
-          <td style="padding:8px;"><a class="btn yellow" href="{{ url_for('admin.lost_report_detail', item_id=it.item_broke_id) }}">รายละเอียด</a></td>
-            <td class="col-action"><a class="btn yellow" href="{{ url_for('admin.lost_report_detail', item_id=it.item_broke_id) }}">รายละเอียด</a></td>
+          <td class="col-action" style="padding:8px;"><a class="btn yellow" href="{{ url_for('admin.lost_report_detail', item_id=it.item_broke_id) }}">รายละเอียด</a></td>
         </tr>
         {% endfor %}
       {% else %}
