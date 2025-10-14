@@ -1,6 +1,7 @@
 # app/blueprints/instructor/instructor.py
-from flask import Blueprint, render_template, url_for, request, redirect
-from sqlalchemy import select, func , or_
+from flask import Blueprint, render_template, url_for, request, redirect 
+from flask_login import  current_user 
+from sqlalchemy import select, func , or_ ,false
 from sqlalchemy.orm import joinedload
 
 from app.db.db import SessionLocal
@@ -41,7 +42,52 @@ def _equip_image_url(eq) -> str:
     # เก็บมาเป็นชื่อไฟล์อย่างเดียว
     return url_for("static", filename=f"images/device/{raw}")
 
-def _query_requests(statuses: list[str] | None = None):
+
+# app/blueprints/instructor/instructor.py
+
+
+
+def _only_my_requests(stmt, employee_id):
+    """
+    กรองเฉพาะคำขอที่ส่งถึงอาจารย์คนนี้ (ถ้าระบุตัวได้)
+    รองรับ 3 เคสตาม schema ที่มีจริงในโปรเจกต์
+    """
+    if not employee_id:
+        return stmt
+
+    # A) ถ้า RentReturn มีฟิลด์ teacher_confirmed (ชี้ไปที่ user.employee_id)
+    if hasattr(RentReturn, "teacher_confirmed"):
+        return stmt.where(RentReturn.teacher_confirmed == employee_id)
+
+    # B) ถ้ามี subject และ Subject มี instructor_id
+    try:
+        from app.db.models import Subject
+        if hasattr(RentReturn, "subject") and hasattr(Subject, "instructor_id"):
+            return stmt.join(Subject, RentReturn.subject)\
+                       .where(Subject.instructor_id == employee_id)
+    except Exception:
+        pass
+
+    # C) ถ้ามี clazz และ Clazz มี teacher_id
+    try:
+        from app.db.models import Clazz
+        if hasattr(RentReturn, "clazz") and hasattr(Clazz, "teacher_id"):
+            return stmt.join(Clazz, RentReturn.clazz)\
+                       .where(Clazz.teacher_id == employee_id)
+    except Exception:
+        pass
+
+    return stmt
+
+def _query_requests(statuses: list[str] | None = None, require_confirm: bool | None = None):
+    """
+    ดึงคำขอ:
+      - statuses: รายชื่อสถานะที่ต้องการกรอง (เช่น ["pending"])
+      - require_confirm=True  -> กรองเฉพาะอุปกรณ์ที่ Equipment.confirm == 1
+        require_confirm=False -> ไม่บังคับ (ดึงทั้งหมด)
+        require_confirm=None  -> ไม่แตะเรื่อง confirm เลย
+    จะกรองให้เห็นเฉพาะของอาจารย์ปัจจุบันโดยอัตโนมัติ
+    """
     with SessionLocal() as s:
         stmt = (
             select(RentReturn)
@@ -52,19 +98,29 @@ def _query_requests(statuses: list[str] | None = None):
             )
             .order_by(RentReturn.created_at.desc())
         )
+
+        # กรองตามสถานะ (case-insensitive)
         if statuses:
-            norm = [ _STATUS_MAP.get(x, x).lower() for x in statuses ]
+            norm = [(_STATUS_MAP.get(x, x)).lower() for x in statuses]
             stmt = stmt.join(StatusRent).where(func.lower(StatusRent.name).in_(norm))
+
+        # ✅ กรองเฉพาะรายการของอาจารย์คนนี้
+        employee_id = getattr(current_user, "employee_id", None)
+        stmt = _only_my_requests(stmt, employee_id)
+
+        # ✅ ถ้าต้องบังคับเฉพาะอุปกรณ์ที่ require confirm
+        if require_confirm is True:
+            stmt = stmt.join(Equipment).where(Equipment.confirm == 1)
+        # ถ้า False หรือ None จะไม่กรองเรื่อง confirm เพิ่มเติม
 
         rows = s.execute(stmt).unique().scalars().all()
 
-        # >>> ใส่ URL รูปให้ทุกชิ้น
+        # ใส่ URL รูปให้ทุกรายการ
         for r in rows:
             if r.equipment:
                 r.equipment.image_url = _equip_image_url(r.equipment)
 
         return rows
-    
 def _to_static_url(path: str) -> str:
     """รับ path จาก DB แล้วคืน URL ของ static"""
     if not path:
@@ -99,18 +155,15 @@ def home():
 
 @bp.get("/requests", endpoint="requests_cards")
 def requests_cards():
-    reqs = _query_requests(["pending"])      # ดึงเฉพาะ PENDING
-    images = _images_map_for(reqs)           # {equipment_id: image_url}
-    # ↳ ส่งไปที่ 'requests.html' (หน้า list/การ์ด) ไม่ใช่ 'request_detail.html'
-    return render_template(
-        "instructor/requests.html",
-        reqs=reqs,
-        images=images
-    )
+    # ✅ หน้า Requests = งานที่ต้องอนุมัติ => pending + ต้องยืนยันโดยอาจารย์ (Equipment.confirm==1)
+    reqs = _query_requests(["pending"], require_confirm=True)
+    images = _images_map_for(reqs)
+    return render_template("instructor/requests.html", reqs=reqs, images=images)
 
 @bp.get("/pending")
 def pending():
-    reqs = _query_requests(None)  # ทั้งหมดเป็นประวัติ
+    # ✅ หน้า Pending/History = ทุกสถานะของอาจารย์คนนี้ (ไม่บังคับ confirm)
+    reqs = _query_requests(["pending", "approved", "rejected", "returned"], require_confirm=True)
     return render_template("instructor/pending.html", reqs=reqs)
 
 @bp.post("/pending/decide/<int:req_id>", endpoint="pending_decide")
@@ -195,3 +248,28 @@ def request_detail(req_id: int):
         clazz_info=clazz_info,
         back_to=url_for("instructor.pending")
     )
+# controller ที่รับคำขอยืม (ตัวอย่าง)
+
+
+@bp.post("/borrow")
+def create_borrow():
+    # ... รับค่าอื่นๆ มาแล้ว ...
+    teacher_empid = request.form.get("teacher_empid")  # เช่น "T001"
+    teacher = None
+    if teacher_empid:
+        teacher = User.query.filter_by(employee_id=teacher_empid, member_type="teacher").first()
+
+    if not teacher:
+        # ถ้าไม่เจออาจารย์ → ให้แจ้งเตือนและไม่บันทึก (หรือจะ fallback ก็ได้)
+        flash("กรุณาเลือกอาจารย์ผู้อนุมัติให้ถูกต้อง", "error")
+        return redirect(url_for("inventory.lend_page"))
+
+    # สร้างคำขอ (ตัวอย่างเรียก service)
+    rents = borrow_service.request_borrow(
+        student_id=current_user.user_id,
+        equipment_id=int(request.form["equipment_id"]),
+        qty=int(request.form.get("qty", 1)),
+        start_date=..., due_date=..., reason=request.form.get("reason",""),
+        instructor_id=teacher.user_id,   # <-- สำคัญ: เก็บ user_id ของอาจารย์ลง teacher_confirmed
+    )
+    # ...
