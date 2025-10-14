@@ -1,0 +1,215 @@
+<style>
+  :root{
+    --ink:#222; --muted:#666;
+    --card:#fff; --border:#e8e8eb; --soft:#fafafb;
+    --shadow:0 10px 26px rgba(0,0,0,.06);
+    --accent:#ff7aa5; --accent-soft:#ffe5ed;
+    --ok:#3ccf91; --warn:#ffae42; --danger:#ff6b6b;
+  }
+
+  .my-history *{ box-sizing:border-box; }
+
+  /* ===== Layout ===== */
+  .my-history{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    padding:60px 24px 80px;
+    min-height:calc(100vh - 86px);
+    background:linear-gradient(180deg,#fff 0%,#fff7fa 100%);
+  }
+
+  /* ===== Title ===== */
+  .my-history h2{
+    font-weight:900;
+    font-size: clamp(32px, 3.6vw, 44px);
+    text-align:center;
+    color:var(--ink);
+    margin-bottom:36px;
+    letter-spacing:.3px;
+  }
+
+  /* ===== Card Container ===== */
+  .hist-grid{
+    width:100%;
+    max-width:960px;
+    display:flex;
+    flex-direction:column;
+    gap:28px;
+  }
+
+  /* ===== Card ===== */
+  .card{
+    background:var(--card);
+    border:2px solid #000;           /* กรอบดำตามที่ตั้งไว้ */
+    border-radius:20px;
+    box-shadow:var(--shadow);
+    padding:28px 34px;
+    transition:transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+  }
+  .card:hover{
+    transform:translateY(-3px);
+    border-color:#686868;
+    box-shadow:0 16px 36px rgba(0,0,0,.08);
+  }
+
+  /* ===== Header row ===== */
+  .card .top{
+    display:flex;
+    align-items:center;
+    gap:24px;
+  }
+
+  .thumb{
+    width:130px; height:130px;
+    border-radius:18px;
+    object-fit:cover;
+    border:1px solid #eee;
+  }
+
+  .title{
+    font-size:22px;
+    font-weight:800;
+    display:flex; align-items:center; gap:10px;
+    color:var(--ink);
+  }
+  .title .muted{ font-weight:600; color:var(--muted); font-size:16px; }
+  .muted{ color:var(--muted); font-size:16px; }
+
+  /* ===== Meta (แยกวันที่/เวลาแบบชิป) ===== */
+  .meta{
+    margin-top:14px;
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+    font-size:16px;
+    color:#333;
+  }
+
+  /* แถวหนึ่ง: label + วันที่ + เวลา (แนวนอนบรรทัดเดียว) */
+  .meta.split .row{
+    display:flex;
+    flex-direction:row;
+    align-items:center;
+    justify-content:flex-start;
+    gap:12px 16px;          /* เว้นระหว่างชิ้น */
+    flex-wrap:nowrap;       /* ไม่ให้ลงบรรทัดใหม่บนจอปกติ */
+    text-align:left;
+  }
+
+  /* label ซ้าย (เริ่ม/ครบกำหนด/คืนจริง) */
+  .meta.split .label{
+    display:flex;
+    align-items:center;
+    justify-content:flex-start;
+    min-width:110px;        /* ความกว้างคงที่ให้ตรงกันทุกแถว */
+    font-weight:800;
+    gap:8px;
+  }
+
+  /* จุดสีหน้า label */
+  .meta.split .label::before{
+    content:"";
+    width:10px; height:10px; border-radius:50%; display:inline-block;
+  }
+  .meta.split .dot-start::before{ background:#ff7aa5; }
+  .meta.split .dot-due::before{   background:#ffae42; }
+  .meta.split .dot-ret::before{   background:#3ccf91; }
+
+  /* ชิป วันที่/เวลา */
+  .chip{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    gap:6px;
+    padding:8px 14px;
+    border-radius:999px;
+    background:#fafafb;
+    border:1px solid #e8e8eb;
+    font-size:15px;
+    line-height:1;
+    white-space:nowrap;
+    margin:0;               /* กัน margin เดิม */
+  }
+  .chip.warn{
+    background:#fff3e8; border-color:#ffd9b5; color:#834500;
+  }
+  /* ระยะระหว่าง วันที่ กับ เวลา */
+  .meta.split .row .chip + .chip{ margin-left:6px; }
+
+  /* ===== Status row ===== */
+  .status-row{
+    margin-top:16px;
+    display:flex; align-items:center; gap:10px;
+  }
+  .status-dot{ width:12px; height:12px; border-radius:50%; }
+  .badge{
+    padding:8px 16px; font-size:15px; border-radius:999px;
+    border:1px solid var(--border); background:var(--soft); font-weight:700;
+  }
+
+  /* ===== Reason ===== */
+  .card p.muted{
+    margin-top:14px;
+    padding:12px 18px;
+    border-radius:14px;
+    background:#e6e6e6;
+    border:1.5px solid #afafaf;
+    box-shadow: inset 0 0 8px rgba(0,0,0,.06);
+    font-size:15px;
+    display:inline-flex;      /* ไม่ยาวเต็มบล็อก */
+    max-width:100%;
+  }
+
+  /* ===== Responsive ===== */
+  @media(max-width:992px){
+    .hist-grid{ max-width:100%; }
+    .card{ padding:22px 20px; }
+    .thumb{ width:110px; height:110px; }
+  }
+  @media(max-width:700px){
+    .meta.split .row{ flex-wrap:wrap; }  /* จอเล็กให้ลงบรรทัดได้ */
+  }
+  @media(max-width:600px){
+    .card .top{ flex-direction:column; align-items:flex-start; }
+    .thumb{ width:100%; height:200px; border-radius:16px; }
+    .title{ font-size:20px; }
+    .meta{ font-size:15px; }
+    .meta.split .label{ min-width:auto; }
+  }
+
+  /* ===== เหตุผล: กว้างเต็มการ์ด ===== */
+.card p.muted{
+  display: block !important;     /* จาก inline/inline-flex → block */
+  width: 100% !important;        /* ยืดเต็มความกว้าง */
+  margin: 12px 0 0;
+  padding: 14px 16px;
+  background: #fafafb;           /* เทาอ่อนอ่านง่าย */
+  border: 1px solid #e8e8eb;     /* เส้นขอบบาง */
+  border-radius: 12px;
+  color: #333;
+  font-weight: 400;
+  box-shadow: none;               /* ตัดเงาเดิมออก */
+  line-height: 1.5;
+  text-align: left;
+}
+
+/* แถบเน้นสีด้านซ้าย (สวยขึ้น แต่เอาออกได้) */
+.card p.muted{
+  position: relative;
+  padding-left: 20px;
+}
+.card p.muted::before{
+  content:"";
+  position:absolute; left:8px; top:8px; bottom:8px;
+  width:4px; border-radius:4px;
+  background:#f1ffa3;  
+}
+/* ===== ขยับ card ขึ้นใกล้หัวข้อ ===== */
+.my-history{
+  padding-top: 5px !important;   /* จาก 60 → 30px */
+}
+
+/* หรือถ้าอยากขยับน้อยกว่านี้ (เช่นแค่เล็กน้อย) ใช้ 40px */
+
+</style>
