@@ -1,0 +1,112 @@
+/* ===== 🔔 ปุ่มกระดิ่ง ===== */
+.btn-bell {
+  background: transparent;
+  border: none;
+  position: relative;
+  cursor: pointer;
+  font-size: 1.4rem;
+  color: #444;
+  transition: transform 0.2s ease;
+}
+
+.btn-bell:hover {
+  transform: scale(1.1);
+  color: #e53935;
+}
+
+/* ===== 🔴 Badge ===== */
+#notifCount {
+  top: 0;
+  right: -2px;
+  background-color: #ff3b30;
+  color: white;
+  font-size: 0.65rem;
+  min-width: 18px;
+  height: 18px;
+  line-height: 16px;
+  border-radius: 999px;
+  border: 2px solid white;
+  text-align: center;
+  padding: 0 4px;
+  font-weight: bold;
+}
+
+/* ===== 📬 Dropdown แจ้งเตือน ===== */
+#notifDropdown {
+  display: none;
+  position: absolute;
+  right: 0;
+  top: 120%;
+  width: 340px;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  overflow: hidden;
+  z-index: 9999;
+  padding: 12px;
+}
+
+#notifDropdown .card-header {
+  background: #fff;
+  font-weight: 600;
+  color: #333;
+  font-size: 0.95rem;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 8px;
+}
+
+/* ===== 🧾 การ์ดแจ้งเตือน ===== */
+.notification-card {
+  background: #f9f9f9;
+  border-left: 4px solid #dc3545;
+  border-radius: 8px;
+  padding: 10px 14px;
+  margin-bottom: 8px;
+  position: relative;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  transition: all 0.2s ease-in-out;
+}
+
+.notification-card:hover {
+  transform: scale(1.01);
+}
+
+/* 🎯 สีขอบตามประเภท */
+.notification-card[data-type="overdue"] { border-color: #dc3545; }
+.notification-card[data-type="due_now"] { border-color: #fbc02d; }
+.notification-card[data-type="due_tomorrow"] { border-color: #0288d1; }
+
+/* 🔴 ไอคอน */
+.notification-icon {
+  font-size: 1.2rem;
+  margin-right: 6px;
+  color: #dc3545;
+}
+
+.notification-card[data-type="due_now"] .notification-icon { color: #fbc02d; }
+.notification-card[data-type="due_tomorrow"] .notification-icon { color: #0288d1; }
+
+/* ❌ ปุ่มปิด */
+.notification-close {
+  position: absolute;
+  top: 6px;
+  right: 8px;
+  background: transparent;
+  border: none;
+  color: #888;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.notification-close:hover {
+  color: #dc3545;
+}
+
+/* ไม่มีแจ้งเตือน */
+#notifList .empty-msg {
+  text-align: center;
+  color: #999;
+  padding: 16px 0;
+  font-size: 0.85rem;
+}

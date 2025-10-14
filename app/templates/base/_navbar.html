@@ -45,11 +45,33 @@
       <a href="{{ url_for('pages.about_us') }}">About Us</a>
     </div>
 
-    <div class="navbar_light">
-      <button class="btn-bell" aria-label="Notifications">
-        <i class="ri-notification-4-line"></i>
-      </button>
+<div class="navbar_light position-relative">
+  <!-- 🔔 ปุ่มกระดิ่ง -->
+  <button id="notifBell" class="btn-bell position-relative" aria-label="Notifications">
+    <i class="ri-notification-4-line fs-5"></i>
+    <span id="notifCount" 
+          class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger d-none"
+          style="font-size: 0.65rem; min-width: 18px;">0</span>
+  </button>
+
+  <!-- 🔽 Dropdown รายการแจ้งเตือน -->
+  <div id="notifDropdown"
+       class="card shadow-lg position-absolute end-0 mt-2 rounded-4"
+       style="width: 360px; display: none; z-index: 2000; background-color: #fff;">
+
+    <div class="card-header bg-white border-0 fw-semibold text-dark">
+      <i class="ri-error-warning-line me-1 text-danger"></i> การแจ้งเตือนของคุณ
+    </div>
+
+    <div id="notifList" class="p-3" style="max-height: 400px; overflow-y: auto;">
+      <div class="text-center text-muted py-3 small">ไม่มีการแจ้งเตือนใหม่</div>
     </div>
   </div>
+</div>
+
+<!-- ✅ โหลด CSS/JS -->
+<link rel="stylesheet" href="{{ url_for('static', filename='css/notifications.css') }}">
+<script src="{{ url_for('static', filename='js/notifications.js') }}"></script>
+
   {% endif %}
 </nav>
