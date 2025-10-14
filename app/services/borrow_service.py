@@ -41,6 +41,7 @@ class BorrowService:
         start_date: datetime,
         due_date: datetime,
         reason: str = "",
+        instructor_id: int|None = None,
     ) -> List[Rent]:
         """
         สร้าง "คำขอยืม" ใหม่ (สถานะเริ่มต้น = pending)
@@ -49,6 +50,36 @@ class BorrowService:
         """
         qty = max(1, int(qty or 1))
         pending = self._get_or_create_status("pending")
+
+        eq: Equipment | None = Equipment.query.get(equipment_id)
+        if not eq:
+            raise ValueError("Equipment not found")
+        needs_teacher = bool(getattr(eq, "confirm", 0))
+        if needs_teacher and not instructor_id:
+            raise ValueError("Instructor ID is required")
+        asserts = (EquipmentAsset.query.filter_by(Equipment_id=equipment_id, status="available", is_active=True).limit(qty).all())
+        if len(asserts) < qty:
+            raise ValueError("Not enough equipment available")
+        rents: List[Rent] = []
+        for asset in asserts:
+            r = Rent(
+                equipment_id=equipment_id,
+                asset_id=asset.asset_id,
+                user_id=student_id,
+                start_date=start_date,
+                due_date=due_date,
+                reason=reason,
+                status_id=pending.status_id,  # ✅ เริ่มต้นเป็น pending เสมอ
+                teacher_confirmed =instructor_id if needs_teacher else None,
+            )
+            db.session.add(r)
+            rents.append(r)
+        db.session.commit()
+        return rents
+            
+                
+
+            
 
         # หา asset ว่าง
         assets_q = EquipmentAsset.query.filter_by(
@@ -70,6 +101,7 @@ class BorrowService:
                 due_date=due_date,
                 reason=reason,
                 status_id=pending.status_id,  # ✅ เริ่มต้นเป็น pending เสมอ
+                teacher_confirmed =instructor_id,
             )
             db.session.add(r)
             rents.append(r)
