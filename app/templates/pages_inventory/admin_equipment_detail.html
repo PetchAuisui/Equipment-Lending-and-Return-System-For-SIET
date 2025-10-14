@@ -15,15 +15,21 @@
 
     <div class="split">
       <!-- ซ้าย: รูปภาพ -->
-      <div class="media">
-        {% if item.images and item.images|length > 0 %}
-          {% set latest = (item.images|sort(attribute='created_at', reverse=True))|first %}
-          <img src="{{ url_for('static', filename=(latest.image_path|replace('\\','/'))) }}" alt="ภาพอุปกรณ์">
+<!-- ซ้าย: รูปภาพ -->
+<div class="media">
+  {% set imgs = item.equipment_images or [] %}
+  {% if imgs|length > 0 %}
+    {% set latest = (imgs|sort(attribute='created_at', reverse=True))|first %}
+    <img
+      src="{{ url_for('static', filename=(latest.image_path|replace('\\','/'))) }}"
+      alt="ภาพอุปกรณ์">
+  {% else %}
+    <img
+      src="{{ url_for('static', filename='images/default_equip.png') }}"
+      alt="ไม่มีรูปภาพ">
+  {% endif %}
+</div>
 
-        {% else %}
-          <div class="placeholder">ไม่มีรูปภาพ</div>
-        {% endif %}
-      </div>
 
       <!-- ขวา: ข้อมูล -->
       <div class="detail">
