@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 from sqlalchemy import func
 from app.db.db import SessionLocal
 from app.db import models as M
@@ -45,10 +45,6 @@ class HomeRepository:
 
 
     def get_outstanding_by_user(self, user_id: int, limit: int = 10):
-        """
-        อุปกรณ์ที่ผู้ใช้นี้ยังไม่คืน
-        ✅ return_date IS NULL และ user_id ตรงกับคนที่ล็อกอิน
-        """
         with self._session_factory() as db:
             q = (
                 db.query(
@@ -67,10 +63,17 @@ class HomeRepository:
                 .limit(limit)
             )
 
-            now = datetime.now(timezone.utc).replace(tzinfo=None)
+            # ใช้เวลาไทยแบบเต็ม ไม่ตัดเป็น .date()
+            THAI_TZ = timezone(timedelta(hours=7))
+            now = datetime.now(THAI_TZ).replace(tzinfo=None)
+
             result = []
             for r in q.all():
-                diff = (r.due_date.date() - now.date()).days
+                # เปรียบเทียบเวลาจริงเต็ม ๆ
+                diff_seconds = (r.due_date - now).total_seconds()
+                is_overdue = diff_seconds < 0
+                overdue_days = abs(diff_seconds) / 86400 if is_overdue else 0
+
                 result.append({
                     "rent_id": r.rent_id,
                     "equipment_name": r.equipment_name,
@@ -78,7 +81,7 @@ class HomeRepository:
                     "borrower_name": r.borrower_name,
                     "start_date": r.start_date,
                     "due_date": r.due_date,
-                    "is_overdue": diff < 0,
-                    "overdue_days": abs(diff) if diff < 0 else 0,
+                    "is_overdue": is_overdue,
+                    "overdue_days": round(overdue_days, 2),
                 })
             return result
