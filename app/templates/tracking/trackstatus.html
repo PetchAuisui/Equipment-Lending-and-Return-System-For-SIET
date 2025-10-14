@@ -13,10 +13,8 @@
 
 <body>
     <div class="track-container">
-        <!-- หัวข้อหลัก -->
         <h1 class="track-title">Track status</h1>
 
-        <!-- กล่องรายการ -->
         <div class="track-box">
             <table class="track-table">
                 <thead>
@@ -39,13 +37,13 @@
                             <td>{{ r.start_date.strftime('%d-%m-%Y') }}</td>
                             <td>{{ r.due_date.strftime('%d-%m-%Y') }}</td>
                             <td class="actions">
-                                {% if r.status_name == 'approved' %}
-                                    <a href="#" class="btn blue">เพิ่มเวลา</a>
-                                    <a href="#" class="btn red">แจ้งเสียหาย</a>
+                                {% if r.status_name == 'approved','pending extend time','approved extend time','cancle extend time' %}
+                                    <a href="{{ url_for('tracking.add_time') }}?rent_id={{ r.rent_id }}" class="btn blue">ขยายเวลาการยืม</a>
                                     <a href="{{ url_for('tracking.user_return', rent_id=r.rent_id) }}" class="btn green">แจ้งคืน</a>
-                                    <a href="" class="btn yellow">รายละเอียด</a>
+                                    <a href="#" class="btn red">แจ้งเสียหาย</a>   
+                                    <a class="btn yellow" href="{{ url_for('tracking.lend_detial') }}?rent_id={{ r.rent_id }}">รายละเอียด</a>
                                 {% else %}
-                                    <a href="#" class="btn yellow">รายละเอียด</a>
+                                    <a class="btn yellow" href="{{ url_for('tracking.lend_detial') }}?rent_id={{ r.rent_id }}">รายละเอียด</a>
                                 {% endif %}
                             </td>
                         </tr>

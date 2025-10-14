@@ -31,3 +31,7 @@ def about_us():
 @pages_bp.get("/policy")
 def policy():
     return render_template("pages/policy.html")
+
+@pages_bp.get("/history")
+def history():
+    return render_template("pages/history.html")
