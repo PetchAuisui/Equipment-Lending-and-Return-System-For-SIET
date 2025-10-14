@@ -164,6 +164,40 @@ AdminHistoryController(
     staff_guard=staff_required,
 )
 
+from app.services.item_broke_service import ItemBrokeService
+
+
+@admin_bp.get('/lost-reports', endpoint='lost_reports')
+@staff_required
+def lost_reports():
+    svc = ItemBrokeService()
+    items = svc.list_reports()
+    return render_template('admin/lost_list.html', items=items)
+
+
+@admin_bp.get('/lost-reports/<int:item_id>', endpoint='lost_report_detail')
+@staff_required
+def lost_report_detail(item_id: int):
+    svc = ItemBrokeService()
+    item = svc.get_report(item_id)
+    if not item:
+        flash('ไม่พบรายการ', 'error')
+        return redirect(url_for('admin.lost_reports'))
+    return render_template('admin/lost_detail.html', item=item)
+
+
+@admin_bp.post('/lost-reports/<int:item_id>/update', endpoint='lost_report_update')
+@staff_required
+def lost_report_update(item_id: int):
+    new_status = request.form.get('update_status')
+    svc = ItemBrokeService()
+    ok = svc.set_status(item_id, new_status)
+    if ok:
+        flash('อัปเดตสถานะเรียบร้อย', 'success')
+    else:
+        flash('ไม่สามารถอัปเดตสถานะได้', 'error')
+    return redirect(url_for('admin.lost_reports'))
+
 
 @admin_bp.get("/confrim_add_time")
 @staff_required

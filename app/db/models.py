@@ -176,6 +176,9 @@ class ItemBroke(Base):
     detail        = Column(Text)
     created_at    = Column(DateTime, default=datetime.utcnow)
 
+    status        = Column(String, nullable=False, default="pending") 
+    created_at    = Column(DateTime, default=datetime.utcnow)
+
     rent_return        = relationship("RentReturn", back_populates="item_brokes")
     item_broke_images  = relationship("ItemBrokeImage", back_populates="item_broke")
 

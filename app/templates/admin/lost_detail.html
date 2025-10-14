@@ -1,0 +1,33 @@
+{% extends 'base/base_admin.html' %}
+{% block title %}รายละเอียดแจ้งสูญหาย/ชำรุด{% endblock %}
+{% block content %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/lost.css') }}">
+
+<div style="padding:24px; max-width:800px; margin:0 auto;">
+  <h2>รายละเอียดการแจ้ง</h2>
+  <div class="lost-card" style="padding:16px;">
+    <p><strong>ID:</strong> {{ item.item_broke_id }}</p>
+    <p><strong>รหัสเช่า:</strong> {{ item.rent_id }}</p>
+    <p><strong>อุปกรณ์:</strong> {{ item.rent_return and item.rent_return.equipment and item.rent_return.equipment.name or item.equipment_name }}</p>
+    <p><strong>ประเภทแจ้ง:</strong> {{ item.type }}</p>
+    <p><strong>รายละเอียด:</strong> {{ item.detail }}</p>
+    <p><strong>สถานะปัจจุบัน:</strong> {{ item.status }}</p>
+
+    <form action="{{ url_for('admin.lost_report_update', item_id=item.item_broke_id) }}" method="post">
+      <div class="row">
+        <label>อัพเดทสถานะ</label>
+        <select name="update_status" class="input" required>
+          <option value="">-- เลือกสถานะ --</option>
+          <option value="ส่งซ่อม">ส่งซ่อม</option>
+          <option value="พร้อมใช้งาน">พร้อมใช้งาน</option>
+        </select>
+      </div>
+      <div style="margin-top:12px;">
+        <button type="submit" class="btn blue">send</button>
+        <a class="btn" href="{{ url_for('admin.lost_reports') }}">ยกเลิก</a>
+      </div>
+    </form>
+  </div>
+</div>
+
+{% endblock %}

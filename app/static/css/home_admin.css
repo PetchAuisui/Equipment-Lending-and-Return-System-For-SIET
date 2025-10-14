@@ -219,3 +219,13 @@ html, body {
 .dashboard {
   transform: translateY(-100px); /* ✅ ขยับขึ้น 40px */
 }
+
+/* ===== Lost / Broken cards (admin) ===== */
+.card--lost {
+  background: linear-gradient(180deg, #fdecea 0%, #f8d6d6 100%);
+  border: 1px solid #f2a7a7;
+  color: #5a1a1a;
+}
+.lost-tag {
+  display:inline-block; padding:4px 8px; border-radius:6px; background:#e74c3c; color:#fff; font-weight:600; font-size:12px;
+}
