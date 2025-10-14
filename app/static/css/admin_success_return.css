@@ -1,0 +1,92 @@
+<style>
+        body {
+            font-family: "Prompt", sans-serif;
+            background-color: #f3f3f3;
+            margin: 0;
+            padding: 0;
+        }
+
+        .content-container {
+            background-color: #e3e3e3;
+            padding: 40px;
+            width: 90%;
+            max-width: 1100px;
+            margin: 40px auto;
+            border-radius: 10px;
+        }
+
+        .page-title {
+            display: flex;
+            align-items: center;
+            font-size: 1.5rem;
+            margin-bottom: 25px;
+        }
+
+        .page-title i {
+            background-color: #4a68e0;
+            color: white;
+            padding: 10px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+
+        .search-bar {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 20px;
+        }
+
+        .search-bar input {
+            width: 300px;
+            padding: 8px 12px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+        }
+
+        .equipment-table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .equipment-table th {
+            background-color: #f0b6c1;
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        .equipment-table td {
+            padding: 12px;
+            border-bottom: 1px solid #ddd;
+            vertical-align: middle;
+        }
+
+        .equipment-table tr:hover {
+            background-color: #f5f5f5;
+        }
+
+        .btn {
+            border: none;
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            margin-right: 5px;
+        }
+
+        .btn-yellow { background-color: #f7d84a; }
+        .btn-green { background-color: #67b869; color: white; }
+        .btn-red { background-color: #dc4a4a; color: white; }
+        .img-thumb {
+            width: 70px;
+            height: 70px;
+            object-fit: cover;
+            border-radius: 5px;
+            background-color: #ddd;
+        }
+
+        .center { text-align: center; }
+    </style>

@@ -1,0 +1,94 @@
+{% extends 'base/base_admin.html' %}
+{% block title %}คืนอุปกรณ์ | ระบบจัดการอุปกรณ์ SIET{% endblock %}
+{% block content %}
+
+<link rel="stylesheet" href="{{ url_for('static', filename='css/admin_success_return.css') }}">
+
+<div class="content-container">
+    <div class="page-title">
+        <i>⟳</i>
+        <span>คืนอุปกรณ์</span>
+    </div>
+
+    <div class="search-bar">
+        <input type="text" id="searchInput" placeholder="ค้นหาอุปกรณ์ / ชื่อผู้ยืม..." onkeyup="filterTable()">
+    </div>
+
+    <table class="equipment-table" id="equipmentTable">
+        <thead>
+            <tr>
+                <th>ภาพ</th>
+                <th>หมายเลข</th>
+                <th>ชื่ออุปกรณ์</th>
+                <th>วันที่แจ้งคืน</th>
+                <th>รหัสผู้ยืม</th>
+                <th>ชื่อผู้ยืม</th>
+                <th class="center">การจัดการ</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in rent_list %}
+                <tr>
+                    <td>
+                        {% if item.image %}
+                            <img src="{{ url_for('static', filename=item.image) }}" class="img-thumb">
+                        {% else %}
+                            <img src="https://cdn-icons-png.flaticon.com/512/337/337940.png" class="img-thumb">
+                        {% endif %}
+                    </td>
+                    <td>{{ item.equipment_code }}</td>
+                    <td>{{ item.equipment_name }}</td>
+                    <td>{{ item.return_date }}</td>
+                    <td>{{ item.user_code }}</td>
+                    <td>{{ item.user_name }}</td>
+                    <td class="center">
+                        <button class="btn btn-yellow">ดูรายละเอียด</button>
+                        <button class="btn btn-green" onclick="confirmReturn({{ item.rent_id }})">ยืนยันการคืน</button>
+                        <button class="btn btn-red" onclick="reportLost({{ item.rent_id }})">แจ้งสูญหาย</button>
+                    </td>
+                </tr>
+            {% endfor %}
+
+            {% if rent_list|length == 0 %}
+                <tr>
+                    <td colspan="7" class="center">ไม่มีข้อมูลอุปกรณ์ที่รอคืน</td>
+                </tr>
+            {% endif %}
+        </tbody>
+    </table>
+</div>
+
+<script>
+    // 🔍 ฟังก์ชันค้นหาในตาราง
+    function filterTable() {
+        const input = document.getElementById("searchInput");
+        const filter = input.value.toLowerCase();
+        const table = document.getElementById("equipmentTable");
+        const tr = table.getElementsByTagName("tr");
+
+        for (let i = 1; i < tr.length; i++) {
+            const rowText = tr[i].innerText.toLowerCase();
+            tr[i].style.display = rowText.includes(filter) ? "" : "none";
+        }
+    }
+
+    // ✅ ฟังก์ชันยืนยันการคืนอุปกรณ์
+    async function confirmReturn(rentId) {
+        if (!confirm("ยืนยันการคืนอุปกรณ์หมายเลข " + rentId + " หรือไม่?")) return;
+        try {
+            const res = await fetch(`/api/return/${rentId}`, { method: 'POST' });
+            const data = await res.json();
+            alert(data.message);
+            if (data.status === 'success') location.reload();
+        } catch (err) {
+            alert("เกิดข้อผิดพลาด: " + err.message);
+        }
+    }
+
+    // 🚨 ฟังก์ชันแจ้งสูญหาย (ต่อ API ในภายหลังได้)
+    async function reportLost(rentId) {
+        alert("ฟังก์ชันแจ้งสูญหายยังไม่เปิดใช้งาน (rent_id: " + rentId + ")");
+    }
+</script>
+
+{% endblock %}
