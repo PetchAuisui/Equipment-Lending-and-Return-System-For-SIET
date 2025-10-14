@@ -1,6 +1,8 @@
 from app.db.db import SessionLocal
 from app.db.models import Subject  # ✅ เพิ่ม import
 from app.db.models import User    # ✅ เพิ่ม import
+from datetime import datetime, time
+from zoneinfo import ZoneInfo
 
 def get_all_subjects():
     """
@@ -71,7 +73,10 @@ def insert_rent_record(data):
             user_id=user.user_id,
             subject_id=int(subject_val) if subject_val else None,   # ✅ ป้องกัน int(None)
             start_date=data["start_date"],
-            due_date=datetime.strptime(data["return_date"], "%Y-%m-%d"),
+            due_date=datetime.combine(
+            datetime.strptime(data["return_date"], "%Y-%m-%d").date(),  # แปลงเป็นวันที่
+            time(hour=18, minute=0, second=0)                          # ตั้งเวลา 18:00
+            ).replace(tzinfo=ZoneInfo("Asia/Bangkok")),            
             teacher_confirmed=int(teacher_val) if teacher_val else None,
             reason=data.get("reason"),
             status_id=data["status_id"],
