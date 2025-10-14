@@ -55,6 +55,68 @@
             </table>
         </div>
     </div>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        {% for category, message in messages %}
+          let icon = 'info';
+          let bgColor = '#fffbe6';
+          if ("{{ category }}" === "success") { icon = 'success'; bgColor = '#e6ffed'; }
+          else if ("{{ category }}" === "warning") { icon = 'warning'; bgColor = '#fffbe6'; }
+          else if ("{{ category }}" === "danger") { icon = 'error'; bgColor = '#ffe6e6'; }
+
+          Swal.fire({
+            position: 'top',
+            icon: icon,
+            title: '{{ message }}',
+            toast: true,
+            showConfirmButton: false,
+            timer: 3000,
+            timerProgressBar: true,
+            background: bgColor,
+            color: '#444',
+            width: 'auto',
+            padding: '10px 20px',
+            customClass: {
+              popup: 'flash-toast'
+            },
+            didOpen: (popup) => {
+              popup.style.animation = "fadeDown 0.5s ease, fadeOut 0.8s ease 2.2s";
+            }
+          });
+        {% endfor %}
+      });
+
+      // ✅ เพิ่ม animation fadeDown + fadeOut
+      const style = document.createElement("style");
+      style.textContent = `
+      @keyframes fadeDown {
+        from { opacity: 0; transform: translateY(-20px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+
+      @keyframes fadeOut {
+        from { opacity: 1; transform: translateY(0); }
+        to { opacity: 0; transform: translateY(-10px); }
+      }
+
+      .flash-toast {
+        white-space: nowrap !important;
+        text-align: center !important;
+        font-size: 14px !important;
+        border: 1px solid #ffd966 !important;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+        border-radius: 8px !important;
+      }
+      `;
+      document.head.appendChild(style);
+    </script>
+  {% endif %}
+{% endwith %}
+
+
 </body>
 
 {% endblock %}
