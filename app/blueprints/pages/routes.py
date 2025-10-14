@@ -2,6 +2,7 @@
 from flask import Blueprint, render_template, session, request, flash, redirect, url_for
 from flask_login import current_user
 from app.services.home_service import HomeService
+from app.services.item_broke_service import ItemBrokeService
 
 pages_bp = Blueprint("pages", __name__)
 svc = HomeService()
@@ -36,9 +37,29 @@ def policy():
 def lost_report():
     """Simple lost/damaged report page. Currently POST only flashes and redirects back."""
     if request.method == 'POST':
-        # Minimal server-side handling: could save to DB here
-        # Keep behavior simple: flash and redirect to confirmation page
-        flash('แบบแจ้งความถูกส่งเรียบร้อย', 'success')
+        # collect fields and files
+        form = request.form
+        report_type = (form.get('report_type') or 'lost')
+        rent_id = form.get('rent_id')
+        detail = form.get('detail') or ''
+        images = request.files.getlist('images')
+
+        # persist via service
+        ibs = ItemBrokeService()
+        device_name = form.get('device') or form.get('equipment_name')
+        try:
+            item_id = ibs.create_report(rent_id=int(rent_id) if rent_id else None,
+                                        type=report_type,
+                                        detail=detail,
+                                        images=images,
+                                        equipment_name=device_name)
+            flash('แบบแจ้งความถูกส่งเรียบร้อย', 'success')
+        except Exception as e:
+            # log/flash and redirect back with error
+            flash('เกิดข้อผิดพลาดในการบันทึกข้อมูล โปรดลองอีกครั้ง', 'error')
+            return redirect(url_for('pages.lost_report'))
+
+        # redirect to confirmation
         return redirect(url_for('pages.lost_sent'))
 
     # allow callers to prefill some fields via query string (rent_id, equipment_name, equipment_code)
