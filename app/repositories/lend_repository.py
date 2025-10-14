@@ -1,8 +1,10 @@
 from app.db.db import SessionLocal
-from app.db.models import Subject  # ✅ เพิ่ม import
-from app.db.models import User    # ✅ เพิ่ม import
+from app.db.models import Subject,User,RentReturn, Equipment
 from datetime import datetime, time
 from zoneinfo import ZoneInfo
+from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy import select
+from sqlalchemy.orm import Session
 
 def get_all_subjects():
     """
@@ -41,11 +43,6 @@ def get_all_users():
         db.close()
 
 
-from datetime import datetime
-from sqlalchemy.exc import SQLAlchemyError
-from app.db.db import SessionLocal
-from app.db.models import RentReturn, Equipment, User
-
 
 def insert_rent_record(data):
     """
@@ -54,29 +51,50 @@ def insert_rent_record(data):
     """
     db = SessionLocal()
     try:
-        # หา equipment จาก code
-        equipment = db.query(Equipment).filter(Equipment.code == data["code"]).first()
+        # ------------------------------
+        # ✅ LOCK ROW ของอุปกรณ์ที่จะยืม
+        # ------------------------------
+        # เพิ่ม with_for_update() เพื่อป้องกันหลาย process แก้ไขอุปกรณ์เดียวกันพร้อมกัน
+        equipment = db.execute(
+            select(Equipment)
+            .where(Equipment.code == data["code"])
+            .with_for_update()  # lock row
+        ).scalar_one_or_none()
+
         if not equipment:
             raise ValueError("❌ ไม่พบอุปกรณ์ที่เลือก")
 
-        # หา user จากชื่อ (หรือใช้ current_user.user_id แทนในภายหลัง)
+        # ------------------------------
+        # ✅ ตรวจสอบสถานะอุปกรณ์
+        # ------------------------------
+        if equipment.status != "available":
+            raise ValueError("❌ อุปกรณ์นี้ถูกยืมไปแล้ว")
+
+        # ------------------------------
+        # หา user
+        # ------------------------------
         user = db.query(User).filter(User.name == data["borrower_name"]).first()
         if not user:
             raise ValueError("❌ ไม่พบผู้ใช้ในระบบ")
 
-        # ✅ รองรับกรณี subject_id หรือ teacher_confirmed เป็น None
+        # ------------------------------
+        # เตรียมค่า subject / teacher_confirmed
+        # ------------------------------
         subject_val = data.get("subject_id")
         teacher_val = data.get("teacher_confirmed")
 
+        # ------------------------------
+        # ✅ สร้าง RentReturn record
+        # ------------------------------
         rent_record = RentReturn(
             equipment_id=equipment.equipment_id,
             user_id=user.user_id,
-            subject_id=int(subject_val) if subject_val else None,   # ✅ ป้องกัน int(None)
+            subject_id=int(subject_val) if subject_val else None,
             start_date=data["start_date"],
             due_date=datetime.combine(
-            datetime.strptime(data["return_date"], "%Y-%m-%d").date(),  # แปลงเป็นวันที่
-            time(hour=18, minute=0, second=0)                          # ตั้งเวลา 18:00
-            ).replace(tzinfo=ZoneInfo("Asia/Bangkok")),            
+                datetime.strptime(data["return_date"], "%Y-%m-%d").date(),
+                time(hour=18, minute=0, second=0)
+            ).replace(tzinfo=ZoneInfo("Asia/Bangkok")),
             teacher_confirmed=int(teacher_val) if teacher_val else None,
             reason=data.get("reason"),
             status_id=data["status_id"],
@@ -84,14 +102,22 @@ def insert_rent_record(data):
         )
         db.add(rent_record)
 
+        # ------------------------------
         # ✅ อัปเดตสถานะอุปกรณ์
-        equipment.status = "unavailable"  # หรือใช้ "borrowed" ตามระบบของคุณ
+        # ------------------------------
+        equipment.status = "unavailable"
         db.add(equipment)
 
+        # ------------------------------
+        # ✅ COMMIT ด้วยตัวเอง
+        # ------------------------------
         db.commit()
         print(f"✅ บันทึกการยืมและอัปเดตสถานะอุปกรณ์ (ID: {equipment.equipment_id}) เรียบร้อย")
 
     except SQLAlchemyError as e:
+        # ------------------------------
+        # ✅ ROLLBACK เมื่อเกิด error
+        # ------------------------------
         db.rollback()
         print("❌ Database Error:", e)
         raise e

@@ -101,10 +101,19 @@ def lend_submit():
     # แปลงเป็น list
     data_list = [data.get(key, None) for key in data]
 
-    # ✅ เรียกไปที่ lend_service.py
-    lend_service.lend_data(data_list)
+    try:
+        # ✅ เรียกไปที่ lend_service.py
+        lend_service.lend_data(data_list)
+        flash("✅ บันทึกการยืมสำเร็จ", "success")
+    except ValueError as ve:
+        # ข้อผิดพลาดที่ฟังก์ชันตรวจสอบเอง (เช่น อุปกรณ์ไม่ว่าง)
+        flash(f"❌ {ve}", "warning")
+    except Exception as e:
+        # ข้อผิดพลาดอื่น ๆ ของ DB / ระบบ
+        flash("❌ เกิดข้อผิดพลาดของระบบ กรุณาลองใหม่อีกครั้ง", "danger")
+        current_app.logger.error(f"lend_submit error: {e}")
 
-    flash("✅ ส่งข้อมูลไปยัง lend_service แล้ว", "success")
+    # ส่งกลับไปยังหน้า form หรือหน้า tracking
     return redirect(url_for("tracking.track_index"))
 
 # ------------------------------------------------------------
