@@ -32,22 +32,30 @@ def about_us():
 def policy():
     return render_template("pages/policy.html")
 
-
 @pages_bp.route('/lost', methods=['GET', 'POST'])
 def lost_report():
     """Simple lost/damaged report page. Currently POST only flashes and redirects back."""
     if request.method == 'POST':
         # Minimal server-side handling: could save to DB here
-        fullname = request.form.get('full_name')
-        phone = request.form.get('phone')
-        device = request.form.get('device')
+        # Keep behavior simple: flash and redirect to confirmation page
         flash('แบบแจ้งความถูกส่งเรียบร้อย', 'success')
         return redirect(url_for('pages.lost_sent'))
 
-    return render_template('pages/lost.html')
+    # allow callers to prefill some fields via query string (rent_id, equipment_name, equipment_code)
+    rent_id = request.args.get('rent_id')
+    equipment_name = request.args.get('equipment_name')
+    equipment_code = request.args.get('equipment_code')
 
+    return render_template('pages/lost.html',
+                           rent_id=rent_id,
+                           equipment_name=equipment_name,
+                           equipment_code=equipment_code)
 
 @pages_bp.get('/lost/sent')
 def lost_sent():
     """Confirmation page after sending lost report."""
     return render_template('pages/lost_sent.html')
+
+@pages_bp.get("/history")
+def history():
+    return render_template("pages/history.html")

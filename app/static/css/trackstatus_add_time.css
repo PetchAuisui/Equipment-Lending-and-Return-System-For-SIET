@@ -1,0 +1,263 @@
+body {
+  font-family: sans-serif;
+  background-color: #fff;
+  margin: 0;
+  padding: 0;
+}
+
+/* ส่วนครอบทั้งหมด */
+.detail-container {
+  max-width: 1000px;             /* ✅ ขยายความกว้าง */
+  margin: 10px auto;
+  background: #fff;
+  border-radius: 14px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  padding: 50px;
+  box-sizing: border-box;
+}
+
+
+/* กล่องหลัก */
+.card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px; /* ✅ เพิ่มช่องไฟ */
+}
+
+/* รูปอุปกรณ์ */
+.card img {
+  width: 260px; /* ✅ ใหญ่ขึ้น */
+  height: auto;
+  border-radius: 12px;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.25);
+  margin-bottom: 15px;
+}
+
+/* ชื่ออุปกรณ์ */
+.card h2 {
+  font-size: 24px;
+  margin: 8px 0 0 0;
+  text-align: center;
+  color: #222;
+}
+
+/* ✅ สถานะ — อยู่ติดชื่อ ไม่มีกล่อง */
+.card .status {
+  font-size: 15px;
+  color: #777;
+  margin-top: 3px;
+  margin-bottom: 18px;
+  text-align: center;
+}
+
+/* กล่องข้อมูลทั่วไป */
+.card p {
+  width: 100%;
+  font-size: 17px; /* ✅ ใหญ่ขึ้น */
+  background: #fff;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 10px 14px;
+  margin: 7px 0;
+  box-sizing: border-box;
+  line-height: 1.5;
+}
+
+.card strong {
+  font-weight: bold;
+  color: #333;
+}
+
+/* วันที่ยืม + วันที่คืน อยู่บรรทัดเดียวกัน */
+.date-row {
+  display: flex;
+  gap: 25px;
+  width: 100%;
+}
+
+.date-row p {
+  flex: 1;
+  margin: 7px 0;
+}
+
+/* ✅ ช่อง input และ textarea ที่ใช้สำหรับขยายเวลา */
+.input-block {
+  width: 100%;
+  margin-top: 10px;
+  text-align: left;
+}
+
+.input-block label {
+  display: block;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 6px;
+}
+
+.extend-input {
+  width: 100%;
+  font-size: 17px;
+  background: #fff;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 10px 14px;
+  margin: 7px 0;
+  box-sizing: border-box;
+  line-height: 1.5;
+  font-family: "Prompt", sans-serif;
+}
+
+.extend-textarea {
+  width: 100%;
+  font-size: 17px;
+  background: #fff;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 10px 14px;
+  margin: 7px 0;
+  box-sizing: border-box;
+  line-height: 1.5;
+  resize: vertical;
+  font-family: "Prompt", sans-serif;
+}
+
+/* ข้อความ “ไม่พบข้อมูลการยืมนี้” */
+.detail-container > p {
+  text-align: center;
+  font-size: 20px;
+  margin-top: 25px;
+  color: #444;
+}
+
+/* ปุ่มย้อนกลับด้านบนซ้าย */
+.btn-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 17px;
+  font-weight: bold;
+  text-decoration: none;
+  color: #2e7de9;
+  margin-bottom: 25px;
+  margin-left: 20px;
+  transition: color 0.2s ease, transform 0.1s ease;
+}
+
+.btn-back:hover {
+  color: #1d5fb9;
+  transform: translateX(-3px);
+}
+
+.btn-back i {
+  font-size: 22px;
+}
+
+/* กลุ่มปุ่ม */
+.button-group {
+  display: flex;
+  justify-content: center;
+  gap: 40px;
+  margin-top: 40px;
+}
+
+/* ปุ่มพื้นฐาน */
+.btn {
+  display: inline-block;
+  padding: 12px 28px;
+  border: 2px solid transparent;
+  border-radius: 8px;
+  text-decoration: none;
+  font-size: 17px;
+  font-weight: bold;
+  background: none;
+  transition: all 0.2s ease;
+}
+
+/* สีแต่ละปุ่ม */
+.btn.blue {
+  color: #2e7de9;
+  border-color: #2e7de9;
+}
+
+.btn.green {
+  color: #4bb543;
+  border-color: #4bb543;
+}
+
+.btn.red {
+  color: #d93232;
+  border-color: #d93232;
+}
+
+/* เอฟเฟกต์ hover */
+.btn.blue:hover {
+  background-color: #2e7de9;
+  color: #fff;
+}
+
+.btn.green:hover {
+  background-color: #4bb543;
+  color: #fff;
+}
+
+.btn.red:hover {
+  background-color: #d93232;
+  color: #fff;
+}
+
+/* หัวข้อหลักของหน้า (ให้เหมือน trackstatus และอยู่ตรงกลาง) */
+.page-title {
+  display: inline-block;
+  background-color: #f6b3c3;
+  color: white;
+  font-size: 28px;
+  font-weight: bold;
+  padding: 12px 50px;
+  border-radius: 18px;
+  margin-top: 40px;
+
+  /* ✅ จัดให้อยู่ตรงกลาง */
+  position: relative;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+/* ==== ปุ่ม ==== */
+.button-group {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.btn {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+/* ปุ่มยกเลิก */
+.btn-cancel {
+  text-decoration: none;
+  background: #d9534f; /* แดง */
+  color: white;
+}
+
+.btn-cancel:hover {
+  background: #c9302c;
+}
+
+/* ปุ่มยืนยัน */
+.btn-submit {
+  background: #5cb85c; /* เขียว */
+  color: white;
+  text-decoration: none;
+  text-align: center;
+}
+
+.btn-submit:hover {
+  background: #449d44;
+}

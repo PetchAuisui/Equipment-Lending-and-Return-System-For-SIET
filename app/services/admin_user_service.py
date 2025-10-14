@@ -3,6 +3,7 @@ from typing import Dict, Any, List, Optional, Tuple
 from sqlalchemy import text
 from app.repositories.user_repository import UserRepository
 from app.services import validators as v
+from werkzeug.security import generate_password_hash
 
 # -------- ใข้คนละความหมายกัน --------
 ALLOWED_MEMBER_TYPES = {"student", "teacher", "officer"}
@@ -120,3 +121,38 @@ class AdminUserService:
         if not updated:
             return None, "User not found"
         return updated, None
+    
+    def set_password_for_user(
+        self,
+        user_id: int,
+        new_password: str,
+        confirm_password: str,
+        actor_id: int | None = None,
+        min_length: int = 6,
+    ):
+        # 1) validate
+        if not new_password or not confirm_password:
+            return False, "กรุณากรอกรหัสผ่านให้ครบ"
+        if new_password != confirm_password:
+            return False, "รหัสผ่านและยืนยันรหัสไม่ตรงกัน"
+        if len(new_password) < min_length:
+            return False, f"รหัสผ่านต้องมีอย่างน้อย {min_length} ตัวอักษร"
+
+        # (ทางเลือก) ตรวจความแข็งแรงพื้นฐาน
+        # if new_password.isdigit() or new_password.isalpha():
+        #     return False, "ควรมีทั้งตัวอักษรและตัวเลขอย่างน้อย"
+
+        # 2) หา user ว่ามีจริงไหม
+        user = self.repo.get_user_by_id(user_id)
+        if not user:
+            return False, "ไม่พบบัญชีผู้ใช้"
+
+        # 3) hash + update
+        pw_hash = generate_password_hash(new_password)
+        payload = {"password_hash": pw_hash}
+        updated = self.repo.update_user(user_id, payload, actor_id=actor_id)
+        if not updated:
+            return False, "อัปเดตรหัสผ่านไม่สำเร็จ"
+
+        # (ถ้าคุณมีระบบ Audit สามารถเรียก service/repo บันทึก log ตรงนี้ได้)
+        return True, None

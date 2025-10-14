@@ -174,7 +174,7 @@
               {% for r in outstanding %}
                 <tr class="{{ 'row-overdue' if r.is_overdue else '' }}">
                   <td>{{ r.equipment_name }}</td>
-                  <td>#{{ r.equipment_code }}</td>
+                  <td>{{ r.equipment_code }}</td>
                   <td>{{ r.start_date.strftime('%d/%m/%Y %H:%M') }}</td>
                   <td>{{ r.due_date.strftime('%d/%m/%Y %H:%M') }}</td>
                   <td>
