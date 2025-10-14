@@ -1,0 +1,48 @@
+{% extends 'base/base_admin.html' %}
+{% block title %}รายการอุปกรณ์สูญหาย/ชำรุด{% endblock %}
+{% block content %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/home_admin.css') }}">
+
+<div style="padding:24px;">
+  <h2>รายการแจ้งสูญหาย/ชำรุด</h2>
+  <table class="table" style="width:100%; margin-top:16px; border-collapse:collapse;">
+    <thead>
+      <tr>
+        <th style="text-align:left; padding:8px;">ID</th>
+        <th style="text-align:left; padding:8px;">รหัสเช่า</th>
+        <th style="text-align:left; padding:8px;">ชื่ออุปกรณ์</th>
+        <th style="text-align:left; padding:8px;">ประเภท</th>
+        <th style="text-align:left; padding:8px;">สถานะ</th>
+        <th style="text-align:left; padding:8px;">การจัดการ</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% if items %}
+        {% for it in items %}
+        <tr>
+          <td style="padding:8px;">{{ it.item_broke_id }}</td>
+          <td style="padding:8px;">{{ it.rent_id }}</td>
+          <td style="padding:8px;">{{ it.equipment_name or '-' }}</td>
+          <td style="padding:8px;">{{ it.type }}</td>
+          <td style="padding:8px;">
+            {% if it.status == 'pending' %}
+              <span style="background:#f0ad4e;color:#fff;padding:4px 8px;border-radius:6px;">รอดำเนินการ</span>
+            {% elif it.status == 'ส่งซ่อม' %}
+              <span style="background:#f0ad4e;color:#fff;padding:4px 8px;border-radius:6px;">ส่งซ่อม</span>
+            {% elif it.status == 'พร้อมใช้งาน' %}
+              <span style="background:#28a745;color:#fff;padding:4px 8px;border-radius:6px;">พร้อมใช้งาน</span>
+            {% else %}
+              <span>{{ it.status }}</span>
+            {% endif %}
+          </td>
+          <td style="padding:8px;"><a class="btn yellow" href="{{ url_for('admin.lost_report_detail', item_id=it.item_broke_id) }}">รายละเอียด</a></td>
+        </tr>
+        {% endfor %}
+      {% else %}
+        <tr><td colspan="6" style="padding:16px;">ไม่มีรายการ</td></tr>
+      {% endif %}
+    </tbody>
+  </table>
+</div>
+
+{% endblock %}

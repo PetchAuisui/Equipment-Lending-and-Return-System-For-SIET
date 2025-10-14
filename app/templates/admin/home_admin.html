@@ -17,7 +17,7 @@
       <div class="card__title">ประวัติยืม-คืน</div>
     </a>
 
-    <a class="card" href="#">
+    <a class="card" href="{{ url_for('admin.lost_reports') }}">
       <img class="card__icon" src="{{ url_for('static', filename='/images/icons/exclamation-mark.png') }}" alt="">
       <div class="card__title">อุปกรณ์สูญหาย/ชำรุด</div>
     </a>
@@ -39,4 +39,5 @@
 
   </section>
 </div>
+<!-- admin lost list accessible via the dedicated page -->
 {% endblock %}
