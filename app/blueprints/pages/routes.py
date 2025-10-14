@@ -35,3 +35,4 @@ def policy():
 @pages_bp.get("/history")
 def history():
     return render_template("pages/history.html")
+
