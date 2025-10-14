@@ -1,17 +1,38 @@
-from sqlalchemy import create_engine
-from sqlalchemy.orm import declarative_base, sessionmaker, scoped_session
+"""
+app/database/db.py
+-------------------------------------
+ไฟล์นี้เชื่อมระบบ Session ของ SQLAlchemy กับ Flask SQLAlchemy
+โดยใช้ instance `db` จาก app/__init__.py เพื่อหลีกเลี่ยงการซ้ำซ้อน
+-------------------------------------
+"""
 
-DATABASE_URL = "sqlite:///app.db"  # เก็บ DB ใน instance/
+from sqlalchemy.orm import sessionmaker, scoped_session
+from app import db
 
-engine = create_engine(
-    DATABASE_URL,
-    future=True,
-    echo=False,
-    connect_args={"check_same_thread": False},
-)
+# ✅ ใช้ engine ตัวเดียวกับ Flask SQLAlchemy
+engine = db.engine
 
+# ✅ สร้าง SessionLocal ที่ใช้ร่วมกับ Flask
 SessionLocal = scoped_session(
-    sessionmaker(bind=engine, autoflush=False, autocommit=False, expire_on_commit=False)
+    sessionmaker(
+        bind=engine,
+        autoflush=False,
+        autocommit=False,
+        expire_on_commit=False
+    )
 )
 
-Base = declarative_base()
+# ✅ ให้ import Base จาก db.Model ได้ (เหมือนเดิม)
+Base = db.Model
+
+
+def get_db_session():
+    """
+    คืนค่า session ใหม่จาก SessionLocal
+    (ควรใช้กับ context manager เช่น `with get_db_session() as session:`)
+    """
+    db_session = SessionLocal()
+    try:
+        yield db_session
+    finally:
+        db_session.close()

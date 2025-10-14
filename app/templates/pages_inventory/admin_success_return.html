@@ -1,0 +1,54 @@
+{% extends "base/base_admin.html" %}
+{% block title %}คืนอุปกรณ์{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="text-center mb-4">คืนอุปกรณ์</h2>
+
+    {% if not item %}
+        <div class="alert alert-warning text-center">ไม่พบรายการอุปกรณ์ที่ต้องคืน</div>
+    {% else %}
+    <div class="card p-4 shadow-sm">
+        <div class="row align-items-center">
+            <!-- ภาพอุปกรณ์ -->
+            <div class="col-md-3 text-center">
+                <div class="border p-3 bg-light">
+                    <img src="{{ item.image_url or url_for('static', filename='images/no-image.png') }}" 
+                         alt="equipment image" 
+                         class="img-fluid" 
+                         style="max-height: 180px;">
+                </div>
+            </div>
+
+            <!-- ข้อมูลอุปกรณ์ -->
+            <div class="col-md-6">
+                <p><strong>หมายเลข :</strong> {{ item.equipment_id }}</p>
+                <p><strong>อุปกรณ์ :</strong> {{ item.name }}</p>
+                <p><strong>วันที่แจ้งคืน :</strong> {{ item.return_date or '-' }}</p>
+                <p><strong>รหัสผู้ยืม :</strong> {{ item.student_id }}</p>
+                <p><strong>ชื่อผู้ยืม :</strong> {{ item.student_name }}</p>
+            </div>
+
+            <!-- ปุ่มจัดการ -->
+            <div class="col-md-3 text-end">
+                <a href="{{ url_for('tracking.detail', equipment_id=item.equipment_id) }}" 
+                   class="btn btn-warning mb-2 w-100">ดูรายละเอียด</a>
+
+                <form method="POST" action="{{ url_for('tracking.confirm_return', rent_id=item.rent_id) }}">
+                    <input type="hidden" name="equipment_id" value="{{ item.equipment_id }}">
+                    <input type="hidden" name="student_id" value="{{ item.student_id }}">
+                    <input type="hidden" name="return_date" value="{{ current_date }}">
+                    <button type="submit" class="btn btn-success mb-2 w-100">ยืนยันการคืน</button>
+                </form>
+
+                <form method="POST" action="{{ url_for('tracking.report_lost') }}">
+                    <input type="hidden" name="equipment_id" value="{{ item.equipment_id }}">
+                    <input type="hidden" name="student_id" value="{{ item.student_id }}">
+                    <button type="submit" class="btn btn-danger w-100">แจ้งสูญหาย</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
