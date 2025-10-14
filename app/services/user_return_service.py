@@ -17,6 +17,7 @@ class UserReturnService:
             image_path = rent_return.equipment.equipment_images[0].image_path
 
         data = {
+            "rent_id": rent_return.rent_id,
             "equipment_id": rent_return.equipment_id,
             "equipment_name": rent_return.equipment.name if rent_return.equipment else None,
             "image_path": image_path,

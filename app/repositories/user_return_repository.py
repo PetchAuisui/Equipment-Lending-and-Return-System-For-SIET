@@ -7,31 +7,44 @@ from datetime import datetime
 
 class UserReturnRepository:
     def get_rent_return_by_id(self, rent_id: int):
-        """ดึงข้อมูลการยืม-คืน พร้อมข้อมูลอุปกรณ์, รูปภาพ, สถานะ"""
-        session = SessionLocal()
+        """ดึงข้อมูลการยืมพร้อมโหลดความสัมพันธ์ที่จำเป็น"""
+        db = SessionLocal()
         try:
-            rent_return = (
-                session.query(RentReturn)
+            rent = (
+                db.query(RentReturn)
                 .options(
                     joinedload(RentReturn.equipment).joinedload(Equipment.equipment_images),
                     joinedload(RentReturn.status)
                 )
-                .filter(RentReturn.rent_id == rent_id)
+                .filter_by(rent_id=rent_id)
                 .first()
             )
-            return rent_return
-        finally:
-            session.close()
-
-    def confirm_return(self, rent_id: int):
-        """อัปเดต status_id เป็น 3 และตั้ง return_date เป็นปัจจุบัน"""
-        session = SessionLocal()
-        try:
-            rent = session.query(RentReturn).filter(RentReturn.rent_id == rent_id).first()
-            if rent:
-                rent.status_id = 3
-                rent.return_date = datetime.utcnow()
-                session.commit()
             return rent
         finally:
-            session.close()
+            db.close()
+
+    def confirm_return(self, rent_id: int):
+        """อัปเดตสถานะการคืนอุปกรณ์"""
+        db = SessionLocal()
+        try:
+            rent_return = db.query(RentReturn).filter_by(rent_id=rent_id).first()
+            if not rent_return:
+                return False
+
+            # ✅ เปลี่ยนสถานะและบันทึกวันเวลาคืน
+            rent_return.status_id = 3
+            rent_return.return_date = datetime.now()
+
+            db.add(rent_return)  # << สำคัญ เพื่อให้ session track object
+            db.commit()
+            db.refresh(rent_return)  # << บังคับ refresh ค่าใหม่จาก DB
+
+            print(f"✅ Updated rent_id={rent_id} to status_id={rent_return.status_id}, return_date={rent_return.return_date}")
+            return True
+
+        except Exception as e:
+            db.rollback()
+            print("❌ Error confirming return:", e)
+            return False
+        finally:
+            db.close()

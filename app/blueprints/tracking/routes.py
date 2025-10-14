@@ -1,8 +1,7 @@
-from flask import render_template
+from flask import render_template, redirect, url_for, flash
 from . import tracking_bp
 from app.services.trackstatus_service import TrackStatusService
 from app.services.user_return_service import UserReturnService
-from flask import redirect, url_for
 from datetime import datetime
 from app.db.db import SessionLocal
 from app.db.models import RentReturn
@@ -20,7 +19,7 @@ def user_return(rent_id):
     rent_info = service.get_user_return_info(rent_id)
     return render_template("tracking/user_return.html", rent_info=rent_info)
 
-@tracking_bp.post("/confirm_return/<int:rent_id>")
+"""@tracking_bp.post("/confirm_return/<int:rent_id>")
 def confirm_return(rent_id):
     session = SessionLocal()
     try:
@@ -32,5 +31,16 @@ def confirm_return(rent_id):
     finally:
         session.close()
     
-    return redirect(url_for("tracking.track_index"))  # กลับไปหน้า list
+    return redirect(url_for("tracking.track_index"))  # กลับไปหน้า list """
 
+@tracking_bp.post("/confirm_return/<int:rent_id>")
+def confirm_return(rent_id):
+    service = UserReturnService()
+    result = service.confirm_return(rent_id)
+
+    if result:
+        flash("อัปเดตสถานะการคืนเรียบร้อยแล้ว", "success")
+    else:
+        flash("เกิดข้อผิดพลาด ไม่สามารถอัปเดตข้อมูลได้", "error")
+
+    return redirect(url_for("tracking.track_index"))
