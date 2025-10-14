@@ -161,6 +161,8 @@ class RentReturn(Base):
     subject   = relationship("Subject", back_populates="rent_returns")
     status    = relationship("StatusRent", back_populates="rent_returns")
     item_brokes = relationship("ItemBroke", back_populates="rent_return")
+    renewals = relationship("Renewal", back_populates="rent_return")
+
 
 
 
@@ -219,7 +221,7 @@ class Renewal(Base):
     created_at  = Column(DateTime, default=datetime.utcnow)
     note        = Column(Text)
 
-    rent_return = relationship("RentReturn")
+    rent_return = relationship("RentReturn", back_populates="renewals")
     approver    = relationship("User", back_populates="renewals_approved")
 
 
