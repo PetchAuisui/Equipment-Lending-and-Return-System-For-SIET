@@ -49,7 +49,11 @@ async function loadNotifications() {
         <i class="ri-error-warning-fill notification-icon"></i>
         <strong>${translateTemplate(n.template)}</strong>
       </div>
-      <p class="mb-1 small text-dark">${n.payload?.message || n.message}</p>
+      <p class="mb-1 small text-dark">
+        ${n.payload?.equipment_name ? `<strong>${n.payload.equipment_name}</strong><br>` : ""}
+        ${n.payload?.message || n.message}
+      </p>
+
       <p class="text-muted small mb-0">${timeAgo(n.created_at)}</p>
     `;
     list.appendChild(div);

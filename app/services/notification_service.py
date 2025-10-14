@@ -25,15 +25,22 @@ class NotificationService:
         # ✅ ดึงข้อมูลการยืมที่ยังไม่คืน
         with self.db as session:
             all_rents = session.execute(text("""
-                SELECT rent_id, user_id, due_date, start_date
-                FROM rent_returns
-                WHERE return_date IS NULL
+                SELECT 
+                    r.rent_id, 
+                    r.user_id, 
+                    r.due_date, 
+                    r.start_date,
+                    e.name AS equipment_name
+                FROM rent_returns r
+                JOIN equipments e ON e.equipment_id = r.equipment_id
+                WHERE r.return_date IS NULL
             """)).fetchall()
 
         # ✅ วนลูปตรวจสอบแต่ละรายการ
         for r in all_rents:
             rent_id = r.rent_id
             user_id = r.user_id
+            equipment_name = r.equipment_name or "ไม่ทราบชื่ออุปกรณ์"
             due_raw = r.due_date
 
             # 🧠 แปลงเป็น datetime เสมอ
@@ -44,6 +51,7 @@ class NotificationService:
                 print(f"[WARN] ❌ แปลง due_date ไม่ได้ rent_id={rent_id}, raw={due_raw} ({e})")
                 continue
 
+            # --- คำนวณเวลาห่าง ---
             diff_seconds = (due - now).total_seconds()
             diff_hours = diff_seconds / 3600
             diff_minutes = int(diff_seconds // 60)
@@ -53,22 +61,39 @@ class NotificationService:
 
             # ✅ 1. เกินกำหนดแล้ว (diff < 0)
             if diff_hours < 0:
-                if self._create_notification(user_id, rent_id, "overdue", f"รายการยืม #{rent_id} เกินกำหนดคืนแล้ว!"):
+                if self._create_notification(
+                    user_id,
+                    rent_id,
+                    "overdue",
+                    f"รายการยืม #{rent_id} ({equipment_name}) เกินกำหนดคืนแล้ว!"
+                ):
                     created_count += 1
 
-            # ✅ 2. เหลือเวลาไม่เกิน 1 ชั่วโมง (แจ้งเตือนสุดท้าย)
+            # ✅ 2. เหลือเวลาไม่เกิน 1 ชั่วโมง
             elif 0 <= diff_hours <= 1:
-                if self._create_notification(user_id, rent_id, "due_now", f"รายการยืม #{rent_id} จะครบกำหนดภายใน 1 ชั่วโมง!"):
+                if self._create_notification(
+                    user_id,
+                    rent_id,
+                    "due_now",
+                    f"รายการยืม #{rent_id} ({equipment_name}) จะครบกำหนดภายใน 1 ชั่วโมง!"
+                ):
                     created_count += 1
 
-            # ✅ 3. เหลือเวลาไม่เกิน 24 ชั่วโมง (พรุ่งนี้ครบกำหนด)
+            # ✅ 3. เหลือเวลาไม่เกิน 24 ชั่วโมง
             elif 1 < diff_hours <= 24:
-                if self._create_notification(user_id, rent_id, "due_tomorrow", f"รายการยืม #{rent_id} ต้องคืนภายในวันพรุ่งนี้!"):
+                if self._create_notification(
+                    user_id,
+                    rent_id,
+                    "due_tomorrow",
+                    f"รายการยืม #{rent_id} ({equipment_name}) ต้องคืนภายในวันพรุ่งนี้!"
+                ):
                     created_count += 1
 
+        # ✅ หลังจาก loop จบ
         self.db.commit()
         print(f"✅ สร้างแจ้งเตือนใหม่ {created_count} รายการ\n")
         self.db.close()
+
 
     def _create_notification(self, user_id, rent_id, template, message):
         """✅ สร้างแจ้งเตือนใหม่ (ถ้ายังไม่มีในวันนี้)"""
