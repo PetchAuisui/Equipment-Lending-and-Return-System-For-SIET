@@ -1,5 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/trackstatus.css') }}">
+    <title>Track Status</title>
+</head>
+
 {% extends 'base/base.html' %}
 {% block title %}Track Status{% endblock %}
 {% block content %}
-<h1>Track Status</h1>
+
+<body>
+    <div class="track-container">
+        <h1 class="track-title">Track status</h1>
+
+        <div class="track-box">
+            <table class="track-table">
+                <thead>
+                    <tr>
+                        <th class="col-item">รายการ</th>
+                        <th class="col-status">สถานะ</th>
+                        <th class="col-date">วันที่ยืม</th>
+                        <th class="col-date">กำหนดคืน</th>
+                        <th class="col-action">การจัดการ</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if rents %}
+                        {% for r in rents %}
+                        <tr>
+                            <td class="item-name">{{ r.equipment_name }}</td>
+                            <td class="status">
+                                <span style="color: {{ r.status_color }}">{{ r.status_name }}</span>
+                            </td>
+                            <td>{{ r.start_date.strftime('%d-%m-%Y') }}</td>
+                            <td>{{ r.due_date.strftime('%d-%m-%Y') }}</td>
+                            <td class="actions">
+                                {% if r.status_name == 'approved','pending extend time','approved extend time','cancle extend time' %}
+                                    <a href="{{ url_for('tracking.add_time') }}?rent_id={{ r.rent_id }}" class="btn blue">ขยายเวลาการยืม</a>
+                                    <a href="#" class="btn green">แจ้งคืน</a>
+                                    <a href="#" class="btn red">แจ้งเสียหาย</a>   
+                                    <a class="btn yellow" href="{{ url_for('tracking.lend_detial') }}?rent_id={{ r.rent_id }}">รายละเอียด</a>
+                                {% else %}
+                                    <a class="btn yellow" href="{{ url_for('tracking.lend_detial') }}?rent_id={{ r.rent_id }}">รายละเอียด</a>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr><td colspan="5" class="no-data">ไม่มีรายการยืมอุปกรณ์</td></tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+
 {% endblock %}
+</html>

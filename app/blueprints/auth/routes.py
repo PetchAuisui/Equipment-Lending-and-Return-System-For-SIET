@@ -111,6 +111,7 @@ def inject_current_user():
     """Inject current user info into all templates."""
     return {
         "current_user": {
+            "id": session.get("user_id"),
             "email": session.get("user_email"),
             "name": session.get("user_name"),
             "identity": session.get("identity"),
