@@ -2,6 +2,8 @@ import os
 from flask import Flask
 from .config import Config
 from app.blueprints.inventory.api_equipment import api_equipment_bp
+from app.scheduler import start_notification_scheduler 
+
 
 def create_app():
     app = Flask(__name__, template_folder="templates", static_folder="static")
@@ -25,7 +27,7 @@ def create_app():
     from .blueprints.tracking import tracking_bp
     from .blueprints.admin import admin_users_bp
     from .blueprints.admin import admin_bp                     # root: "/"
-    from app.blueprints.pages.routes import pages_bp
+    from .blueprints.notifications import notifications_bp
 
     app.register_blueprint(pages_bp)
     app.register_blueprint(auth_bp, url_prefix="/auth")
@@ -33,7 +35,10 @@ def create_app():
     app.register_blueprint(tracking_bp, url_prefix="/track-status")
     app.register_blueprint(admin_users_bp)
     app.register_blueprint(admin_bp)
+    app.register_blueprint(notifications_bp)
 
+    # ===== 🔔 เริ่ม Scheduler สำหรับแจ้งเตือน =====
+    start_notification_scheduler(app)
 
-
+    
     return app

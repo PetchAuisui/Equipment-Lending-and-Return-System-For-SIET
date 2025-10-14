@@ -1,9 +1,10 @@
 # app/blueprints/pages/routes.py
-from flask import Blueprint, render_template, session
+from flask import render_template, session
 from flask_login import current_user
 from app.services.home_service import HomeService
+from . import pages_bp  
 
-pages_bp = Blueprint("pages", __name__)
+
 svc = HomeService()
 
 @pages_bp.get("/")

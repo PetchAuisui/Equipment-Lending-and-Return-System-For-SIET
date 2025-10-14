@@ -96,7 +96,7 @@ class Equipment(Base):
     equipment_images = relationship("EquipmentImage", back_populates="equipment")
     stock_movements  = relationship("StockMovement", back_populates="equipment")
     rent_returns     = relationship("RentReturn", back_populates="equipment")
-    images           = relationship("EquipmentImage",back_populates="equipment",cascade="all, delete-orphan",lazy="selectin",passive_deletes=True,)
+    images           = relationship("EquipmentImage",back_populates="equipment",cascade="all, delete-orphan",lazy="selectin",passive_deletes=True,overlaps="equipment_images",) # - overlaps = "equipment_images" เพื่อป้องกัน SQLAlchemy เตือนว่ามีการซ้อน relationship เนื่องจากมีทั้ง 'equipment_images' และ 'images' ที่อ้างอิง column เดียวกัน (equipment_id)
 
 
 # ---------- equipment_images ----------
