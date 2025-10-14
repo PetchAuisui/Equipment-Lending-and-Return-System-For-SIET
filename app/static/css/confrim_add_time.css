@@ -1,7 +1,7 @@
 /* ✅ กล่องหลัก */
 .track-container {
     background-color: #f2f2f2;
-    width: 160%;
+    width: 115%;
     padding: 40px;
     border-radius: 20px;
     margin-top: 30px;
@@ -11,10 +11,9 @@
 
 .title-wrapper {
     display: flex;
-    justify-content: space-between; /* หัวข้อซ้าย ปุ่มขวา */
     align-items: center; /* จัดให้แนวตั้งอยู่ตรงกลางพอดี */
     width: 90%;
-    margin: 0 auto 25px;
+    margin-left: 60px;
 }
 
 /* ป้องกัน H2 ดันปุ่มลง */
@@ -88,6 +87,7 @@
 .btn-green {
     background-color: #28a745;
     color: white;
+    border-radius: 8px #28a745;
 }
 
 .btn-green:hover {
