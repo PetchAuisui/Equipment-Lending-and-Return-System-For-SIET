@@ -50,7 +50,7 @@
       <div class="row">
         <div class="form-group">
           <label>วันที่ยืม</label>
-          <input type="date" name="borrow_date" value="{{ now().strftime('%Y-%m-%d') }}" readonly />
+          <input type="date" name="borrow_date" value="{{ now_bangkok.strftime('%Y-%m-%d') }}" readonly />
         </div>
         <div class="form-group">
           <label>วันที่กำหนดคืน</label>
@@ -135,7 +135,7 @@
       <div class="row">
         <div class="form-group">
           <label>วันที่ยืม</label>
-          <input type="date" name="borrow_date" value="{{ now().strftime('%Y-%m-%d') }}" readonly />
+          <input type="date" name="borrow_date" value="{{ now_bangkok.strftime('%Y-%m-%d') }}" readonly />
         </div>
         <div class="form-group">
           <label>วันที่กำหนดคืน</label>
@@ -159,7 +159,7 @@
       </div>
 
       <div class="button-group">
-        <a href="{{ url_for('inventory.lend_device') }}" type="button" class="btn btn-cancel">ยกเลิก</a>
+        <a href="{{ url_for('inventory.lend_device') }}" class="btn btn-cancel">ยกเลิก</a>
         <button type="submit" class="btn btn-submit">ยืนยันการยืม</button>
       </div>
     </form>

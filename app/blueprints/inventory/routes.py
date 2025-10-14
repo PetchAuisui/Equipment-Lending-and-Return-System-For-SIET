@@ -9,6 +9,7 @@ from sqlalchemy.orm import joinedload
 from sqlalchemy.exc import IntegrityError
 from werkzeug.utils import secure_filename
 from datetime import datetime
+from zoneinfo import ZoneInfo  # Python 3.9+
 from sqlalchemy.sql import exists, and_
 from app.models.stock_movements import StockMovement
 import os, uuid
@@ -54,6 +55,9 @@ def lend():
             if equipment:
                 confirm_status = equipment.confirm  # ✅ ดึงค่าจาก DB
 
+    # ✅ เวลาปัจจุบันตาม Bangkok
+    now_bangkok = datetime.now(ZoneInfo("Asia/Bangkok"))
+
     # ✅ print log ไปที่ console (ตามที่คุณขอ)
     print("\n--- Teachers Data ---")
     for t in teachers:
@@ -68,7 +72,8 @@ def lend():
         codes=codes,
         subjects=subjects,
         teachers=teachers,
-        confirm=confirm_status
+        confirm=confirm_status,
+        now_bangkok=now_bangkok  # <-- ส่งเวลา Bangkok ไป template
     )
 
 

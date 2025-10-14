@@ -2,11 +2,10 @@ from app.repositories import lend_repository
 from app.db.db import SessionLocal
 from app.db.models import Equipment, User
 from datetime import datetime
-
+from zoneinfo import ZoneInfo  # Python 3.9+
 
 def get_all_subjects():
     return lend_repository.get_all_subjects()
-
 
 def get_all_users():
     users = lend_repository.get_all_users()
@@ -16,18 +15,16 @@ def get_all_users():
     ]
     return {"teachers": teachers}
 
-
 def lend_data(data_list):
     """
-    ✅ รับข้อมูลจากฟอร์มยืม แล้วบันทึกลงตาราง rent_returns ผ่าน repository
-    โดยเช็ค member_type และ confirm ของอุปกรณ์ก่อนกำหนด status_id
+    รับข้อมูลจากฟอร์มยืม แล้วบันทึกลงตาราง rent_returns
+    โดยใช้เวลา Bangkok
     """
     print("📦 ข้อมูลการยืมที่ได้รับ:")
     print(data_list)
 
     db = SessionLocal()
     try:
-        # ✅ ดึงข้อมูลจากฟอร์ม
         data = {
             "device_name": data_list[0],
             "code": data_list[1],
@@ -41,30 +38,29 @@ def lend_data(data_list):
             "reason": data_list[9],
         }
 
-        # ✅ หา user จากชื่อ
+        # หา user
         user = db.query(User).filter(User.name == data["borrower_name"]).first()
         if not user:
             raise ValueError("❌ ไม่พบผู้ใช้ในระบบ")
 
-        # ✅ หา equipment จาก code
+        # หา equipment
         equipment = db.query(Equipment).filter(Equipment.code == data["code"]).first()
         if not equipment:
             raise ValueError("❌ ไม่พบอุปกรณ์ในระบบ")
 
-        # ✅ ตั้งค่าเวลาเริ่มต้น
-        data["start_date"] = datetime.utcnow()
+        # ✅ ใช้เวลา Bangkok แทน UTC
+        data["start_date"] = datetime.now(ZoneInfo("Asia/Bangkok"))
 
-        # ✅ ตรวจสอบ member_type เพื่อกำหนด status
+        # กำหนด status ตาม member_type
         if user.member_type in ["teacher", "staff"]:
             data["status_id"] = 2  # approved
         else:
-            # ถ้าเป็นนักศึกษา
             if equipment.confirm == 1:
                 data["status_id"] = 1  # pending
             else:
                 data["status_id"] = 2  # approved
 
-        # ✅ ส่งข้อมูลไปบันทึก
+        # ส่งข้อมูลไปบันทึก
         lend_repository.insert_rent_record(data)
 
     finally:

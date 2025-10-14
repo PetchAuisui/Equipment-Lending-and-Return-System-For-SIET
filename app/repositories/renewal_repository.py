@@ -1,7 +1,8 @@
-from datetime import datetime
+from datetime import datetime,time
 from sqlalchemy.orm import joinedload
 from app.db.db import SessionLocal
 from app.db.models import RentReturn, Equipment, EquipmentImage, StatusRent, Subject, User, Renewal
+from zoneinfo import ZoneInfo
 
 
 def insert_renewal(data):
@@ -11,24 +12,36 @@ def insert_renewal(data):
     """
     db = SessionLocal()
     try:
-        # ✅ 1. เพิ่ม record ใหม่ในตาราง renewals
+        # ตรวจสอบว่า new_due เป็น string หรือ datetime
+        if isinstance(data["new_due"], str):
+            date_part = datetime.strptime(data["new_due"], "%Y-%m-%d").date()
+        elif isinstance(data["new_due"], datetime):
+            date_part = data["new_due"].date()
+        else:
+            raise ValueError("new_due ต้องเป็น str หรือ datetime")
+
+        # แปลงเป็น datetime + 18:00 Bangkok
+        new_due_datetime = datetime.combine(
+            date_part,
+            time(hour=18, minute=0, second=0)
+        ).replace(tzinfo=ZoneInfo("Asia/Bangkok"))
+
+        # เพิ่ม record ใหม่ในตาราง renewals
         new_record = Renewal(
             rent_id=data["rent_id"],
             old_due=data["old_due"],
-            new_due=data["new_due"],
+            new_due=new_due_datetime,  # ใช้ datetime 18:00 Bangkok
             note=data["note"],
             created_at=data["created_at"],
             status="pending"
         )
         db.add(new_record)
 
-        # ✅ 2. อัปเดต status_id = 5 ใน rent_returns โดยไม่ต้องเช็ก
+        # อัปเดต status_id = 5 ใน rent_returns
         db.query(RentReturn).filter(RentReturn.rent_id == data["rent_id"]).update(
             {"status_id": 5}
         )
-        print(f"🔄 อัปเดต RentReturn ID={data['rent_id']} → status_id=5")
 
-        # ✅ 3. commit พร้อมกัน
         db.commit()
         print(f"✅ บันทึกคำขอขยายเวลา rent_id={data['rent_id']} สำเร็จ")
 

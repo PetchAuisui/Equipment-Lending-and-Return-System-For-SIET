@@ -133,6 +133,7 @@ textarea {
   border-radius: 5px;
   cursor: pointer;
   font-size: 14px;
+  font-style: normal;
 }
 
 .btn-cancel {
@@ -146,10 +147,9 @@ textarea {
 }
 
 .btn-submit {
+  text-decoration: none; /* เอาเส้นใต้ลิงก์ออก */
   background: #5cb85c; /* เขียว */
   color: white;
-  text-decoration: none; /* เอาเส้นใต้ลิงก์ออก */
-  text-align: center;
 }
 
 .btn-submit:hover {
