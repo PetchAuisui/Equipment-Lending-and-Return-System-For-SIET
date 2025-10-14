@@ -165,11 +165,24 @@ AdminHistoryController(
 )
 
 from app.services.item_broke_service import ItemBrokeService
+from app.db.db import engine
+from sqlalchemy import text
 
 
 @admin_bp.get('/lost-reports', endpoint='lost_reports')
 @staff_required
 def lost_reports():
+    # If DB schema missing the equipment_name column, show a hint to admin
+    try:
+        with engine.connect() as conn:
+            res = conn.execute(text("PRAGMA table_info('item_brokes')"))
+            cols = [row[1] for row in res.fetchall()]
+            if 'equipment_name' not in cols:
+                flash('Database missing column `equipment_name`. Run migration script scripts/add_equipment_name_column.py then restart the server.', 'warning')
+    except Exception:
+        # ignore DB inspect errors; service will handle errors
+        pass
+
     svc = ItemBrokeService()
     items = svc.list_reports()
     return render_template('admin/lost_list.html', items=items)
