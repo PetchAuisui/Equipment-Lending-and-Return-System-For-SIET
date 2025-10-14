@@ -7,6 +7,8 @@ from app.repositories.notification_repository import NotificationRepository
 
 class NotificationService:
     """สร้างแจ้งเตือนให้เฉพาะผู้ที่ยืมของอยู่"""
+    DEBUG = False  # 👈 ตั้ง True/False เพื่อเปิด–ปิด log
+    SHOW_SUMMARY = False # 👈 ตั้ง True/False เพื่อแสดงสรุปท้าย
 
     def __init__(self):
         self.db = SessionLocal()
@@ -57,7 +59,8 @@ class NotificationService:
             diff_minutes = int(diff_seconds // 60)
             h, m = divmod(diff_minutes, 60)
 
-            print(f"[DEBUG] rent_id={rent_id}, user_id={user_id}, due={due}, diff={h:02d}:{m:02d} (≈{diff_hours:.2f}h)")
+            if self.DEBUG:
+                print(f"[DEBUG] rent_id={rent_id}, user_id={user_id}, due={due}, diff={h:02d}:{m:02d} (≈{diff_hours:.2f}h)")
 
             # ✅ 1. เกินกำหนดแล้ว (diff < 0)
             if diff_hours < 0:
@@ -91,7 +94,9 @@ class NotificationService:
 
         # ✅ หลังจาก loop จบ
         self.db.commit()
-        print(f"✅ สร้างแจ้งเตือนใหม่ {created_count} รายการ\n")
+        # ✅ แสดงสรุปท้าย (ควบคุมแยกได้)
+        if self.SHOW_SUMMARY:
+            print(f"\n✅ สร้างแจ้งเตือนใหม่ {created_count} รายการ\n")
         self.db.close()
 
 
@@ -102,7 +107,8 @@ class NotificationService:
 
         # ตรวจว่ามีแจ้งเตือน rent_id เดิมในวันนี้ไหม
         if self.notif_repo.exists_today(user_id, rent_id, template):
-            print(f"[SKIP] ⚠️ ข้าม {template} (rent_id={rent_id}) ของ user_id={user_id} (มีอยู่แล้ววันนี้)")
+            if self.DEBUG:            
+                print(f"[SKIP] ⚠️ ข้าม {template} (rent_id={rent_id}) ของ user_id={user_id} (มีอยู่แล้ววันนี้)")
             return False
 
         # ✅ บันทึก rent_id ลงใน payload JSON
@@ -118,5 +124,7 @@ class NotificationService:
             "status": "unread",
             "created_at": now,
         })
-        print(f"[NEW] 🔔 เพิ่มแจ้งเตือน {template} (rent_id={rent_id}) ให้ user_id={user_id}")
+
+        if self.DEBUG:
+            print(f"[NEW] 🔔 เพิ่มแจ้งเตือน {template} (rent_id={rent_id}) ให้ user_id={user_id}")
         return True
