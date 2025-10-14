@@ -32,9 +32,14 @@ class User(Base):
     # ✅ เพิ่ม foreign_keys ให้ชัดเจนทั้งสองด้าน
     rent_checked       = relationship("RentReturn", back_populates="checker", foreign_keys="RentReturn.check_by")
     rent_requests      = relationship("RentReturn", back_populates="user", foreign_keys="RentReturn.user_id")
-    teacher_confirmed  = relationship("RentReturn", back_populates="user", foreign_keys="RentReturn.teacher_confirmed")
+    teacher_confirmed = relationship("RentReturn",back_populates="teacher_confirm",foreign_keys="RentReturn.teacher_confirmed")
     renewals_approved  = relationship("Renewal", back_populates="approver")
-    audits             = relationship("Audit", back_populates="actor")
+    audits_made        = relationship("UserAudit",back_populates="actor",foreign_keys="UserAudit.actor_id",cascade="all, delete-orphan")
+    audits_received    = relationship("UserAudit",back_populates="target_user",foreign_keys="UserAudit.user_id",cascade="all, delete-orphan")
+
+
+
+
 
 
 # ---------- subjects ----------
@@ -156,6 +161,8 @@ class RentReturn(Base):
     subject   = relationship("Subject", back_populates="rent_returns")
     status    = relationship("StatusRent", back_populates="rent_returns")
     item_brokes = relationship("ItemBroke", back_populates="rent_return")
+    renewals = relationship("Renewal", back_populates="rent_return")
+
 
 
 
@@ -210,22 +217,25 @@ class Renewal(Base):
     old_due     = Column(DateTime, nullable=False)
     new_due     = Column(DateTime, nullable=False)
     approved_by = Column(Integer, ForeignKey("users.user_id"))
+    status      = Column(String, nullable=False, default="pending")
     created_at  = Column(DateTime, default=datetime.utcnow)
     note        = Column(Text)
 
-    rent_return = relationship("RentReturn")
+    rent_return = relationship("RentReturn", back_populates="renewals")
     approver    = relationship("User", back_populates="renewals_approved")
 
 
 # ---------- audits ----------
-class Audit(Base):
-    __tablename__ = "audits"
+class UserAudit(Base):
+    __tablename__ = "user_audits"
 
     audit_id   = Column(Integer, primary_key=True, autoincrement=True)
-    entity_id  = Column(Integer, nullable=False)
-    action     = Column(String, nullable=False)
-    actor_id   = Column(Integer, ForeignKey("users.user_id"))
+    user_id    = Column(Integer, ForeignKey("users.user_id"), nullable=False)  # เป้าหมายที่ถูกแก้ไข
+    action     = Column(String, nullable=False)  # เช่น created/updated/deleted/profile_change
+    actor_id   = Column(Integer, ForeignKey("users.user_id"))                  # คนที่ลงมือ
     diff       = Column(JSON)
     created_at = Column(DateTime, default=datetime.utcnow)
 
-    actor = relationship("User", back_populates="audits")
+    # ↔ เชื่อมกลับไปยัง User ทั้งสองบทบาท
+    actor      = relationship("User",foreign_keys=[actor_id],back_populates="audits_made")
+    target_user= relationship("User",foreign_keys=[user_id],back_populates="audits_received")

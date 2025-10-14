@@ -1,0 +1,163 @@
+body {
+  font-family: 'Prompt', sans-serif;
+  background-color: #f8f9fa;
+  margin: 0;
+  padding: 0;
+}
+
+/* 🔹 หัวข้ออยู่นอกกรอบ */
+
+.page-title {
+  font-size: 26px;
+  font-weight: 700;
+  color: #111;
+  width: 85%;
+  max-width: 1000px;
+  margin: 40px auto 15px auto; /* จัดให้อยู่กึ่งกลางแบบเดียวกับกรอบ */
+}
+
+/* กล่องหลัก */
+.detail-container {
+  display: flex;
+  justify-content: center;
+  padding: 0 0 80px;
+}
+
+.detail-card {
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  padding: 40px 50px;
+  width: 85%;
+  max-width: 1000px;
+}
+
+/* แถวเนื้อหา */
+.content-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem;
+}
+
+/* รูปภาพ */
+.image-section {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+.image-section img {
+  width: 100%;
+  max-width: 320px;
+  border-radius: 10px;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.15);
+}
+
+/* ข้อมูล */
+.info-section {
+  flex: 1.3;
+  font-size: 16px;
+  color: #333;
+}
+
+.equip-name {
+  font-size: 22px;
+  font-weight: 700;
+  margin-bottom: 10px;
+  color: #111;
+}
+
+.info-section p {
+  margin: 6px 0;
+  line-height: 1.5;
+}
+
+/* สีสถานะ */
+.status {
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: 5px;
+}
+.status.available { color: #00a000; }
+.status.in-use { color: #e6b800; }
+.status.broken { color: #d9534f; }
+.status.lost { color: #777; }
+
+/* ==== ปุ่ม ==== */
+.button-group {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 25px;
+}
+
+.btn {
+  padding: 10px 25px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 15px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: 0.25s;
+  border: none;
+}
+
+/* ปุ่มกลับ */
+.btn-gray {
+  background: #6c757d;
+  color: white;
+}
+.btn-gray:hover {
+  background: #5a6268;
+  transform: scale(1.03);
+}
+
+/* ปุ่มยืม */
+.btn-blue {
+  background: #007bff;
+  color: white;
+}
+.btn-blue:hover {
+  background: #0069d9;
+  transform: scale(1.03);
+}
+/* === ปุ่มกลับ (เทา) === */
+.btn-cancel {
+  background: #6c757d;   /* เทา */
+  color: white;
+  border: none;
+  padding: 10px 25px;
+  border-radius: 6px;
+  text-decoration: none;
+  font-weight: 600;
+  transition: 0.2s;
+}
+.btn-cancel:hover {
+  background: #5a6268;
+  transform: scale(1.05);
+}
+
+/* === ปุ่มยืมอุปกรณ์ (ฟ้า) === */
+.btn-submit {
+  background: #007bff;   /* ฟ้า */
+  color: white;
+  border: none;
+  padding: 10px 25px;
+  border-radius: 6px;
+  text-decoration: none;
+  font-weight: 600;
+  transition: 0.2s;
+}
+.btn-submit:hover {
+  background: #0069d9;
+  transform: scale(1.05);
+}
+
+/* === จัดตำแหน่งกลุ่มปุ่ม === */
+.button-group {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 20px;
+}
