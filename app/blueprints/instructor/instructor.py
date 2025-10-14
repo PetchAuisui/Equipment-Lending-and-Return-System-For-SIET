@@ -153,17 +153,16 @@ def _images_map_for(reqs: list[RentReturn]) -> dict[int, str]:
 def home():
     return redirect(url_for("instructor.pending"))
 
-@bp.get("/requests", endpoint="requests_cards")
+@bp.get("/requests")  # งานที่ต้องอนุมัติ
 def requests_cards():
-    # ✅ หน้า Requests = งานที่ต้องอนุมัติ => pending + ต้องยืนยันโดยอาจารย์ (Equipment.confirm==1)
-    reqs = _query_requests(["pending"], require_confirm=True)
+    reqs = _query_requests(["pending"], require_confirm=True)  # ต้อง confirm
     images = _images_map_for(reqs)
     return render_template("instructor/requests.html", reqs=reqs, images=images)
 
-@bp.get("/pending")
+@bp.get("/pending")  # ประวัติ/ภาพรวมของอาจารย์คนนี้
 def pending():
-    # ✅ หน้า Pending/History = ทุกสถานะของอาจารย์คนนี้ (ไม่บังคับ confirm)
-    reqs = _query_requests(["pending", "approved", "rejected", "returned"], require_confirm=True)
+    # ไม่บังคับ confirm เพื่อให้เห็นทุกคำขอที่ส่งถึงอาจารย์คนนี้
+    reqs = _query_requests(["pending", "approved", "rejected", "returned"], require_confirm=None)
     return render_template("instructor/pending.html", reqs=reqs)
 
 @bp.post("/pending/decide/<int:req_id>", endpoint="pending_decide")
