@@ -17,8 +17,7 @@
     <i class="ri-file-edit-fill"></i>
     <span>บันทึกการ “ยืม” อุปกรณ์</span>
   </div>
-
-{% if current_user.member_type == 'student' %}
+{% if current_user.member_type == 'student' and confirm == True %}
   <!-- Form สำหรับนักศึกษา -->
   <div class="form-container">
     <form action="{{ url_for('inventory.lend_submit') }}" method="POST">
@@ -36,7 +35,7 @@
             <label>รหัสอุปกรณ์</label>
             {% if codes|length > 1 %}
               <select name="code">
-                {% for c in codes %}
+                {% for c in codes %} 
                   <option value="{{ c }}">{{ c }}</option>
                 {% endfor %}
               </select>
@@ -68,49 +67,6 @@
       <div class="form-group">
         <label>เบอร์โทร</label>
         <input type="text" name="phone" value="{{ current_user.phone }}" readonly />
-      </div>
-
-      <!-- สาขาวิชา -->
-      <div class="form-group">
-        <label>สาขาวิชา</label>
-        <select name="major" required>
-          <option value="">กรุณาเลือกสาขา</option>
-          <optgroup label="ครุศาสตร์สถาปัตยกรรม">
-            <option value="ครุศาสตร์สถาปัตยกรรม">ครุศาสตร์สถาปัตยกรรม</option>
-            <option value="ครุศาสตร์การออกแบบ (หลักสูตร 5 ปี)">ครุศาสตร์การออกแบบ (หลักสูตร 5 ปี)</option>
-            <option value="สถาปัตยกรรม (หลักสูตร 5 ปี)">สถาปัตยกรรม (หลักสูตร 5 ปี)</option>
-            <option value="การออกแบบสภาพแวดล้อมภายใน (หลักสูตร 5 ปี)">การออกแบบสภาพแวดล้อมภายใน (หลักสูตร 5 ปี)</option>
-            <option value="ครุศาสตร์การออกแบบ (หลักสูตร 4 ปี)">ครุศาสตร์การออกแบบ (หลักสูตร 4 ปี)</option>
-            <option value="นวัตกรรมและเทคโนโลยีการออกแบบ">นวัตกรรมและเทคโนโลยีการออกแบบ</option>
-          </optgroup>
-
-          <optgroup label="ครุศาสตร์อุตสาหกรรม">
-            <option value="ครุศาสตร์อุตสาหกรรม">ครุศาสตร์อุตสาหกรรม</option>
-            <option value="วิทยาการจัดการเรียนรู้">วิทยาการจัดการเรียนรู้</option>
-          </optgroup>
-
-          <optgroup label="ครุศาสตร์วิศวกรรม">
-            <option value="ครุศาสตร์วิศวกรรม">ครุศาสตร์วิศวกรรม</option>
-            <option value="ครุศาสตร์วิศวกรรม (หลักสูตร 5 ปี)">ครุศาสตร์วิศวกรรม (หลักสูตร 5 ปี)</option>
-            <option value="เทคโนโลยีอิเล็กทรอนิกส์ (ต่อเนื่อง)">เทคโนโลยีอิเล็กทรอนิกส์ (ต่อเนื่อง)</option>
-            <option value="ครุศาสตร์วิศวกรรม (หลักสูตร 4 ปี)">ครุศาสตร์วิศวกรรม (หลักสูตร 4 ปี)</option>
-            <option value="เทคโนโลยีคอมพิวเตอร์">เทคโนโลยีคอมพิวเตอร์</option>
-            <option value="อิเล็กทรอนิกส์และโทรคมนาคม">อิเล็กทรอนิกส์และโทรคมนาคม</option>
-          </optgroup>
-
-          <optgroup label="ครุศาสตร์เกษตร">
-            <option value="ครุศาสตร์เกษตร">ครุศาสตร์เกษตร</option>
-            <option value="ครุศาสตร์เกษตร (หลักสูตร 5 ปี)">ครุศาสตร์เกษตร (หลักสูตร 5 ปี)</option>
-            <option value="เทคโนโลยีชีวภาพทางการเกษตร (ต่อเนื่อง)">เทคโนโลยีชีวภาพทางการเกษตร (ต่อเนื่อง)</option>
-            <option value="ครุศาสตร์เกษตร (หลักสูตร 4 ปี)">ครุศาสตร์เกษตร (หลักสูตร 4 ปี)</option>
-          </optgroup>
-
-          <optgroup label="หมวดอื่น ๆ">
-            <option value="ภาษาและสังคม">ภาษาและสังคม</option>
-            <option value="สำนักงานมาตราฐานครุศาสตร์อุตสาหกรรมและเทคโนโลยี">สำนักงานมาตราฐานครุศาสตร์อุตสาหกรรมและเทคโนโลยี</option>
-            <option value="เทคโนโลยีบัณฑิต (บูรณาการนวัตกรรมเพื่อสินค้าและบริการ)">เทคโนโลยีบัณฑิต (บูรณาการนวัตกรรมเพื่อสินค้าและบริการ)</option>
-          </optgroup>
-        </select>
       </div>
 
       <!-- วิชา -->

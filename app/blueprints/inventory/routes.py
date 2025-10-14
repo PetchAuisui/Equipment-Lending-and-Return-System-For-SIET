@@ -32,8 +32,6 @@ def lend_device():
 
     return render_template("pages_inventory/lend_device.html", equipments=equipments)
 
-
-
 @inventory_bp.route('/lend')
 def lend():
     codes_raw = request.args.get("codes", "")
@@ -48,6 +46,14 @@ def lend():
     teachers_data = lend_service.get_all_users()
     teachers = teachers_data["teachers"]
 
+    # ✅ 3. ดึงข้อมูล confirm จากอุปกรณ์
+    confirm_status = False  # ค่าเริ่มต้น (กรณีหาไม่เจอ)
+    with SessionLocal() as db:
+        if codes:
+            equipment = db.query(Equipment).filter(Equipment.code == codes[0]).first()
+            if equipment:
+                confirm_status = equipment.confirm  # ✅ ดึงค่าจาก DB
+
     # ✅ print log ไปที่ console (ตามที่คุณขอ)
     print("\n--- Teachers Data ---")
     for t in teachers:
@@ -61,29 +67,10 @@ def lend():
         image=image,
         codes=codes,
         subjects=subjects,
-        teachers=teachers
+        teachers=teachers,
+        confirm=confirm_status
     )
 
-    codes_raw = request.args.get("codes", "")
-    name = request.args.get("name", "")
-    image = request.args.get("image", "")
-
-    # แยกรหัสออกเป็น list
-    codes = [c.strip() for c in codes_raw.split(",") if c.strip()]
-
-    # ✅ ดึงข้อมูลวิชาและอาจารย์จาก service
-    subjects = lend_service.get_all_subjects()
-    teachers_data = lend_service.get_all_users()
-    teachers = teachers_data["teachers"]
-
-    return render_template(
-        "pages_inventory/lend.html",
-        name=name,
-        image=image,
-        codes=codes,
-        subjects=subjects,
-        teachers=teachers
-    )
 
 @inventory_bp.route("/lend_submit", methods=["POST"])
 def lend_submit():
@@ -224,3 +211,16 @@ def toggle_teacher_approval(eid):
         svc.repo.commit()
         flash(f"{'เปิด' if eq.confirm else 'ปิด'}โหมดให้อาจารย์อนุมัติสำเร็จ", "success")
     return redirect(url_for("inventory.admin_equipment_list"))
+
+@inventory_bp.route("/equipments/<int:eid>/detail", methods=["GET"])
+def equipment_detail(eid):
+    from app.services import lend_device_service
+
+    svc = lend_device_service.get_grouped_equipments_separated()
+    all_items = svc["available"] + svc["unavailable"]
+
+    item = next((i for i in all_items if i["equipment_id"] == eid), None)
+    if not item:
+        abort(404)
+
+    return render_template("pages_inventory/equipment_detail.html", item=item)
