@@ -26,16 +26,22 @@
       <div class="equip-grid">
         {% for e in items %}
           <a href="{{ url_for('inventory.admin_equipment_detail', eid=e.equipment_id) }}" class="equip-card">
-            <div class="equip-thumb">
-              {% if e.images and e.images|length > 0 %}
-                {% set latest = (e.images|sort(attribute='created_at', reverse=True))|first %}
+           <div class="equip-thumb">
+              {# ใช้ความสัมพันธ์ที่ถูกต้อง: equipment_images #}
+              {% if e.equipment_images and e.equipment_images|length > 0 %}
+                {# เอารูปล่าสุดตาม created_at #}
+                {% set latest = (e.equipment_images|sort(attribute='created_at', reverse=True))|first %}
                 <img
-                  src="{{ url_for('static', filename=(latest.image_path|replace('\\','/'))) }}?v={{ (e.updated_at.timestamp() if e.updated_at else 0) }}"
-                  alt="ภาพอุปกรณ์">
+                  src="{{ url_for('static', filename=latest.image_path) }}"
+                  alt="{{ e.name or 'ภาพอุปกรณ์' }}">
               {% else %}
-                <span class="no-image">ไม่มีรูป</span>
+                {# มี fallback กันพลาด #}
+                <img
+                  src="{{ url_for('static', filename='images/default_equip.png') }}"
+                  alt="ไม่มีรูป">
               {% endif %}
             </div>
+
 
             <div class="equip-info">
               <div><strong>หมายเลข:</strong> {{ e.code or '—' }}</div>

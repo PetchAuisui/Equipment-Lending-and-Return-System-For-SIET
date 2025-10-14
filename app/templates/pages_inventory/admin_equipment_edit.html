@@ -92,18 +92,30 @@
             </div>
           </div>
 
-        {% if item.images and item.images|length > 0 %}
-          {% set latest = (item.images|sort(attribute='created_at', reverse=True))|first %}
-          <div class="eqedit-row">
-            <label class="eqedit-label">รูปภาพปัจจุบัน</label>
-            <div class="eqedit-preview">
-              <img
-                src="{{ url_for('static', filename=(latest.image_path|replace('\\','/'))) }}?v={{ (item.updated_at.timestamp() if item.updated_at else 0) }}"
-                alt="รูปปัจจุบัน"
-                class="eqedit-preview__img">
+          {% set imgs = item.equipment_images or [] %}
+          {% if imgs|length > 0 %}
+            {% set latest = (imgs|sort(attribute='created_at', reverse=True))|first %}
+            <div class="eqedit-row">
+              <label class="eqedit-label">รูปภาพปัจจุบัน</label>
+              <div class="eqedit-preview">
+                <img
+                  src="{{ url_for('static', filename=(latest.image_path|replace('\\','/'))) }}?v={{ (item.updated_at.timestamp() if item.updated_at else 0) }}"
+                  alt="รูปปัจจุบัน"
+                  class="eqedit-preview__img">
+              </div>
             </div>
-          </div>
-        {% endif %}
+          {% else %}
+            <div class="eqedit-row">
+              <label class="eqedit-label">รูปภาพปัจจุบัน</label>
+              <div class="eqedit-preview">
+                <img
+                  src="{{ url_for('static', filename='images/default_equip.png') }}"
+                  alt="ไม่มีรูป"
+                  class="eqedit-preview__img">
+              </div>
+            </div>
+          {% endif %}
+
 
         <div class="eqedit-row">
           <label class="eqedit-label">แนบรูปภาพใหม่ (ถ้ามี)</label>
