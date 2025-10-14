@@ -4,6 +4,11 @@ from app.db.db import SessionLocal
 from app.repositories.user_repository import UserRepository
 from app.services.admin_user_service import AdminUserService
 from app.utils.decorators import staff_required
+from app.services import renewal_service
+from app.db.models import Renewal
+from flask_login import current_user
+
+
 
 # ---- สำหรับประวัติยืม-คืน (admin) ----
 from app.repositories.history_repository import RentHistoryRepository
@@ -158,3 +163,51 @@ AdminHistoryController(
     user_repo_factory=_user_repo,
     staff_guard=staff_required,
 )
+
+
+@admin_bp.get("/confrim_add_time")
+@staff_required
+def confrim_add_time():
+    success, data = renewal_service.get_renewal_summary_service()
+    if not success:
+        flash("เกิดข้อผิดพลาดในการโหลดข้อมูล", "danger")
+        data = {"renewals": [], "history_renewals": []}
+
+    # ✅ ต้องส่งเฉพาะ list ของ pending
+    return render_template(
+        "admin/confrim_add_time.html",
+        renewals=data["renewals"]  # ❗️อย่าส่ง data ตรง ๆ
+    )
+
+@admin_bp.get("/confrim_add_time_history")
+@staff_required
+def confrim_add_time_history():
+    success, data = renewal_service.get_renewal_summary_service()
+    if not success:
+        flash("เกิดข้อผิดพลาดในการโหลดข้อมูล", "danger")
+        data = {"renewals": [], "history_renewals": []}
+
+    return render_template(
+        "admin/confrim_add_time_history.html",
+        history_renewals=data["history_renewals"]
+    )
+
+
+from flask import request, session, redirect, url_for, flash
+from app.services import renewal_service
+
+
+@admin_bp.post("/approve_renewal/<int:renewal_id>")
+def approve_renewal(renewal_id):
+    user_id = session.get("user_id")  # ✅ ดึงจาก session (user ที่ล็อกอิน)
+    success, msg = renewal_service.approve_renewal_service(renewal_id, user_id)
+    flash(msg, "success" if success else "danger")
+    return redirect(url_for("admin.confrim_add_time"))
+
+
+@admin_bp.post("/reject_renewal/<int:renewal_id>")
+def reject_renewal(renewal_id):
+    user_id = session.get("user_id")  # ✅ ดึงจาก session (user ที่ล็อกอิน)
+    success, msg = renewal_service.reject_renewal_service(renewal_id, user_id)
+    flash(msg, "success" if success else "danger")
+    return redirect(url_for("admin.confrim_add_time"))
