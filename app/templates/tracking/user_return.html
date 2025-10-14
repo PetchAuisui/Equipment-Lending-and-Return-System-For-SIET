@@ -36,9 +36,10 @@
         </div>
 
         <div class="action-buttons">
-            <form method="POST" action="{{ url_for('tracking.confirm_return', rent_id=rent_info.equipment_id) }}">
+            <form method="POST" action="{{ url_for('tracking.confirm_return', rent_id=rent_info.rent_id) }}">
                 <button type="submit" class="btn btn-confirm">ยืนยันการคืน</button>
             </form>
+
             
             <a href="{{ url_for('tracking.track_index') }}" class="btn btn-cancel">ยกเลิก</a>
         </div>

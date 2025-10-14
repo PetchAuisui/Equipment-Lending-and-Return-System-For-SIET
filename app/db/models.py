@@ -91,7 +91,6 @@ class Equipment(Base):
     equipment_images = relationship("EquipmentImage", back_populates="equipment")
     stock_movements  = relationship("StockMovement", back_populates="equipment")
     rent_returns     = relationship("RentReturn", back_populates="equipment")
-    images           = relationship("EquipmentImage",back_populates="equipment",cascade="all, delete-orphan",lazy="selectin",passive_deletes=True,)
 
 
 # ---------- equipment_images ----------
