@@ -81,3 +81,21 @@ def add_time_submit():
 
 
     return redirect(url_for("tracking.track_index"))
+
+@tracking_bp.route('/return/<int:equipment_id>')
+def show_return_item(equipment_id):
+    db = get_db()
+    item = db.execute("""
+        SELECT r.id, e.name, r.return_date, r.student_id, s.name AS student_name, e.image_url
+        FROM rentals r
+        JOIN equipment e ON r.equipment_id = e.id
+        JOIN students s ON r.student_id = s.id
+        WHERE e.id = ?
+    """, (equipment_id,)).fetchone()
+
+    return render_template('return_equipment.html', item=item, current_date=date.today())
+
+@tracking_bp.route('/detail/<int:equipment_id>')
+def detail(equipment_id):
+    # ดึงข้อมูลอุปกรณ์ถ้าต้องการ (ตอนนี้ placeholder ไว้ก่อน)
+    return render_template('pages_tracking/detail.html', equipment_id=equipment_id)

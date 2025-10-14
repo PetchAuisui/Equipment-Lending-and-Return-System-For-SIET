@@ -1,10 +1,11 @@
+from app import db
 from flask import render_template, request, redirect, url_for, current_app, flash, abort, session
 from app.blueprints.inventory import inventory_bp
 from app.services.lend_device_service import get_grouped_equipments_separated
 from app.services import lend_service
 from app.db.db import SessionLocal
 from app.models.equipment import Equipment
-from app.db.models import EquipmentImage
+from app.db.models import EquipmentImage, RentReturn
 from sqlalchemy.orm import joinedload
 from sqlalchemy.exc import IntegrityError
 from werkzeug.utils import secure_filename
@@ -14,7 +15,6 @@ from app.models.stock_movements import StockMovement
 import os, uuid
 from app.utils.decorators import staff_required
 from app.services.equipment_service import EquipmentService
-
 
 # ===== Helper Factory =====
 def _equip_svc():
@@ -224,3 +224,41 @@ def equipment_detail(eid):
         abort(404)
 
     return render_template("pages_inventory/equipment_detail.html", item=item)
+
+@inventory_bp.route('/admin/success-return')
+def admin_success_return():
+    """
+    แสดงหน้าการยืนยันการคืนอุปกรณ์ (ข้อมูลจริงจากฐานข้อมูล)
+    """
+    # ✅ ดึงรายการที่ยังไม่คืน (ปรับค่า status_id ให้ตรงกับของจริงในระบบคุณ)
+    rent = (
+        db.session.query(RentReturn)
+        .filter(RentReturn.status_id == 1)  # สมมติ 1 = "กำลังยืม"
+        .order_by(RentReturn.due_date.asc())
+        .first()
+    )
+
+    # ✅ ถ้าไม่พบข้อมูล
+    if not rent:
+        return render_template(
+            'pages_inventory/admin_success_return.html',
+            item=None,
+            message="ไม่พบรายการอุปกรณ์ที่รอการคืน"
+        )
+
+    # ✅ สร้างข้อมูลที่จะส่งให้ Template
+    item = {
+        'rent_id': rent.rent_id,
+        'equipment_id': rent.equipment_id,  # ✅ เพิ่มเพื่อใช้ใน href
+        'name': rent.equipment.equipment_name if rent.equipment else 'ไม่พบชื่ออุปกรณ์',
+        'image_url': rent.equipment.image_url if rent.equipment and rent.equipment.image_url else None,
+        'student_id': rent.user.username if rent.user else '-',
+        'student_name': rent.user.full_name if rent.user else '-',
+        'return_date': rent.return_date.strftime('%Y-%m-%d') if rent.return_date else '-',
+        'due_date': rent.due_date.strftime('%Y-%m-%d'),
+        'status': rent.status.status_name if rent.status else '-'
+    }
+
+    # ✅ ส่งข้อมูลจริงไปที่ Template
+    return render_template('pages_inventory/admin_success_return.html', item=item)
+

@@ -5,3 +5,6 @@ class Config:
     DATA_DIR = "data"
     ALLOWED_IMAGE_EXT = {"jpg","jpeg","png","gif","webp"}
     UPLOAD_FOLDER = os.path.join(os.path.dirname(__file__), "static", "uploads", "equipment")
+
+    SQLALCHEMY_DATABASE_URI = "sqlite:///equipment_system.db"
+    SQLALCHEMY_TRACK_MODIFICATIONS = False

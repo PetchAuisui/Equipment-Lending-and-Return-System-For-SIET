@@ -4,7 +4,8 @@ from sqlalchemy import (
     ForeignKey, JSON
 )
 from sqlalchemy.orm import relationship
-from app.db.db import Base
+from app import db
+Base = db.Model
 
 
 # ---------- users ----------
