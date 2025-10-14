@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/confrim_add_time.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/confrim_add_time_history.css') }}">
 </head>
 
 {% extends 'base/base_admin.html' %}
@@ -15,7 +15,7 @@
         <h2 class="track-title">ประวัติคำขอขยายเวลาการยืมอุปกรณ์</h2>
 
         <!-- 🔙 ปุ่มกลับไปหน้าหลัก -->
-        <a href="{{ url_for('admin.confrim_add_time') }}" class="btn btn-blue" style="margin-left: 20px;">
+        <a href="{{ url_for('admin.confrim_add_time') }}" class="btn btn-blue" >
             กลับไปหน้าคำขอ
         </a>
     </div>

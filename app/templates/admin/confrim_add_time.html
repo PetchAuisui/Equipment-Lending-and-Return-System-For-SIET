@@ -48,12 +48,12 @@
                         <td>{{ item.new_due }}</td>
                         <td class="actions">
                             <!-- ✅ ปุ่มอนุมัติ -->
-                            <form action="{{ url_for('admin.approve_renewal', renewal_id=item.renewal_id) }}" method="POST" style="display:inline;">
+                            <form action="{{ url_for('admin.approve_renewal', renewal_id=item.renewal_id) }}" method="POST">
                                 <button type="submit" class="btn btn-green">อนุมัติ</button>
                             </form>
 
                             <!-- ❌ ปุ่มไม่อนุมัติ -->
-                            <form action="{{ url_for('admin.reject_renewal', renewal_id=item.renewal_id) }}" method="POST" style="display:inline;">
+                            <form action="{{ url_for('admin.reject_renewal', renewal_id=item.renewal_id) }}" method="POST" >
                                 <button type="submit" class="btn btn-red">ไม่อนุมัติ</button>
                             </form>
 

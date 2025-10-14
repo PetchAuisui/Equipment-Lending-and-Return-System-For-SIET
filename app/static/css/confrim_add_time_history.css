@@ -1,7 +1,7 @@
 /* ✅ กล่องหลัก */
 .track-container {
     background-color: #f2f2f2;
-    width: 115%;
+    width: 125%;
     padding: 40px;
     border-radius: 20px;
     margin-top: 30px;
@@ -87,7 +87,6 @@
 .btn-green {
     background-color: #28a745;
     color: white;
-    border-radius: 8px #28a745;
 }
 
 .btn-green:hover {
@@ -123,6 +122,7 @@
     font-weight: bold;
     text-decoration: none;
     transition: 0.3s;
+    margin-left: 20px;
 }
 
 .btn-blue:hover {
