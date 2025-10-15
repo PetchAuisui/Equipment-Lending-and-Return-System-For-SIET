@@ -230,18 +230,18 @@
 
 /* ---------- Popular grid (อัปเดตใหม่) ---------- */
 .grid-cards {
-  width: calc(100% - 40px);       /* 🔸 ให้กว้างเท่ากับ HERO */
+  width: calc(100% - 40px);      
   max-width: 1400px;
   margin: 0 auto;
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 280px));
   gap: 24px;
-  justify-content: start;         /* 🔥 จัดการ์ดให้ชิดซ้าย */
+  justify-content: start;        
   align-items: stretch;
 }
 
 .equip-card {
-  width: 280px;                   /* 🔒 ขนาดคงที่ */
+  width: 280px; 
   position: relative;
   background: #f7f7f8;
   border: 1px solid var(--card-border);
@@ -279,7 +279,8 @@
   transition: transform .25s ease;
 }
 
-.equip-card:hover .equip-thumb img { transform: scale(1.04); }
+/* 🚩 แก้ไข: ลบเอฟเฟกต์ซูมของรูปภาพใน Popular Grid เมื่อโฮเวอร์ */
+.equip-card:hover .equip-thumb img { transform: none; }
 
 .equip-card__head {
   display: flex;
@@ -370,6 +371,86 @@
   background: var(--cta-hover);
   transform: translateY(-1px);
   box-shadow: 0 4px 10px rgba(84, 194, 111, .3);
+}
+
+/* ---------- Lost Equipment Styling ---------- */
+/* ⚠️ เพิ่ม Style สำหรับการ์ดสูญหายที่ต้องการจัดเรียงใหม่ */
+
+.equip-card.lost.lost-no-actions {
+  /* ล้างค่า padding และ display เดิมออกเพื่อกำหนดใหม่ */
+  padding: 16px;
+  min-height: auto;
+  
+  display: flex;
+  flex-direction: column; /* เรียงจากบนลงล่าง */
+  align-items: center; /* จัดรูปภาพและข้อความทั้งหมดให้อยู่ตรงกลางแนวนอน */
+  text-align: center; 
+  border: 2px solid var(--danger); /* ให้ดูโดดเด่นด้วยกรอบสีแดง */
+  background: #fff;
+}
+
+.equip-card.lost.lost-no-actions:hover {
+  /* ลบเอฟเฟกต์ยกขึ้นเมื่อชี้ (hover) เพื่อให้ดูเป็นข้อมูลเฉยๆ */
+  transform: none;
+  box-shadow: 0 4px 12px rgba(181, 30, 30, 0.1); /* เปลี่ยน shadow เป็นสีแดงอ่อนๆ */
+}
+
+.equip-card.lost.lost-no-actions .equip-thumb {
+  /* ปรับตำแหน่งและขนาดของรูปภาพให้เข้าที่ */
+  position: static; /* ไม่อยู่ลอยเหนือการ์ด */
+  width: 100%;
+  max-width: 180px; /* ขนาดรูปที่แสดงผลจริง */
+  height: 120px;
+  margin: 0 auto 10px auto; /* จัดให้อยู่ตรงกลางและมีระยะห่างด้านล่าง */
+  box-shadow: none;
+}
+
+.equip-card.lost.lost-no-actions .equip-thumb img {
+  object-fit: contain; /* รูปไม่ถูกตัด แต่แสดงเต็มในกรอบ */
+}
+.equip-card.lost.lost-no-actions:hover .equip-thumb img { transform: none; }
+
+
+.equip-card.lost.lost-no-actions .equip-card__head {
+  /* ซ่อนส่วน head เดิม (ชื่อและรหัส) เนื่องจากเราย้ายไปอยู่ใน equip-card__detail แล้ว */
+  display: none;
+}
+
+/* ส่วนรายละเอียดทั้งหมดที่เรียงต่อกัน */
+.equip-card__detail {
+  width: 100%;
+  padding-top: 5px;
+}
+
+.equip-card__detail .equip-card__title {
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--danger);
+  margin-bottom: 2px;
+}
+
+.equip-card__detail .equip-card__code {
+  color: #777;
+  font-size: 13px;
+  margin-bottom: 10px;
+}
+
+.equip-card__detail .lost-detail {
+  font-size: 14px;
+  color: var(--ink);
+  margin: 4px 0;
+  line-height: 1.4;
+}
+
+.lost-tag {
+    display: inline-block;
+    background-color: var(--danger);
+    color: white;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 4px;
+    margin-top: 12px;
+    font-size: 12px;
 }
 
 /* ---------- Table ---------- */
