@@ -42,6 +42,7 @@ def get_all_users():
     finally:
         db.close()
 
+current_time = datetime.now(ZoneInfo("Asia/Bangkok")).replace(tzinfo=None)
 
 
 def insert_rent_record(data):
@@ -49,88 +50,72 @@ def insert_rent_record(data):
     ✅ บันทึกข้อมูลการยืมลงตาราง rent_returns
     และอัปเดตสถานะอุปกรณ์ในตาราง equipments
     """
-    import time as pytime  # ใช้เวลารอระหว่าง retry
+    import time as pytime
     from sqlalchemy.exc import SQLAlchemyError
+    from datetime import datetime, time
+    from zoneinfo import ZoneInfo
 
-    retry_delays = [5, 10, 30]  # วินาทีสำหรับ retry 3 ครั้ง
+    retry_delays = [5, 10, 30]
     max_retries = len(retry_delays)
     attempt = 0
 
     while attempt < max_retries:
         db = SessionLocal()
         try:
-            # ------------------------------
             # ✅ LOCK ROW ของอุปกรณ์ที่จะยืม
-            # ------------------------------
             equipment = db.execute(
                 select(Equipment)
                 .where(Equipment.code == data["code"])
-                .with_for_update()  # lock row
+                .with_for_update()
             ).scalar_one_or_none()
 
             if not equipment:
                 raise ValueError("❌ ไม่พบอุปกรณ์ที่เลือก")
 
-            # ------------------------------
-            # ✅ ตรวจสอบสถานะอุปกรณ์
-            # ------------------------------
             if equipment.status != "available":
                 raise ValueError("❌ อุปกรณ์นี้ถูกยืมไปแล้ว")
 
-            # ------------------------------
-            # หา user
-            # ------------------------------
+            # ✅ หา user
             user = db.query(User).filter(User.name == data["borrower_name"]).first()
             if not user:
                 raise ValueError("❌ ไม่พบผู้ใช้ในระบบ")
 
-            # ------------------------------
-            # เตรียมค่า subject / teacher_confirmed
-            # ------------------------------
             subject_val = data.get("subject_id")
             teacher_val = data.get("teacher_confirmed")
 
-            # ------------------------------
-            # ✅ แปลง datetime เป็น naive (SQLite compatible)
-            # ------------------------------
-            start_date = data["start_date"]
-            if isinstance(start_date, str):
-                start_date = datetime.strptime(start_date, "%Y-%m-%d")
-            start_date = start_date.replace(tzinfo=None)
+            # ✅ เวลาปัจจุบันของ Bangkok (ใช้เหมือนกันทั้ง start_date และ created_at)
+            current_time = datetime.now(ZoneInfo("Asia/Bangkok")).replace(tzinfo=None)
+            print(f"🕓 Current Bangkok Time: {current_time}")
 
+            # ✅ คำนวณ due_date
             due_date = datetime.combine(
                 datetime.strptime(data["return_date"], "%Y-%m-%d").date(),
                 time(hour=18, minute=0, second=0)
             ).replace(tzinfo=None)
 
-            # ------------------------------
-            # ✅ สร้าง RentReturn record
-            # ------------------------------
+            # ✅ สร้าง RentReturn record โดยใช้ current_time
             rent_record = RentReturn(
                 equipment_id=equipment.equipment_id,
                 user_id=user.user_id,
                 subject_id=int(subject_val) if subject_val else None,
-                start_date=start_date,
+                start_date=current_time,  # ← เวลาปัจจุบัน
                 due_date=due_date,
                 teacher_confirmed=int(teacher_val) if teacher_val else None,
                 reason=data.get("reason"),
                 status_id=data["status_id"],
-                created_at=datetime.utcnow()
+                created_at=current_time   # ← เวลาปัจจุบันเหมือนกัน
             )
+
             db.add(rent_record)
 
-            # ------------------------------
             # ✅ อัปเดตสถานะอุปกรณ์
-            # ------------------------------
             equipment.status = "unavailable"
             db.add(equipment)
 
-            # ------------------------------
-            # ✅ COMMIT → ถ้า success → return
-            # ------------------------------
+            # ✅ COMMIT
             db.commit()
             db.close()
-            print(f"✅ บันทึกการยืมและอัปเดตสถานะอุปกรณ์ (ID: {equipment.equipment_id}) เรียบร้อย")
+            print(f"✅ บันทึกข้อมูลเรียบร้อย start_date={current_time}")
             return {"status": "success"}
 
         except (SQLAlchemyError, ValueError) as e:
@@ -138,15 +123,10 @@ def insert_rent_record(data):
             db.close()
             attempt += 1
             print(f"⚠️ Attempt {attempt}/{max_retries} failed: {e}")
-
-            # ------------------------------
-            # ⏳ รอเวลาตาม retry_delays ก่อน retry ครั้งถัดไป
-            # ------------------------------
             if attempt < max_retries:
                 delay = retry_delays[attempt - 1]
                 print(f"⏳ รอ {delay} วินาทีก่อน retry ครั้งถัดไป")
                 pytime.sleep(delay)
 
-    # ถ้า retry ครบ max_retries → fail
     print("❌ ล้มเหลวหลังจาก retry 3 ครั้ง")
     return {"status": "failed"}
