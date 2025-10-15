@@ -1,5 +1,5 @@
 from datetime import datetime
-from flask_login import current_user
+from flask import session
 from app.repositories.admin_return_repository import AdminReturnRepository
 from app.db.models import Equipment
 
@@ -46,13 +46,17 @@ class AdminReturnService:
         rent.status_id = 4  # คืนแล้ว
         rent.return_date = datetime.utcnow()
 
-        # ✅ บันทึกผู้ตรวจสอบ
-        rent.check_by = getattr(current_user, "user_id", getattr(current_user, "id", None))
+        # ✅ ดึง user_id จาก session แทน current_user
+        user_id = session.get("user_id")
+        if user_id:
+            rent.check_by = user_id
+            print(f"👤 CHECKED BY (session user_id): {user_id}")
+        else:
+            print("⚠️ ไม่พบ user_id ใน session — check_by จะเป็น None")
 
         # ✅ อัปเดตสถานะอุปกรณ์
         equipment.status = "available"
-
-        print(f"🟢 DEBUG | RentID: {rent_id} | CheckBy: {rent.check_by} | Equipment: {equipment.name} -> {equipment.status}")
+        print(f"🟢 DEBUG | RentID: {rent_id} | Equipment: {equipment.name} -> {equipment.status}")
 
         # ✅ commit จริงใน session เดียวกัน
         self.repo.commit()
