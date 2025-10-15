@@ -1,11 +1,8 @@
-from sqlalchemy import text, inspect
+from sqlalchemy import inspect
 from sqlalchemy.exc import SQLAlchemyError
 from app.db.db import SessionLocal, engine
 from app.db.models import ItemBroke, RentReturn
 from sqlalchemy.orm import joinedload, load_only
-import os, time
-from werkzeug.utils import secure_filename
-from flask import current_app
 
 class ItemBrokeRepository:
     def __init__(self):
