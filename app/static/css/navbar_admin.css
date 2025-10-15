@@ -90,9 +90,9 @@ html, body {
   padding-right: 24px; padding-bottom: 32px;
   padding-left: 8px;             /* ให้ชิดขวา sidebar (อยากชิดมากตั้ง 0 ได้) */
   margin-left: 96px;             /* = ความกว้าง sidebar ปกติ */
+  margin-top: 20px;
   background:#fff;
   transition: margin-left .3s ease;
-  display: flex;
   justify-content: center; /* center children horizontally inside admin-content */
 }
 /* ตอน hover ขยาย sidebar ให้ดัน content เท่ากัน */

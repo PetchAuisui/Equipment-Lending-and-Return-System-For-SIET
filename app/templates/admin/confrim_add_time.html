@@ -13,7 +13,7 @@
 <body>
     <div class="title-wrapper">
         <h2 class="track-title">รายการคำขอขยายเวลาการยืมอุปกรณ์</h2>
-        <a href="{{ url_for('admin.confrim_add_time_history') }}" class="btn btn-blue" style="margin-left: 20px;">ดูประวัติ</a>
+        <a href="{{ url_for('admin.confrim_add_time_history') }}" class="btn btn-blue">ดูประวัติ</a>
     </div>
 
     <div class="track-container">
@@ -40,18 +40,15 @@
                         <td>{{ item.start_date }}</td>
                         <td>{{ item.old_due }}</td>
                         <td>{{ item.new_due }}</td>
-                        <td>—</td>
-                    </tr>
-                    <tr>
-                        <td colspan="7">
-                            <div class="action-row">
+                        <td>
+                            <div class="action-inline">
                                 <form action="{{ url_for('admin.approve_renewal', renewal_id=item.renewal_id) }}" method="POST">
                                     <button type="submit" class="btn btn-green">อนุมัติ</button>
                                 </form>
-                                <a href="#" class="btn btn-yellow">รายละเอียด</a>
                                 <form action="{{ url_for('admin.reject_renewal', renewal_id=item.renewal_id) }}" method="POST">
                                     <button type="submit" class="btn btn-red">ไม่อนุมัติ</button>
                                 </form>
+                                <a href="#" class="btn btn-yellow">รายละเอียด</a>
                             </div>
                         </td>
                     </tr>
