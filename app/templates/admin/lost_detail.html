@@ -3,17 +3,30 @@
 {% block content %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/lost.css') }}">
 
-<div style="padding:40px 24px; display:flex; justify-content:center;">
-  <div style="width:95%; max-width:900px; margin:0 auto; position:relative; left:50%; transform:translateX(-50%);">
+<div style="
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;        /* ✅ ชิดบน */
+  min-height: calc(100vh - 120px);
+  padding: 60px 24px 40px;        /* ✅ เว้นบน 60px พอดีกับ navbar */
+  box-sizing: border-box;
+">
+  <div style="width:95%; max-width:900px; margin:0 auto;">
     <h2 style="text-align:center; margin-bottom:18px;">รายละเอียดการแจ้ง</h2>
 
-    <div class="lost-card" style="padding:22px; box-shadow:0 10px 30px rgba(10,20,40,0.06); border-radius:10px; background:#fff;">
-      <div style="display:flex; gap:20px; align-items:flex-start;">
-        <div style="flex:1;">
-          <p style="margin:0 0 8px 0;"><strong>ID:</strong> {{ item.item_broke_id }}</p>
-          <p style="margin:0 0 8px 0;"><strong>รหัสเช่า:</strong> {{ item.rent_id }}</p>
-          <p style="margin:0 0 12px 0;"><strong>อุปกรณ์:</strong> {{ item.rent_return and item.rent_return.equipment and item.rent_return.equipment.name or item.equipment_name }}</p>
-          <p style="margin:0 0 8px 0;"><strong>ประเภทแจ้ง:</strong>
+    <div class="lost-card" 
+         style="padding:22px; box-shadow:0 10px 30px rgba(10,20,40,0.06);
+                border-radius:10px; background:#fff;">
+      
+      <div style="display:flex; gap:20px; align-items:flex-start; flex-wrap:wrap;">
+        <!-- ข้อมูลฝั่งซ้าย -->
+        <div style="flex:1; min-width:300px;">
+          <p><strong>ID:</strong> {{ item.item_broke_id }}</p>
+          <p><strong>รหัสเช่า:</strong> {{ item.rent_id }}</p>
+          <p><strong>อุปกรณ์:</strong> 
+            {{ item.rent_return and item.rent_return.equipment and item.rent_return.equipment.name or item.equipment_name }}
+          </p>
+          <p><strong>ประเภทแจ้ง:</strong>
             {% set t = item.type or '' %}
             {% if t.lower() in ['lost','สูญหาย'] %}
               <span style="color:#d9534f;font-weight:700;">สูญหาย</span>
@@ -23,8 +36,11 @@
               {{ item.type }}
             {% endif %}
           </p>
-          <p style="margin:12px 0 8px 0;"><strong>รายละเอียด:</strong></p>
-          <div style="background:#fafafa;border:1px solid #eee;padding:12px;border-radius:6px;">{{ item.detail or '-' }}</div>
+
+          <p style="margin-top:12px;"><strong>รายละเอียด:</strong></p>
+          <div style="background:#fafafa;border:1px solid #eee;padding:12px;border-radius:6px;">
+            {{ item.detail or '-' }}
+          </div>
 
           <p style="margin-top:12px;"><strong>สถานะปัจจุบัน:</strong>
             {% if item.status in ['lost','สูญหาย','damaged'] %}
@@ -39,31 +55,48 @@
           </p>
         </div>
 
+        <!-- ฝั่งขวา -->
         <div style="width:260px;">
           <p><strong>รูปหลักฐาน</strong></p>
           {% if item.item_broke_images %}
             <div style="display:flex;flex-direction:column;gap:8px;">
               {% for im in item.item_broke_images %}
                 <a href="{{ url_for('static', filename=im.image_path) }}" target="_blank">
-                  <img src="{{ url_for('static', filename=im.image_path) }}" alt="img" style="width:100%; border:1px solid #eee; border-radius:6px;">
+                  <img src="{{ url_for('static', filename=im.image_path) }}" 
+                       alt="img"
+                       style="width:100%; border:1px solid #eee; border-radius:6px;">
                 </a>
               {% endfor %}
             </div>
           {% else %}
-            <div style="background:#fafafa;border:1px dashed #ddd;padding:36px;text-align:center;border-radius:6px;color:#777;">ไม่มีรูป</div>
+            <div style="background:#fafafa;border:1px dashed #ddd;
+                        padding:36px;text-align:center;border-radius:6px;color:#777;">
+              ไม่มีรูป
+            </div>
           {% endif %}
 
           <div style="margin-top:16px;">
             <form action="{{ url_for('admin.lost_report_update', item_id=item.item_broke_id) }}" method="post">
               <label style="display:block; font-weight:700; margin-bottom:6px;">อัพเดทสถานะ</label>
-              <select name="update_status" class="input" required style="width:100%; padding:8px; border-radius:6px; border:1px solid #e6e9ef;">
+              <select name="update_status" required
+                      style="width:100%; padding:8px; border-radius:6px; border:1px solid #e6e9ef;">
                 <option value="">-- เลือกสถานะ --</option>
                 <option value="ส่งซ่อม">ส่งซ่อม</option>
                 <option value="พร้อมใช้งาน">พร้อมใช้งาน</option>
               </select>
+
               <div style="display:flex; gap:8px; margin-top:12px;">
-                <button type="submit" class="btn blue" style="flex:1;">send</button>
-                <a class="btn" href="{{ url_for('admin.lost_reports') }}" style="flex:1; text-align:center;">ยกเลิก</a>
+                <button type="submit" 
+                        style="flex:1; padding:8px; background:#007bff; color:#fff;
+                               border:none; border-radius:6px; font-weight:600; cursor:pointer;">
+                  send
+                </button>
+                <a href="{{ url_for('admin.lost_reports') }}"
+                   style="flex:1; text-align:center; padding:8px; 
+                          border:1px solid #ccc; border-radius:6px; 
+                          color:#6a3ea8; text-decoration:none; font-weight:600;">
+                  ยกเลิก
+                </a>
               </div>
             </form>
           </div>
