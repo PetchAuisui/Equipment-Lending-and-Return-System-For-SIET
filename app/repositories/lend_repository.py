@@ -62,10 +62,8 @@ def insert_rent_record(data):
             rent_record = RentReturn(**data)
             db.add(rent_record)
 
-            # ✅ อัปเดตสถานะอุปกรณ์เป็น unavailable
-            equipment = db.query(Equipment).filter(
-                Equipment.equipment_id == data["equipment_id"]
-            ).first()
+                    # ✅ อัปเดตสถานะอุปกรณ์เป็น unavailable
+            equipment = db.query(Equipment).filter(Equipment.equipment_id == data["equipment_id"]).first()
             if equipment:
                 equipment.status = "unavailable"
                 db.add(equipment)
