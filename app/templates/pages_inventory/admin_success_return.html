@@ -43,7 +43,7 @@
                         <td>{{ item.user_code }}</td>
                         <td>{{ item.user_name }}</td>
                         <td class="center action-buttons">
-                            <button class="btn btn-yellow"><i>🔍</i> ดูรายละเอียด</button>
+                            <a href="{{ url_for('admin_success_return.admin_return_detail', rent_id=item.rent_id) }}"class="btn btn-yellow">🔍 ดูรายละเอียด</a>
                             <button class="btn btn-green" onclick="confirmReturn({{ item.rent_id }})"><i>✅</i> ยืนยัน</button>
                             <button class="btn btn-red" onclick="reportLost({{ item.rent_id }})"><i>⚠️</i> เสียหาย</button>
                         </td>

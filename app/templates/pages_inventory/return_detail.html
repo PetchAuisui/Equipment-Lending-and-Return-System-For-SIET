@@ -1,0 +1,134 @@
+{% extends 'base/base_admin.html' %}
+{% block title %}รายละเอียดการคืนอุปกรณ์{% endblock %}
+
+{% block content %}
+
+<style>
+.detail-wrapper{width:calc(100% - 260px);margin-left:260px;padding:40px 0;display:flex;justify-content:center;}
+.detail-card{width:100%;max-width:1050px;background:#fff;border-radius:16px;box-shadow:0 10px 30px rgba(0,0,0,0.06);padding:28px 28px 32px;}
+.detail-header{display:flex;align-items:center;gap:12px;margin-bottom:16px}
+.detail-header .icon{background:#4a68e0;color:#fff;border-radius:50%;width:36px;height:36px;display:flex;align-items:center;justify-content:center}
+.detail-grid{display:grid;grid-template-columns:260px 1fr;gap:24px;margin-top:14px}
+.preview{width:100%;border:1px dashed #d8dbe8;border-radius:12px;display:flex;align-items:center;justify-content:center;background:#fafbff}
+.preview img{width:210px;height:210px;object-fit:cover;border-radius:8px}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.form-grid .full{grid-column:span 2}
+.input{display:flex;flex-direction:column;gap:6px}
+.input label{font-size:.92rem;color:#334;opacity:.9}
+.input input{height:40px;border:1px solid #d8dbe8;border-radius:10px;padding:0 12px;background:#f9fbff}
+.actions{display:flex;gap:10px;justify-content:flex-end;margin-top:18px}
+.btn{border:none;border-radius:9px;padding:10px 16px;font-weight:600;cursor:pointer}
+.btn-outline{background:#fff;border:1px solid #d7daea}
+.btn-green{background:#3ac97c;color:#fff}
+.btn-red{background:#ff5b5b;color:#fff}
+</style>
+
+<div class="detail-wrapper">
+  <div class="detail-card">
+    <div class="detail-header">
+      <div class="icon">⟳</div>
+      <h2 style="margin:0">คืนอุปกรณ์</h2>
+      <div style="margin-left:auto">
+        <a class="btn btn-outline" href="{{ url_for('admin_success_return.admin_return_page') }}">↩ กลับรายการ</a>
+      </div>
+    </div>
+
+    {% if not rent %}
+      <p>ไม่พบข้อมูล</p>
+    {% else %}
+    <div class="detail-grid">
+
+      <div class="preview">
+        {% if rent.image %}
+          <img src="{{ url_for('static', filename=rent.image) }}" alt="">
+        {% else %}
+          <img src="https://cdn-icons-png.flaticon.com/512/337/337940.png" alt="">
+        {% endif %}
+      </div>
+
+      <div class="form-grid">
+        <div class="input">
+          <label>ID</label>
+          <input type="text" value="{{ rent.rent_id }}" disabled>
+        </div>
+
+        <div class="input">
+          <label>ชื่ออุปกรณ์</label>
+          <input type="text" value="{{ rent.equipment_name }}" disabled>
+        </div>
+
+        <div class="input">
+          <label>วันที่ยืม</label>
+          <input type="text" value="{{ rent.start_date }}" disabled>
+        </div>
+
+        <div class="input">
+          <label>วันกำหนดคืน</label>
+          <input type="text" value="{{ rent.due_date }}" disabled>
+        </div>
+
+        <div class="input">
+          <label>รหัสประจำตัว</label>
+          <input type="text" value="{{ rent.user_code }}" disabled>
+        </div>
+
+        <div class="input">
+          <label>ชื่อ-นามสกุล</label>
+          <input type="text" value="{{ rent.user_name }}" disabled>
+        </div>
+
+        <div class="input">
+          <label>เบอร์โทร</label>
+          <input type="text" value="{{ rent.phone }}" disabled>
+        </div>
+
+        <div class="input">
+          <label>วันที่แจ้งคืน</label>
+          <input type="text" value="{{ rent.return_date }}" disabled>
+        </div>
+
+        <div class="input">
+          <label>รหัสอุปกรณ์</label>
+          <input type="text" value="{{ rent.equipment_code }}" disabled>
+        </div>
+
+        <div class="input">
+          <label>ยี่ห้อ</label>
+          <input type="text" value="{{ rent.brand or '-' }}" disabled>
+        </div>
+
+        <div class="input">
+          <label>วันที่จัดซื้อ</label>
+          <input type="text" value="{{ rent.buy_date or '-' }}" disabled>
+        </div>
+
+        <div class="full actions">
+          <a class="btn btn-red"
+             href="{{ url_for('pages.lost_report',
+                              rent_id=rent.rent_id,
+                              equipment_name=rent.equipment_name,
+                              equipment_code=rent.equipment_code) }}">
+            แจ้งสูญหาย
+          </a>
+          <button class="btn btn-green" onclick="confirmReturn({{ rent.rent_id }})">ยืนยันการคืน</button>
+        </div>
+      </div>
+
+    </div>
+    {% endif %}
+  </div>
+</div>
+
+<script>
+async function confirmReturn(rentId){
+  if(!confirm('ยืนยันการคืนอุปกรณ์หมายเลข '+rentId+' ?')) return;
+  const res = await fetch(`/api/return/${rentId}`, {method:'POST'});
+  const data = await res.json();
+  alert(data.message);
+  if(data.status === 'success'){
+    window.location.href = "{{ url_for('admin_success_return.admin_return_page') }}";
+  }
+}
+</script>
+
+{% endblock %}

@@ -12,3 +12,8 @@ class AdminReturnController:
     def confirm_return(rent_id):
         service = AdminReturnService()
         return service.confirm_return(rent_id)
+
+    @staticmethod
+    def get_return_detail(rent_id):
+        service = AdminReturnService()
+        return service.get_return_detail(rent_id)
