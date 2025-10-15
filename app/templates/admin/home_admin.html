@@ -17,12 +17,13 @@
       <div class="card__title">ประวัติยืม-คืน</div>
     </a>
 
+
     <a class="card" href="{{ url_for('admin.lost_reports') }}">
       <img class="card__icon" src="{{ url_for('static', filename='/images/icons/exclamation-mark.png') }}" alt="">
       <div class="card__title">อุปกรณ์สูญหาย/ชำรุด</div>
     </a>
 
-    <a class="card" href="#">
+    <a class="card" href="{{ url_for('admin_success_return.admin_return_page') }}">
       <img class="card__icon" src="{{ url_for('static', filename='/images/icons/back.png') }}" alt="">
       <div class="card__title">คืนอุปกรณ์</div>
     </a>

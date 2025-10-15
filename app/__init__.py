@@ -44,7 +44,10 @@ def create_app():
     from .blueprints.instructor.routes import bp as instructor_bp  
     from app.blueprints.admin.routes import admin_bp, admin_users_bp, admin_history_bp                  # root: "/"
     from app.blueprints.pages.routes import pages_bp
-    from app.blueprints.history.routes import history_bp                 # root: "/"
+
+    from app.blueprints.history.routes import history_bp
+    from app.blueprints.inventory.admin_success_return import admin_success_return_bp
+                # root: "/"
     from .blueprints.notifications import notifications_bp
 
 
@@ -58,11 +61,11 @@ def create_app():
     app.register_blueprint(instructor_bp, url_prefix="/instructor")   
     app.register_blueprint(history_bp)
     app.register_blueprint(admin_history_bp)
+    app.register_blueprint(admin_success_return_bp)
     app.register_blueprint(notifications_bp)
-
-
     
     # ===== 🔔 เริ่ม Scheduler สำหรับแจ้งเตือน =====
     start_notification_scheduler(app)
     return app
+
 

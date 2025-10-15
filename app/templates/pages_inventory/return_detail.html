@@ -1,0 +1,221 @@
+{% extends 'base/base_admin.html' %}
+{% block title %}รายละเอียดการคืนอุปกรณ์{% endblock %}
+
+{% block content %}
+
+<style>
+.detail-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  width: calc(100% - 260px); /* เผื่อ sidebar */
+  margin-left: 350px;
+  padding: 60px 0;
+  box-sizing: border-box;
+}
+
+/* การ์ดกลาง */
+.detail-card {
+  width: 100%;
+  max-width: 900px; /* ✅ ปรับให้ขนาดเหมาะกับเนื้อหา */
+  background: #fff;
+  border-radius: 18px;
+  box-shadow: 0 8px 26px rgba(0, 0, 0, 0.05);
+  padding: 40px 50px;
+  margin: 0 auto; /* ✅ ให้จัดกึ่งกลาง */
+  transition: all 0.3s ease;
+}
+
+/* ส่วนหัว */
+.detail-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.detail-header h2 {
+  margin: 0;
+  color: #1e2a78;
+  font-size: 1.6rem;
+  font-weight: 700;
+}
+
+/* ปุ่มกลับ */
+.detail-header .btn-outline {
+  background: #fff;
+  border: 2px solid #8b78e6;
+  color: #4a3dc6;
+  font-weight: 600;
+  border-radius: 8px;
+  padding: 8px 16px;
+  text-decoration: none;
+  transition: 0.25s ease;
+}
+.detail-header .btn-outline:hover {
+  background: #fafafa;
+}
+
+/* กริดฟอร์ม */
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+}
+.form-grid .full {
+  grid-column: span 2;
+}
+
+.input {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.input label {
+  font-size: 0.92rem;
+  font-weight: 500;
+  color: #444;
+}
+.input input {
+  height: 42px;
+  border: 1px solid #d0d4e4;
+  border-radius: 10px;
+  padding: 0 12px;
+  background: #f9fbff;
+}
+
+/* ปุ่มล่าง */
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 25px;
+}
+.btn {
+  border: none;
+  border-radius: 8px;
+  padding: 10px 18px;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 1rem;
+}
+.btn-red {
+  background-color: #ff5b5b;
+  color: white;
+  text-decoration: none; /* เพิ่มบรรทัดนี้ */
+}
+.btn-green {
+  background-color: #3ac97c;
+  color: white;
+}
+.btn-red:hover {
+  background-color: #ff7373;
+  text-decoration: none; /* เพิ่มบรรทัดนี้ เพื่อป้องกันเส้นใต้เมื่อเมาส์ไปวาง */
+}
+.btn-green:hover {
+  background-color: #4ad48b;
+}
+
+</style>
+
+<div class="detail-wrapper">
+  <div class="detail-card">
+    <div class="detail-header">
+      
+      <h2 style="margin:0">คืนอุปกรณ์</h2>
+      <div style="margin-left:auto">
+        <a class="btn btn-outline" href="{{ url_for('admin_success_return.admin_return_page') }}">↩ กลับรายการ</a>
+      </div>
+    </div>
+
+    {% if not rent %}
+      <p>ไม่พบข้อมูล</p>
+    {% else %}
+    <div class="detail-grid">
+
+      <div class="form-grid">
+        <div class="input">
+          <label>ID</label>
+          <input type="text" value="{{ rent.rent_id }}" disabled>
+        </div>
+
+        <div class="input">
+          <label>ชื่ออุปกรณ์</label>
+          <input type="text" value="{{ rent.equipment_name }}" disabled>
+        </div>
+
+        <div class="input">
+          <label>วันที่ยืม</label>
+          <input type="text" value="{{ rent.start_date }}" disabled>
+        </div>
+
+        <div class="input">
+          <label>วันกำหนดคืน</label>
+          <input type="text" value="{{ rent.due_date }}" disabled>
+        </div>
+
+        <div class="input">
+          <label>รหัสประจำตัว</label>
+          <input type="text" value="{{ rent.user_code }}" disabled>
+        </div>
+
+        <div class="input">
+          <label>ชื่อ-นามสกุล</label>
+          <input type="text" value="{{ rent.user_name }}" disabled>
+        </div>
+
+        <div class="input">
+          <label>เบอร์โทร</label>
+          <input type="text" value="{{ rent.phone }}" disabled>
+        </div>
+
+        <div class="input">
+          <label>วันที่แจ้งคืน</label>
+          <input type="text" value="{{ rent.return_date }}" disabled>
+        </div>
+
+        <div class="input">
+          <label>รหัสอุปกรณ์</label>
+          <input type="text" value="{{ rent.equipment_code }}" disabled>
+        </div>
+
+        <div class="input">
+          <label>ยี่ห้อ</label>
+          <input type="text" value="{{ rent.brand or '-' }}" disabled>
+        </div>
+
+        <div class="input">
+          <label>วันที่จัดซื้อ</label>
+          <input type="text" value="{{ rent.buy_date or '-' }}" disabled>
+        </div>
+
+        <div class="full actions">
+          <a class="btn btn-red"
+             href="{{ url_for('pages.lost_report',
+                              rent_id=rent.rent_id,
+                              equipment_name=rent.equipment_name,
+                              equipment_code=rent.equipment_code) }}">
+            แจ้งสูญหาย
+          </a>
+          <button class="btn btn-green" onclick="confirmReturn({{ rent.rent_id }})">ยืนยันการคืน</button>
+        </div>
+      </div>
+
+    </div>
+    {% endif %}
+  </div>
+</div>
+
+<script>
+async function confirmReturn(rentId){
+  if(!confirm('ยืนยันการคืนอุปกรณ์หมายเลข '+rentId+' ?')) return;
+  const res = await fetch(`/api/return/${rentId}`, {method:'POST'});
+  const data = await res.json();
+  alert(data.message);
+  if(data.status === 'success'){
+    window.location.href = "{{ url_for('admin_success_return.admin_return_page') }}";
+  }
+}
+</script>
+
+{% endblock %}
