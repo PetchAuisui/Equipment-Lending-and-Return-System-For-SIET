@@ -179,7 +179,11 @@
                   <td>{{ r.due_date.strftime('%d/%m/%Y %H:%M') }}</td>
                   <td>
                     {% if r.is_overdue %}
-                      <span class="badge danger">ค้าง {{ r.overdue_days }} วัน</span>
+                      {% if r.overdue_days < 1 %}
+                        <span class="badge danger">เกินกำหนด</span>
+                      {% else %}
+                        <span class="badge danger">ค้าง {{ r.overdue_days|int }} วัน</span>
+                      {% endif %}
                     {% else %}
                       <span class="badge ok">ยังไม่ครบกำหนด</span>
                     {% endif %}
