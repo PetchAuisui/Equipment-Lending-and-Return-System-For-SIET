@@ -7,7 +7,7 @@
 <div class="main-wrapper">
     <div class="content-container">
         <div class="page-title">
-            <i>⟳</i>
+            
             <span>คืนอุปกรณ์</span>
         </div>
 
@@ -18,25 +18,18 @@
         <table class="equipment-table" id="equipmentTable">
             <thead>
                 <tr>
-                    <th>ภาพ</th>
                     <th>หมายเลข</th>
                     <th>ชื่ออุปกรณ์</th>
                     <th>วันที่แจ้งคืน</th>
                     <th>รหัสผู้ยืม</th>
                     <th>ชื่อผู้ยืม</th>
-                    <th class="center">การจัดการ</th>
+                    <th class="manage-header">การจัดการ</th>
                 </tr>
             </thead>
             <tbody>
                 {% for item in rent_list %}
                     <tr>
-                        <td>
-                            {% if item.image %}
-                                <img src="{{ url_for('static', filename=item.image) }}" class="img-thumb">
-                            {% else %}
-                                <img src="https://cdn-icons-png.flaticon.com/512/337/337940.png" class="img-thumb">
-                            {% endif %}
-                        </td>
+                        
                         <td>{{ item.equipment_code }}</td>
                         <td>{{ item.equipment_name }}</td>
                         <td>{{ item.return_date }}</td>
