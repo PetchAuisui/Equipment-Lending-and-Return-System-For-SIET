@@ -94,7 +94,6 @@ class TrackStatusUserService:
                 "status_color": (r["status"] or {}).get("color_code"),
                 "full_name": (r["user"] or {}).get("name"),
                 "phone_number": (r["user"] or {}).get("phone"),
-                "subject_name": (r["subject"] or {}).get("name"),
                 "teacher_name": (r["teacher"] or {}).get("name"),
                 "reason": r.get("reason"),
             })
