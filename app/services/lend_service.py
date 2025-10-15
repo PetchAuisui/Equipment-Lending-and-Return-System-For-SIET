@@ -50,7 +50,6 @@ def lend_data_service(data):
         rent_data = {
             "equipment_id": equipment.equipment_id,
             "user_id": user.user_id,
-            "subject_id": None,
             "start_date": now_bkk,
             "due_date": datetime.strptime(data["return_date"], "%Y-%m-%d"),
             "teacher_confirmed": data.get("teacher_confirmed"),
