@@ -1,5 +1,6 @@
 # app/services/equipment_service.py
-import os, uuid
+import os
+import uuid
 from typing import Optional, List
 from datetime import datetime
 from werkzeug.utils import secure_filename

@@ -1,6 +1,6 @@
 from app.db.db import SessionLocal, engine
 from sqlalchemy import text
-from app.db.models import ItemBroke, RentReturn, Equipment, User, ItemBrokeImage
+from app.db.models import ItemBroke, RentReturn, ItemBrokeImage
 from sqlalchemy.orm import joinedload
 from sqlalchemy.orm import load_only
 import os

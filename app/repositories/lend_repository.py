@@ -1,10 +1,6 @@
 from app.db.db import SessionLocal
 from app.db.models import User,RentReturn, Equipment
-from datetime import datetime, time
-from zoneinfo import ZoneInfo
 from sqlalchemy.exc import SQLAlchemyError
-from sqlalchemy import select
-from sqlalchemy.orm import Session
 
 
 def get_all_users():

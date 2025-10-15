@@ -1,7 +1,7 @@
 from flask.views import MethodView
 from flask import Blueprint, request, Response
+from app.db.models import Equipment
 from app.db.db import SessionLocal
-from app.models.equipment import Equipment
 import json
 
 api_equipment_bp = Blueprint("api_equipment", __name__, url_prefix="/api/equipments")

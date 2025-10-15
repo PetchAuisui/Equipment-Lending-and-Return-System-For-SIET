@@ -1,14 +1,17 @@
 from math import ceil
 from typing import Dict, Any, List, Optional, Tuple
+
 from sqlalchemy import text
-from app.repositories.user_repository import UserRepository
-from app.services import validators as v
 from werkzeug.security import generate_password_hash
 
-# -------- ใข้คนละความหมายกัน --------
+from app.repositories.user_repository import UserRepository
+from app.services import validators as v
+
+# -------- ใช้คนละความหมายกัน --------
 ALLOWED_MEMBER_TYPES = {"student", "teacher", "officer"}
-ALLOWED_GENDERS      = {"male", "female", "other"}
-ALLOWED_ROLES        = {"member", "staff"}
+ALLOWED_GENDERS = {"male", "female", "other"}
+ALLOWED_ROLES = {"member", "staff"}
+
 
 class AdminUserService:
     def __init__(self, repo: UserRepository):
@@ -32,21 +35,27 @@ class AdminUserService:
         for u in rows:
             uid = u.get("user_id") or u.get("id")
             code = u.get("student_id") or u.get("employee_id") or (f"U{uid:04d}" if uid else "U")
-            users.append({
-                "user_id": uid,
-                "code": code,
-                "name": u.get("name", "-"),
-                "email": u.get("email", "-"),
-                "role": u.get("role", "member"),
-                "member_type": u.get("member_type", "-"),
-                "major": u.get("major", "-"),
-                "phone": u.get("phone", "-"),
-            })
+            users.append(
+                {
+                    "user_id": uid,
+                    "code": code,
+                    "name": u.get("name", "-"),
+                    "email": u.get("email", "-"),
+                    "role": u.get("role", "member"),
+                    "member_type": u.get("member_type", "-"),
+                    "major": u.get("major", "-"),
+                    "phone": u.get("phone", "-"),
+                }
+            )
 
         total_pages = ceil(total / per_page) if per_page else 1
         return {
-            "users": users, "page": page, "per_page": per_page,
-            "total": total, "total_pages": total_pages, "q": q,
+            "users": users,
+            "page": page,
+            "per_page": per_page,
+            "total": total,
+            "total_pages": total_pages,
+            "q": q,
         }
 
     def drop_user(self, user_id: int, *, actor_id: Optional[int]) -> bool:
@@ -56,7 +65,7 @@ class AdminUserService:
     def get_user(self, user_id: int) -> Optional[Dict[str, Any]]:
         row = self.repo.session.execute(
             text("SELECT * FROM users WHERE user_id = :uid LIMIT 1"),
-            {"uid": user_id}
+            {"uid": user_id},
         ).first()
         return dict(row._mapping) if row else None
 
@@ -66,13 +75,12 @@ class AdminUserService:
             return "User not found"
 
         # ใช้ค่าที่ส่งมา ถ้าไม่ส่งให้ fallback เป็นค่าปัจจุบัน (เพื่อเทียบ/ตรวจ)
-        name   = v.norm(data.get("name"))   or (current.get("name") or "")
-        email  = (v.norm(data.get("email")) or (current.get("email") or "")).lower()
-        phone  = v.norm(data.get("phone"))  or (current.get("phone") or "")
-        major  = v.norm(data.get("major"))  or (current.get("major") or "")
-        mtype  = (v.norm(data.get("member_type")) or (current.get("member_type") or "")).lower()
+        name = v.norm(data.get("name")) or (current.get("name") or "")
+        email = (v.norm(data.get("email")) or (current.get("email") or "")).lower()
+        phone = v.norm(data.get("phone")) or (current.get("phone") or "")
+        mtype = (v.norm(data.get("member_type")) or (current.get("member_type") or "")).lower()
         gender = (v.norm(data.get("gender")) or (current.get("gender") or "")).lower()
-        role   = (v.norm(data.get("role")) or (current.get("role") or "member")).lower()
+        role = (v.norm(data.get("role")) or (current.get("role") or "member")).lower()
 
         if not name:
             return "Missing field: name"
@@ -91,13 +99,15 @@ class AdminUserService:
         if email and email != (current.get("email") or "").lower():
             exists = self.repo.session.execute(
                 text("SELECT user_id FROM users WHERE email = :email LIMIT 1"),
-                {"email": email}
+                {"email": email},
             ).first()
             if exists and int(exists.user_id) != int(user_id):
                 return "Email already in use"
         return None
 
-    def update_user(self, user_id: int, data: Dict[str, Any], *, actor_id: Optional[int]) -> Tuple[Optional[Dict[str, Any]], Optional[str]]:
+    def update_user(
+        self, user_id: int, data: Dict[str, Any], *, actor_id: Optional[int]
+    ) -> Tuple[Optional[Dict[str, Any]], Optional[str]]:
         """อัปเดตผู้ใช้ผ่าน repo เพื่อให้เกิด audit 'updated'"""
         current = self.get_user(user_id)
         if not current:
@@ -109,7 +119,7 @@ class AdminUserService:
 
         # อัปเดตเฉพาะคีย์ที่อนุญาต (partial update)
         allowed = {"name", "email", "phone", "major", "member_type", "gender", "role"}
-        payload = {}
+        payload: Dict[str, Any] = {}
         for k in allowed:
             if k in data:
                 payload[k] = v.norm(data.get(k))
@@ -121,15 +131,15 @@ class AdminUserService:
         if not updated:
             return None, "User not found"
         return updated, None
-    
+
     def set_password_for_user(
         self,
         user_id: int,
         new_password: str,
         confirm_password: str,
-        actor_id: int | None = None,
+        actor_id: Optional[int] = None,
         min_length: int = 6,
-    ):
+    ) -> Tuple[bool, Optional[str]]:
         # 1) validate
         if not new_password or not confirm_password:
             return False, "กรุณากรอกรหัสผ่านให้ครบ"
@@ -137,10 +147,6 @@ class AdminUserService:
             return False, "รหัสผ่านและยืนยันรหัสไม่ตรงกัน"
         if len(new_password) < min_length:
             return False, f"รหัสผ่านต้องมีอย่างน้อย {min_length} ตัวอักษร"
-
-        # (ทางเลือก) ตรวจความแข็งแรงพื้นฐาน
-        # if new_password.isdigit() or new_password.isalpha():
-        #     return False, "ควรมีทั้งตัวอักษรและตัวเลขอย่างน้อย"
 
         # 2) หา user ว่ามีจริงไหม
         user = self.repo.get_user_by_id(user_id)
@@ -154,5 +160,4 @@ class AdminUserService:
         if not updated:
             return False, "อัปเดตรหัสผ่านไม่สำเร็จ"
 
-        # (ถ้าคุณมีระบบ Audit สามารถเรียก service/repo บันทึก log ตรงนี้ได้)
         return True, None

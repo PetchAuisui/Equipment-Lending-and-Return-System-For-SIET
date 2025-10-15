@@ -3,9 +3,6 @@ from flask import render_template, redirect, url_for, flash,request
 from . import tracking_bp
 from app.services.trackstatus_service import TrackStatusService, TrackStatusUserService
 from app.services.user_return_service import UserReturnService
-from datetime import datetime
-from app.db.db import SessionLocal
-from app.db.models import RentReturn
 from app.services import renewal_service
 
 

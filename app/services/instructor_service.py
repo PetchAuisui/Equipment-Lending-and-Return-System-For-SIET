@@ -1,7 +1,6 @@
 # app/services/instructor_service.py
 
 from dataclasses import dataclass
-from typing import List, Optional
 from sqlalchemy import select, func
 
 # ใช้ตัวนี้ที่อยู่ใน app/services/image_resolver.py
