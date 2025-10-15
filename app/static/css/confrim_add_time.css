@@ -1,22 +1,22 @@
-/* ✅ กล่องหลัก */
 .track-container {
     background-color: #f2f2f2;
-    width: 115%;
+    width: 100%;
+    max-width: 1200px;
     padding: 40px;
     border-radius: 20px;
-    margin-top: 30px;
-    margin-left: 60px;
+    margin: 30px auto;
     box-shadow: 0 2px 8px rgba(0,0,0,0.1);
 }
 
 .title-wrapper {
     display: flex;
-    align-items: center; /* จัดให้แนวตั้งอยู่ตรงกลางพอดี */
-    width: 90%;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 20px;
     margin-left: 60px;
+    margin-bottom: 20px;
 }
 
-/* ป้องกัน H2 ดันปุ่มลง */
 .track-title {
     background-color: #f8b9c4;
     color: #fff;
@@ -26,20 +26,20 @@
     text-align: center;
     display: inline-block;
     border-radius: 15px;
-    margin: 0; /* ✅ ตัด margin บน-ล่างของ h2 ออก */
+    margin: 0;
 }
 
-
-/* ✅ กล่องตาราง */
 .track-box {
     background-color: #f4f4f4;
     padding: 25px;
     border-radius: 15px;
+    margin-bottom: 40px;
 }
 
 .track-table {
     width: 100%;
-    border-collapse: collapse;
+    border-collapse: separate;
+    border-spacing: 0 20px; /* ✅ เว้นบรรทัดระหว่างแถว */
     font-family: "Prompt", sans-serif;
 }
 
@@ -56,24 +56,21 @@
     text-align: center;
     font-size: 15px;
     color: #333;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.05);
 }
 
-.track-table tbody tr {
-    border-bottom: 1px solid #ddd;
-}
-
-.track-table tbody tr:last-child {
-    border-bottom: none;
-}
-
-/* ✅ ปุ่มจัดกลางในแต่ละแถว */
-.actions {
+.action-row {
     display: flex;
-    justify-content: center;
-    gap: 10px;
+    justify-content: space-between;
+    padding: 15px 30px;
+    background-color: #fff;
+    border-radius: 12px;
+    margin: 20px 0; /* ✅ เว้นบรรทัดบน-ล่าง */
+    box-shadow: 0 1px 6px rgba(0,0,0,0.1);
 }
 
-/* ✅ ปุ่มต่าง ๆ */
 .btn {
     padding: 6px 12px;
     border-radius: 8px;
@@ -83,18 +80,15 @@
     transition: 0.3s;
 }
 
-/* สีปุ่มอนุมัติ */
 .btn-green {
     background-color: #28a745;
     color: white;
-    border-radius: 8px #28a745;
 }
 
 .btn-green:hover {
     background-color: #218838;
 }
 
-/* สีปุ่มไม่อนุมัติ */
 .btn-red {
     background-color: #dc3545;
     color: white;
@@ -104,7 +98,6 @@
     background-color: #c82333;
 }
 
-/* สีปุ่มรายละเอียด */
 .btn-yellow {
     background-color: #ffc107;
     color: #212529;
@@ -114,7 +107,6 @@
     background-color: #e0a800;
 }
 
-/* สีปุ่มดูประวัติ */
 .btn-blue {
     background-color: #007bff;
     color: white;
@@ -129,7 +121,6 @@
     background-color: #0069d9;
 }
 
-/* ถ้าไม่มีข้อมูล */
 .no-data {
     text-align: center;
     color: #777;
