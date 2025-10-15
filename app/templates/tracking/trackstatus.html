@@ -45,9 +45,14 @@
                         {% for r in rents %}
                         <tr>
                             <td class="item-name">{{ r.equipment_name }}</td>
-                            <td class="status">
-                                <span style="color: {{ r.status_color }}">{{ r.status_name }}</span>
-                            </td>
+              <td class="status">
+                {% set _name = (r.status_name|lower) if r.status_name is defined else '' %}
+                {% if _name == 'lost' or _name == 'สูญหาย' %}
+                  <span style="color: red; font-weight: 600;">{{ r.status_name }}</span>
+                {% else %}
+                  <span style="color: {{ r.status_color }}">{{ r.status_name }}</span>
+                {% endif %}
+              </td>
                             <td>{{ r.start_date.strftime('%d-%m-%Y') }}</td>
                             <td>{{ r.due_date.strftime('%d-%m-%Y') }}</td>
                             <td class="actions">

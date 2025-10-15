@@ -24,9 +24,10 @@
             {% endif %}
           </p>
           <p style="margin:12px 0 8px 0;"><strong>รายละเอียด:</strong></p>
-          <div style="background:#fafafa;border:1px solid #eee;padding:12px;border-radius:6px;">{{ item.detail or '-' }}</div>
+          <div id="detail-box" data-original-detail="{{ (item.detail or '')|e }}" style="background:#fafafa;border:1px solid #eee;padding:12px;border-radius:6px;">{{ item.detail or '-' }}</div>
 
           <p style="margin-top:12px;"><strong>สถานะปัจจุบัน:</strong>
+            <span id="current-status" style="font-weight:700;">
             {% if item.status in ['lost','สูญหาย','damaged'] %}
               <span style="color:#d9534f;font-weight:700;">{{ item.status }}</span>
             {% elif item.status == 'ส่งซ่อม' %}
@@ -36,6 +37,7 @@
             {% else %}
               <span>{{ item.status }}</span>
             {% endif %}
+            </span>
           </p>
         </div>
 
@@ -73,4 +75,58 @@
   </div>
 </div>
 
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function(){
+  const sel = document.querySelector('select[name="update_status"]');
+  const currentStatusEl = document.getElementById('current-status');
+  const detailBox = document.getElementById('detail-box');
+  // determine original reported type
+  const reportedType = "{{ (item.type or '')|e }}".toLowerCase();
+
+  function setStatusVisual(status){
+    if(!currentStatusEl) return;
+    let html = '';
+    if(['lost','สูญหาย','damaged','เสียหาย'].includes(status.toLowerCase())){
+      html = '<span style="color:#d9534f;font-weight:700;">'+ status +'</span>';
+    } else if(status === 'ส่งซ่อม'){
+      html = '<span style="color:#f0ad4e;font-weight:700;">'+ status +'</span>';
+    } else if(status === 'พร้อมใช้งาน'){
+      html = '<span style="color:#28a745;font-weight:700;">'+ status +'</span>';
+    } else {
+      html = '<span>'+ status +'</span>';
+    }
+    currentStatusEl.innerHTML = html;
+  }
+
+  if(sel){
+    sel.addEventListener('change', function(){
+      const v = this.value || '';
+      // if admin sets to ready, show green and append previous-type note
+      if(v === 'พร้อมใช้งาน'){
+        setStatusVisual(v);
+        if(detailBox){
+          const orig = detailBox.getAttribute('data-original-detail') || '';
+          // only append once
+          if(!detailBox.innerText.includes('ประเภทเก่า')){
+            const prev = reportedType.includes('damaged') || reportedType.includes('เสียหาย') ? 'เสียหาย' : 'สูญหาย';
+            const note = ' (ประเภทเก่า ' + prev + ')';
+            detailBox.innerText = (orig || detailBox.innerText || '-') + note;
+          }
+        }
+      } else {
+        // revert visual to selected value (or keep original)
+        setStatusVisual(v || '{{ item.status|e }}');
+        // if changed away from ready, restore original detail text
+        if(detailBox){
+          const orig = detailBox.getAttribute('data-original-detail') || '';
+          detailBox.innerText = orig || detailBox.innerText.replace(/\s*\(ประเภทเก่า.*\)$/, '');
+        }
+      }
+    });
+  }
+});
+</script>
 {% endblock %}

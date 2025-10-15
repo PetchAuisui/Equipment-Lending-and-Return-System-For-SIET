@@ -112,6 +112,28 @@
       '[name="place"]'
     ];
 
+    // show/hide images row based on report_type
+    const reportTypeField = document.querySelector('[name="report_type"]');
+    const imagesRow = document.querySelector('[name="images"]').closest('.row');
+
+    function toggleImagesRow(){
+      const v = (reportTypeField && reportTypeField.value) || '';
+      if(v === 'damaged'){
+        imagesRow.style.display = '';
+      } else {
+        imagesRow.style.display = 'none';
+      }
+    }
+
+    if(reportTypeField){
+      reportTypeField.addEventListener('change', function(){
+        toggleImagesRow();
+        validate();
+      });
+      // initial
+      toggleImagesRow();
+    }
+
     function getFields(){
       return requiredSelectors.map(s=>document.querySelector(s));
     }
