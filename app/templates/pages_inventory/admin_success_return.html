@@ -45,7 +45,7 @@
                         <td class="center action-buttons">
                             <button class="btn btn-yellow"><i>🔍</i> ดูรายละเอียด</button>
                             <button class="btn btn-green" onclick="confirmReturn({{ item.rent_id }})"><i>✅</i> ยืนยัน</button>
-                            <button class="btn btn-red" onclick="reportLost({{ item.rent_id }})"><i>⚠️</i> สูญหาย</button>
+                            <button class="btn btn-red" onclick="reportLost({{ item.rent_id }})"><i>⚠️</i> เสียหาย</button>
                         </td>
                     </tr>
                 {% endfor %}
@@ -82,7 +82,7 @@
     }
 
     async function reportLost(rentId) {
-        alert("ฟังก์ชันแจ้งสูญหายยังไม่เปิดใช้งาน (rent_id: " + rentId + ")");
+        alert("ฟังก์ชันแจ้งเสียหายยังไม่เปิดใช้งาน (rent_id: " + rentId + ")");
     }
 </script>
 
