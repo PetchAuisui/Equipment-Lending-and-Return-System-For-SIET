@@ -95,7 +95,6 @@ def lend_submit():
         "return_date": form.get("return_date") or None,
         "borrower_name": form.get("borrower_name") or None,
         "phone": form.get("phone") or None,
-        "major": form.get("major") or None,
         "subject_id": form.get("subject") or None,
         "teacher_confirmed": form.get("teacher") or None,
         "reason": form.get("reason") or None,
