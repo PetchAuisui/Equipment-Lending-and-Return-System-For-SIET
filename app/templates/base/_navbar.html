@@ -54,7 +54,7 @@
       <a href="{{ url_for('pages.policy') }}">Policy</a>
       <a href="{{ url_for('pages.about_us') }}">About Us</a>
 
-<<<<<<< HEAD
+
       <!-- เมนู Login / Logout -->
       {% if not current_user.is_authenticated %}
         <hr style="border:none;height:1px;background:rgba(255,255,255,.25);margin:6px 0;">
@@ -73,12 +73,7 @@
       {% endif %}
     </nav>
 
-    <!-- ปุ่มกระดิ่ง -->
-    <div class="navbar_light">
-      <button class="btn-bell" aria-label="Notifications">
-        <i class="ri-notification-4-line"></i>
-      </button>
-=======
+
 <div class="navbar_light position-relative">
   <!-- 🔔 ปุ่มกระดิ่ง -->
   <button id="notifBell" class="btn-bell position-relative" aria-label="Notifications">
@@ -99,7 +94,6 @@
 
     <div id="notifList" class="p-3" style="max-height: 400px; overflow-y: auto;">
       <div class="text-center text-muted py-3 small">ไม่มีการแจ้งเตือนใหม่</div>
->>>>>>> function/overdue-alert-4
     </div>
   </div>
 </div>
