@@ -161,3 +161,20 @@ body {
   gap: 10px;
   margin-top: 20px;
 }
+
+.status-badge {
+  display: inline-flex;          /* ใช้ flex จัดให้อยู่กลางทั้งแนวตั้งแนวนอน */
+  align-items: center;
+  justify-content: center;
+  width: fit-content;
+  padding: 1px 8px;              /* ลด padding ให้เตี้ยลง */
+  background-color: #e0e0e0;
+  color: #333;
+  font-weight: 600;
+  border-radius: 999px;          /* มนพอดี */
+  font-size: 0.9rem;
+  line-height: 1;                /* ให้เท่าความสูงข้อความ */
+  vertical-align: middle;
+  text-transform: lowercase;
+  height: 1.6em;                 /* กำหนดความสูงเท่ากับขนาดฟอนต์ */
+}
