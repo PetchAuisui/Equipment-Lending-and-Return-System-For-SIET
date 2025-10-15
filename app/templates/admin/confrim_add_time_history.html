@@ -13,11 +13,7 @@
 <body>
     <div class="title-wrapper">
         <h2 class="track-title">ประวัติคำขอขยายเวลาการยืมอุปกรณ์</h2>
-
-        <!-- 🔙 ปุ่มกลับไปหน้าหลัก -->
-        <a href="{{ url_for('admin.confrim_add_time') }}" class="btn btn-blue" >
-            กลับไปหน้าคำขอ
-        </a>
+        <a href="{{ url_for('admin.confrim_add_time') }}" class="btn btn-blue">กลับไปหน้าคำขอ</a>
     </div>
 
     <div class="track-container">
@@ -47,15 +43,17 @@
                         <td>{{ item.new_due }}</td>
                         <td>
                             {% if item.status == "approved" %}
-                                <span style="color: green; font-weight: bold;">อนุมัติ</span>
+                                <span class="status approved">อนุมัติ</span>
                             {% elif item.status == "cancle" %}
-                                <span style="color: red; font-weight: bold;">ไม่อนุมัติ</span>
+                                <span class="status rejected">ไม่อนุมัติ</span>
                             {% else %}
-                                <span>{{ item.status }}</span>
+                                <span class="status pending">{{ item.status }}</span>
                             {% endif %}
                         </td>
-                        <td class="actions">
-                            <a href="#" class="btn btn-yellow">รายละเอียด</a>
+                        <td>
+                            <div class="action-inline">
+                                <a href="#" class="btn btn-yellow">รายละเอียด</a>
+                            </div>
                         </td>
                     </tr>
                     {% endfor %}
