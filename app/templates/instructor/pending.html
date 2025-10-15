@@ -1,0 +1,68 @@
+{% extends 'base/base_teacher.html' %}
+{% block title %}Pending / History{% endblock %}
+
+{% block content %}
+<h2>คำขอทั้งหมด</h2>
+
+<table class="tbl tbl-hover">
+  <thead>
+    <tr>
+      <th>#</th>
+      <th>รหัสคำขอ</th>
+      <th>ผู้ขอ</th>
+      <th>อุปกรณ์</th>
+      <th>ยืมเมื่อ</th>
+      <th>กำหนดคืน</th>
+      <th>สถานะ</th>
+      <th>หมายเหตุ</th>
+      <th>ตรวจสอบ</th>
+    </tr>
+  </thead>
+
+  <tbody>
+    {% for r in reqs %}
+    {% set st = (r.status.name if r.status else 'pending')|lower %}
+    <tr data-href="{{ url_for('instructor.request_detail', req_id=r.rent_id) }}">
+      <td>{{ loop.index }}</td>
+      <td><a href="{{ url_for('instructor.request_detail', req_id=r.rent_id) }}">#{{ r.rent_id }}</a></td>
+      <td>
+        {{ (r.user.student_id or r.user.employee_id) if r.user else '-' }}
+        <div class="muted">{{ r.user.name if r.user else '' }}</div>
+      </td>
+      <td>
+        {{ r.equipment.code if r.equipment else '-' }}
+        <div class="muted">{{ r.equipment.name if r.equipment else '' }}</div>
+      </td>
+      <td>{{ r.start_date.strftime('%d/%m/%Y %H:%M') if r.start_date else '-' }}</td>
+      <td>{{ r.due_date.strftime('%d/%m/%Y %H:%M') if r.due_date else '-' }}</td>
+      <td>
+        <span class="badge
+          {% if st=='approved' %} badge-success
+          {% elif st=='rejected' %} badge-danger
+          {% elif st=='returned' %} badge-info
+          {% else %} badge-warning {% endif %}">
+          {{ st }}
+        </span>
+      </td>
+      <td>{{ r.note or r.reason or '-' }}</td>
+      <td>
+        <a class="btn btn-sm btn-outline" href="{{ url_for('instructor.request_detail', req_id=r.rent_id) }}">
+          🔍 ดูรายละเอียด
+        </a>
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+{# --- Script ทำให้คลิกได้ทั้งแถว --- #}
+<script>
+  document.querySelectorAll('tr[data-href]').forEach(tr => {
+    tr.addEventListener('click', e => {
+      if (e.target.closest('a, button')) return;
+      window.location = tr.dataset.href;
+    });
+  });
+</script>
+
+{% endblock %}

@@ -1,0 +1,74 @@
+{% extends 'base/base_teacher.html' %}
+
+{% block title %}รายละเอียดคำขอ #{{ req.rent_id }}{% endblock %}
+
+{% block content %}
+{# สถานะเป็นสตริงตัวพิมพ์เล็ก #}
+{% set st = (req.status.name if req.status else 'PENDING')|lower %}
+
+<div class="request-panel">
+  <div class="panel-head">
+    <a class="back" href="{{ url_for('instructor.pending') }}">⟵</a>
+    <div class="title-chip">{{ req.equipment.name if req.equipment else 'อุปกรณ์' }}</div>
+  </div>
+
+  <div class="item-photo">
+    <img src="{{ img_url }}" alt="{{ req.equipment.name if req.equipment else 'device' }}">
+  </div>
+
+  <div class="form-like">
+    <div class="row">
+      <label>ID</label>
+      <div class="value">{{ req.rent_id }}</div>
+
+      <label>วันที่ยืม</label>
+      <div class="value">
+        {{ req.start_date.strftime('%d/%m/%Y %H:%M') if req.start_date else '-' }}
+      </div>
+
+      <label>วันที่กำหนดคืน</label>
+      <div class="value">
+        {{ req.due_date.strftime('%d/%m/%Y %H:%M') if req.due_date else '-' }}
+      </div>
+    </div>
+
+    <div class="row">
+      <label>ชื่อ-นามสกุล</label>
+      <div class="value">{{ req.user.name if req.user else '-' }}</div>
+
+      <label>สาขา</label>
+      <div class="value">{{ req.user.major if req.user and req.user.major else '-' }}</div>
+
+      <label>ชั้นปี</label>
+      <div class="value">{{ req.user.year if req.user and req.user.year else '-' }}</div>
+
+      <label>เบอร์โทร</label>
+      <div class="value">{{ req.user.phone if req.user and req.user.phone else '-' }}</div>
+
+      <label>เหตุผลการยืม</label>
+      <div class="value">{{ req.reason or req.note or '-' }}</div>
+
+      <label>รายวิชา</label>
+      <div class="value">{{ subject_name }}</div>
+
+      <label>ชั้นเรียน/เซกชัน</label>
+      <div class="value">{{ clazz_info or '-' }}</div>
+
+      <label>สถานะ</label>
+      <div class="value status {{ st }}">{{ st }}</div>
+    </div>
+  </div>
+
+  <div class="panel-actions">
+    <form method="post" action="{{ url_for('instructor.pending_decide', req_id=req.rent_id) }}">
+      <input type="hidden" name="action" value="approve">
+      <button type="submit" class="btn big approve">✓ ยืนยัน</button>
+    </form>
+
+    <form method="post" action="{{ url_for('instructor.pending_decide', req_id=req.rent_id) }}">
+      <input type="hidden" name="action" value="reject">
+      <button type="submit" class="btn big reject">✕ ปฏิเสธ</button>
+    </form>
+  </div>
+</div>
+{% endblock %}

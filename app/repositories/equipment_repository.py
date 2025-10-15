@@ -86,6 +86,7 @@ class EquipmentRepository:
     def commit(self):
         self.db.commit()
 
+
     def rollback(self):
         self.db.rollback()
 

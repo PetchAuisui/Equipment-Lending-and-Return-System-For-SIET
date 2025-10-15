@@ -1,6 +1,8 @@
 <nav class="navbar">
+
   <!-- แถวบน: Brand + ปุ่ม user (แถบสีชมพู) -->
   <div class="navbar_login">
+
     <div class="nav-left">
       <a class="brand" href="{{ url_for('pages.home') }}">
         <img src="{{ url_for('static', filename='images/logo.png') }}"
@@ -10,7 +12,9 @@
     </div>
 
     <div class="nav-right">
+
       {% if current_user.is_authenticated %}
+
         {% if session.get('role') in ['staff'] %}
           {% if request.path.startswith('/admin') %}
             <a href="{{ url_for('pages.home') }}" class="btn-nav btn-admin">Member</a>
@@ -18,7 +22,22 @@
             <a href="{{ url_for('admin.admin_home') }}" class="btn-nav btn-admin">Admin</a>
           {% endif %}
         {% endif %}
+
+        {# ===== ✅ ปุ่ม Instructor (ครอบคลุมหลายเคส) ===== #}
+        {% set role  = session.get('role') %}
+        {% set mtype = session.get('member_type') %}
+        {% set empid = session.get('employee_id') %}
+
+        {% if role in ['teacher','instructor'] or mtype == 'teacher' or empid %}
+          {% if request.path.startswith('/instructor') %}
+            <a href="{{ url_for('pages.home') }}" class="btn-nav btn-admin">Back</a>
+          {% else %}
+            <a href="{{ url_for('instructor.teacher_home') }}" class="btn-nav btn-admin">Instructor</a>
+          {% endif %}
+        {% endif %}
+
         <a href="{{ url_for('auth.logout_action') }}" class="btn-nav btn-logout">Logout</a>
+
         <span class="user_identity">
           {{ current_user.email | replace('@kmitl.ac.th','') }}
           <i class="ri-user-line"></i>
@@ -31,11 +50,13 @@
           <a href="{{ url_for('auth.register_page') }}">Sign in</a>
         </div>
       {% endif %}
+
     </div>
   </div>
 
   <!-- แถวล่าง (เขียว): เมนูหลัก -->
   {% if not request.path.startswith('/admin') %}
+
   <div class="navbar_menu">
     <!-- ปุ่ม hamburger -->
     <button class="menu-toggle" aria-label="Toggle menu" aria-expanded="false">
@@ -102,7 +123,9 @@
 <link rel="stylesheet" href="{{ url_for('static', filename='css/notifications.css') }}">
 <script src="{{ url_for('static', filename='js/notifications.js') }}"></script>
 
+
   {% endif %}
+
 </nav>
 
 <script>
