@@ -68,15 +68,30 @@
           <td style="padding:8px;">{{ it.item_broke_id }}</td>
           <td style="padding:8px;">{{ it.rent_id }}</td>
             <td class="col-equip"><span class="equip-name">{{ it.equipment_name if it.equipment_name else '-' }}</span></td>
-            <td class="col-detail"><span class="detail-text">{% if it.detail %}{{ it.detail[:120] }}{% if it.detail|length > 120 %}...{% endif %}{% else %}-{% endif %}</span></td>
-          <td style="padding:8px;">
-            {% set t = it.type or '' %}
-            {% if t.lower() in ['lost','สูญหาย'] %}
-              <span style="color:#d9534f;font-weight:700;">สูญหาย</span>
-            {% elif t.lower() in ['damaged','เสียหาย'] %}
-              <span style="color:#d9534f;font-weight:700;">เสียหาย</span>
+            {# detail - append previous-type note when status is ready #}
+            <td class="col-detail"><span class="detail-text">
+              {% set base_detail = it.detail or '' %}
+              {% if it.status == 'พร้อมใช้งาน' %}
+                {% set prev = (it.type or '')|lower %}
+                {% set prev_text = 'เสียหาย' if ('damaged' in prev) or ('เสียหาย' in prev) else 'สูญหาย' %}
+                {% set shown = (base_detail ~ ' (ประเภทเก่า ' ~ prev_text ~ ')') if base_detail else ('(ประเภทเก่า ' ~ prev_text ~ ')') %}
+              {% else %}
+                {% set shown = base_detail %}
+              {% endif %}
+              {% if shown %}{{ shown[:120] }}{% if shown|length > 120 %}...{% endif %}{% else %}-{% endif %}
+            </span></td>
+          <td style="padding:8px; text-align:center;">
+            {% if it.status == 'พร้อมใช้งาน' %}
+              <span class="badge-small" style="background:#28a745;">พร้อมให้ยืม</span>
             {% else %}
-              {{ it.type }}
+              {% set t = it.type or '' %}
+              {% if t.lower() in ['lost','สูญหาย'] %}
+                <span style="color:#d9534f;font-weight:700;">สูญหาย</span>
+              {% elif t.lower() in ['damaged','เสียหาย'] %}
+                <span style="color:#d9534f;font-weight:700;">เสียหาย</span>
+              {% else %}
+                {{ it.type }}
+              {% endif %}
             {% endif %}
           </td>
           <td style="padding:8px;">

@@ -206,6 +206,12 @@ def lost_report_update(item_id: int):
     svc = ItemBrokeService()
     ok = svc.set_status(item_id, new_status)
     if ok:
+        # if marking ready, update type to 'success' immediately
+        if new_status == 'พร้อมใช้งาน':
+            try:
+                svc.update_type(item_id, 'success')
+            except Exception:
+                pass
         flash('อัปเดตสถานะเรียบร้อย', 'success')
     else:
         flash('ไม่สามารถอัปเดตสถานะได้', 'error')

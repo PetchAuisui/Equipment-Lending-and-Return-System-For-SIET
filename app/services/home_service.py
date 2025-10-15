@@ -4,6 +4,8 @@ from app.services.schemas import TopBorrowedDTO, OutstandingDTO
 from app.services.item_broke_service import ItemBrokeService
 from app.services.schemas import RecentLostDTO
 from datetime import datetime
+from app.db.db import SessionLocal
+from app.db import models as M
 
 class HomeService:
     """Business logic ของหน้า Home"""
@@ -46,20 +48,48 @@ class HomeService:
         ibs = ItemBrokeService()
         rows = ibs.list_reports() or []
         out = []
-        for r in rows:
-            try:
-                if r.get('type') != 'lost':
+        db = SessionLocal()
+        try:
+            for r in rows:
+                try:
+                    if r.get('type') != 'lost':
+                        continue
+                    # try to find equipment image via rent->equipment->equipment_images
+                    img_path = None
+                    try:
+                        rent_id = r.get('rent_id')
+                        if rent_id:
+                            rr = db.query(M.RentReturn).filter(M.RentReturn.rent_id == rent_id).first()
+                            if rr and getattr(rr, 'equipment_id', None):
+                                ei = (
+                                    db.query(M.EquipmentImage)
+                                    .filter(M.EquipmentImage.equipment_id == rr.equipment_id)
+                                    .order_by(M.EquipmentImage.equipment_image_id.asc())
+                                    .first()
+                                )
+                                if ei:
+                                    img_path = ei.image_path
+                    except Exception:
+                        img_path = None
+
+                    # fallback to item_broke images
+                    img = (r.get('images') or [None])[0]
+                    final_img = img_path or (img if img else 'images/default_equip.png')
+
+                    out.append(RecentLostDTO(
+                        item_broke_id=r.get('item_broke_id'),
+                        equipment_name=r.get('equipment_name') or r.get('equipment_code') or 'ไม่ระบุ',
+                        image_path=final_img,
+                        created_at=r.get('created_at') if isinstance(r.get('created_at'), datetime) else None,
+                        contact_phone=r.get('contact_phone')
+                    ))
+                    if len(out) >= limit:
+                        break
+                except Exception:
                     continue
-                img = (r.get('images') or [None])[0]
-                out.append(RecentLostDTO(
-                    item_broke_id=r.get('item_broke_id'),
-                    equipment_name=r.get('equipment_name') or r.get('equipment_code') or 'ไม่ระบุ',
-                    image_path=(img if img else 'images/default_equip.png'),
-                    created_at=r.get('created_at') if isinstance(r.get('created_at'), datetime) else None,
-                    contact_phone=r.get('contact_phone')
-                ))
-                if len(out) >= limit:
-                    break
+        finally:
+            try:
+                db.close()
             except Exception:
-                continue
+                pass
         return out

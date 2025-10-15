@@ -104,7 +104,7 @@
       {% endif %}
     </section>
 
-    {# Recent lost reports: show image, name, time, and contact phone (informational only) #}
+    {# recent_lost section removed per request #}
     <section class="section-block">
       <div class="section-header">
         <h2>แจ้งอุปกรณ์สูญหายล่าสุด</h2>
@@ -113,27 +113,32 @@
 
       {% if recent_lost and recent_lost|length > 0 %}
         <div class="grid-cards">
-          {% for it in recent_lost %}
-            <div class="equip-card">
+          {% for rpt in recent_lost %}
+            <div class="equip-card lost-card">
               <div class="equip-thumb">
-                <img src="{{ url_for('static', filename=it.image_path) }}" alt="{{ it.equipment_name }}">
+                <img src="{{ url_for('static', filename=rpt.image_path) }}" alt="{{ rpt.equipment_name }}">
               </div>
 
               <div class="equip-card__head">
-                <div class="equip-card__title">{{ it.equipment_name }}</div>
+                <div class="equip-card__title">{{ rpt.equipment_name }}</div>
               </div>
 
               <div class="equip-card__meta">
-                <div class="muted">{{ it.created_at.strftime('%d/%m/%Y %H:%M') if it.created_at else '-' }}</div>
-                {% if it.contact_phone %}
-                  <div class="muted">ติดต่อ: {{ it.contact_phone }}</div>
-                {% endif %}
+                <div class="muted">{{ rpt.created_at.strftime('%d/%m/%Y %H:%M') if rpt.created_at else '' }}</div>
               </div>
+
+              <div class="equip-card__actions">
+                <span class="muted">ติดต่อ: 012-000-0000</span>
+              </div>
+
+              {% if current_user.is_authenticated and current_user.role == 'admin' %}
+                <button class="btn-delete ajax-delete" data-id="{{ rpt.item_broke_id }}" title="ลบรายการ">✕</button>
+              {% endif %}
             </div>
           {% endfor %}
         </div>
       {% else %}
-        <p class="muted">ไม่มีรายการแจ้งสูญหายล่าสุด</p>
+        <p class="muted">ไม่มีรายงานอุปกรณ์สูญหายล่าสุด</p>
       {% endif %}
     </section>
 
@@ -184,4 +189,37 @@
     </section>
   {% endif %}
 </div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function(){
+  document.querySelectorAll('.ajax-delete').forEach(btn=>{
+    btn.addEventListener('click', function(e){
+      if(!confirm('ต้องการลบรายการนี้จริงหรือไม่?')) return;
+      const id = this.dataset.id;
+      fetch('{{ url_for("pages.delete_lost_report") }}', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+          'X-Requested-With': 'XMLHttpRequest'
+        },
+        body: 'item_broke_id=' + encodeURIComponent(id)
+      }).then(res => {
+        if(!res.ok) throw new Error('delete-failed');
+        return res.json();
+      }).then(json => {
+        // remove card DOM
+        const btn = document.querySelector('.ajax-delete[data-id="'+id+'"]');
+        if(btn){
+          const card = btn.closest('.equip-card');
+          if(card) card.remove();
+        }
+      }).catch(err=>{
+        alert('ไม่สามารถลบรายการได้');
+      });
+    });
+  });
+});
+</script>
 {% endblock %}

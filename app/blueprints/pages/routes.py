@@ -4,6 +4,8 @@ from flask import Blueprint, render_template, session, request, flash, redirect,
 from flask_login import current_user
 from app.services.home_service import HomeService
 from app.services.item_broke_service import ItemBrokeService
+from flask_login import login_required
+from flask import jsonify
 
 svc = HomeService()
 
@@ -80,6 +82,39 @@ def lost_report():
 def lost_sent():
     """Confirmation page after sending lost report."""
     return render_template('pages/lost_sent.html')
+
+
+@pages_bp.post('/lost/delete')
+@login_required
+def delete_lost_report():
+    # only admins can delete reports
+    if getattr(current_user, 'role', None) != 'admin':
+        flash('คุณไม่มีสิทธิ์ลบรายการนี้', 'error')
+        return redirect(url_for('pages.home'))
+
+    item_id = request.form.get('item_broke_id')
+    if not item_id:
+        flash('ไม่พบรหัสรายการ', 'error')
+        return redirect(url_for('pages.home'))
+
+    try:
+        ibs = ItemBrokeService()
+        ok = ibs.delete_report(int(item_id))
+        if ok:
+            # for normal requests show flash, for AJAX return JSON
+            if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                return jsonify({'success': True})
+            flash('ลบรายการเรียบร้อย', 'success')
+        else:
+            if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                return jsonify({'success': False}), 400
+            flash('ไม่สามารถลบรายการได้', 'error')
+    except Exception:
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            return jsonify({'success': False}), 500
+        flash('เกิดข้อผิดพลาดในการลบรายการ', 'error')
+
+    return redirect(url_for('pages.home'))
 
 @pages_bp.get("/history")
 def history():

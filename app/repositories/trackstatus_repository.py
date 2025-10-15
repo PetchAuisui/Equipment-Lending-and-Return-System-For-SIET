@@ -113,3 +113,17 @@ class TrackStatusRepository:
 
     def close(self):
         self.db.close()
+
+    def get_status_by_id(self, status_id: int):
+        """Return a small dict for a StatusRent row or None."""
+        try:
+            s = self.db.query(StatusRent).filter(StatusRent.status_id == int(status_id)).first()
+            if not s:
+                return None
+            return {
+                'status_id': getattr(s, 'status_id', None),
+                'name': getattr(s, 'name', None),
+                'color_code': getattr(s, 'color_code', None),
+            }
+        except Exception:
+            return None
