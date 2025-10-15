@@ -62,24 +62,41 @@ async function loadNotifications() {
 
 // ❌ ปิดแจ้งเตือน (mark as read)
 async function dismissNotification(id) {
-  const card = document.querySelector(`.notification-card button[onclick="dismissNotification(${id})"]`)?.closest(".notification-card");
+  const card = document.querySelector(
+    `.notification-card button[onclick="dismissNotification(${id})"]`
+  )?.closest(".notification-card"); // หา card ที่ปุ่มนี้อยู่   
+
+  const count = document.getElementById("notifCount"); // วงกลมแสดงจำนวนแจ้งเตือน
+  const list = document.getElementById("notifList"); // รายการแจ้งเตือนทั้งหมด
 
   if (card) {
     // fade out effect
     card.style.transition = "opacity 0.3s ease";
     card.style.opacity = "0";
-    setTimeout(() => card.remove(), 300);
+
+    // รอให้ fade จบก่อนลบ
+    setTimeout(() => {
+      card.remove();        
+
+      const remaining = list.querySelectorAll(".notification-card").length;
+
+      if (remaining > 0) {
+        count.textContent = remaining;   // ✅ อัพเดตเลขใหม่
+        count.classList.remove("d-none");      // ✅ ไม่ซ่อนวงกลม
+        count.style.display = "inline-block"; // ให้โชว์อยู่ตลอด
+      } else {
+        count.textContent = "0";         // ✅ แสดงเลข 0
+        count.classList.remove("d-none"); // ✅ ไม่ซ่อนวงกลม
+        count.style.display = "inline-block"; // ให้โชว์อยู่ตลอด
+        list.innerHTML = `<div class="empty-msg">ไม่มีการแจ้งเตือนใหม่</div>`;
+      }
+    }, 300);
   }
 
   // เรียก API เปลี่ยนสถานะ
   await fetch(`/api/notifications/dismiss/${id}`, { method: "POST" });
 
-  // ลดจำนวน badge
-  const count = document.getElementById("notifCount");
-  const current = parseInt(count.textContent || "0", 10);
-  if (current > 1) count.textContent = current - 1;
-  else count.classList.add("d-none");
-}
+} 
 
 // ⏱ แปลงเวลาเป็น "7m ago"
 function timeAgo(datetimeStr) {
