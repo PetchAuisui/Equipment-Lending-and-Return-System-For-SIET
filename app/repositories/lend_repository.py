@@ -1,28 +1,11 @@
 from app.db.db import SessionLocal
-from app.db.models import Subject,User,RentReturn, Equipment
+from app.db.models import User,RentReturn, Equipment
 from datetime import datetime, time
 from zoneinfo import ZoneInfo
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-def get_all_subjects():
-    """
-    ดึงข้อมูลวิชาทั้งหมดจากตาราง subjects
-    """
-    db = SessionLocal()
-    try:
-        subjects = db.query(Subject).all()
-        return [
-            {
-                "subject_id": s.subject_id,
-                "subject_code": s.subject_code,
-                "subject_name": s.subject_name
-            }
-            for s in subjects
-        ]
-    finally:
-        db.close()
 
 def get_all_users():
     """
