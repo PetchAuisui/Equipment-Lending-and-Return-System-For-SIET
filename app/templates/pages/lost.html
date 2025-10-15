@@ -1,0 +1,162 @@
+{% extends 'base/blank.html' %}
+{% block title %}แจ้งอุปกรณ์สูญหายหรือเสียหาย{% endblock %}
+
+{% block head %}
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/lost.css') }}">
+{% endblock %}
+
+{% block content %}
+  <div class="lost-wrapper">
+
+    <header class="lost-header">
+      <i class="ri-file-edit-line"></i>
+      <div class="lost-heading">แจ้งอุปกรณ์สูญหายหรือเสียหาย</div>
+    </header>
+    <form class="lost-card" method="post" enctype="multipart/form-data">
+
+      <div class="row small">
+        <label>ประเภทการแจ้ง</label>
+        <select name="report_type" class="input" required>
+          <option value="">-- เลือกประเภท --</option>
+          <option value="lost">สูญหาย</option>
+          <option value="damaged">เสียหาย</option>
+        </select>
+      </div>
+
+      <div class="row">
+        <label>ชื่อ-นามสกุล</label>
+        <input name="full_name" class="input" type="text" placeholder="ชื่อ-นามสกุล" required>
+      </div>
+
+      <div class="row">
+        <label>เบอร์โทร</label>
+        <input name="phone" class="input" type="tel" placeholder="081-xxx-xxxx" required>
+      </div>
+
+      <div class="row">
+        <label>อุปกรณ์ที่หาย/ชำรุด</label>
+        <input name="device" class="input" type="text" placeholder="ชื่ออุปกรณ์" value="{{ equipment_name or '' }}" required>
+      </div>
+
+      <div class="two-col">
+        <div class="row small">
+          <label>ประเภท</label>
+          <input name="device_type" class="input" type="text" placeholder="ประเภท" />
+        </div>
+        <div class="row small">
+          <label>ID</label>
+          <input name="device_id" class="input" type="text" placeholder="รหัสอุปกรณ์ (ถ้ามี)" value="{{ equipment_code or '' }}" />
+        </div>
+      </div>
+
+      <div class="row">
+        <label>วันที่หาย/ชำรุด</label>
+        <div class="date-row">
+          <input name="lost_day" class="input date" type="text" inputmode="numeric" maxlength="2" placeholder="DD" required>
+          <span class="sep">/</span>
+          <input name="lost_month" class="input date" type="text" inputmode="numeric" maxlength="2" placeholder="MM" required>
+          <span class="sep">/</span>
+          <input name="lost_year" class="input date" type="text" inputmode="numeric" maxlength="4" placeholder="YYYY" required>
+          <span class="cal">📅</span>
+        </div>
+      </div>
+
+      <div class="row">
+        <label>สถานที่ที่หาย/ชำรุด</label>
+        <input name="place" class="input" type="text" placeholder="สถานที่ที่หาย" required>
+      </div>
+
+      <div class="row">
+        <label>รายละเอียดปัญหา</label>
+        <textarea name="detail" class="input textarea" rows="5" placeholder="รายละเอียดเพิ่มเติม..."></textarea>
+      </div>
+
+      <div class="row">
+        <label>รหัสรายการยืมที่เกิดปัญหา (Rent ID)</label>
+        <input name="rent_id" class="input" type="text" placeholder="กรอกรหัสรายการยืม (เช่น 123)" value="{{ rent_id or '' }}" pattern="[0-9]*" title="กรุณากรอกตัวเลขรหัสรายการยืมเท่านั้น">
+      </div>
+
+      <div class="row">
+        <label>อัปโหลดรูป</label>
+        <input name="images" class="file" type="file" accept="image/*" multiple>
+      </div>
+
+      <div class="row actions">
+        <div style="flex:1"></div>
+        <div class="submit">
+          <div class="error-message" id="errorMessage" role="alert" aria-live="assertive" style="display:none"></div>
+          <button type="submit" class="btn-send" id="sendBtn">send</button>
+        </div>
+      </div>
+
+    </form>
+  </div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  (function(){
+    const form = document.querySelector('.lost-card');
+    const sendBtn = document.getElementById('sendBtn');
+    const errorMessage = document.getElementById('errorMessage');
+
+    // fields to validate
+    const requiredSelectors = [
+      '[name="report_type"]',
+      '[name="full_name"]',
+      '[name="phone"]',
+      '[name="device"]',
+      '[name="lost_day"]',
+      '[name="lost_month"]',
+      '[name="lost_year"]',
+      '[name="place"]'
+    ];
+
+    function getFields(){
+      return requiredSelectors.map(s=>document.querySelector(s));
+    }
+
+    function validate(){
+      const fields = getFields();
+      let valid = true;
+      let firstInvalid = null;
+      fields.forEach(f=>{
+        if(!f) return;
+        const v = (f.value || '').trim();
+        if(!v){
+          valid = false;
+          f.classList.add('invalid');
+          if(!firstInvalid) firstInvalid = f;
+        } else {
+          f.classList.remove('invalid');
+        }
+      });
+      if(valid){
+        errorMessage.style.display='none';
+        sendBtn.disabled = false;
+      } else {
+        errorMessage.textContent = 'กรุณากรอกข้อมูลที่จำเป็นทั้งหมดก่อนส่งแบบฟอร์ม';
+        errorMessage.style.display='block';
+        sendBtn.disabled = true;
+      }
+      return {valid, firstInvalid};
+    }
+
+    // validate on input/change
+    getFields().forEach(f=>{ if(f) f.addEventListener('input', validate); if(f) f.addEventListener('change', validate); });
+
+    form.addEventListener('submit', function(e){
+      const res = validate();
+      if(!res.valid){
+        e.preventDefault();
+        if(res.firstInvalid) res.firstInvalid.focus();
+      }
+    });
+
+    // initial check
+    document.addEventListener('DOMContentLoaded', validate);
+    // also run immediately in case DOMContentLoaded already fired
+    validate();
+  })();
+</script>
+{% endblock %}

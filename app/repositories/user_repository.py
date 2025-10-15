@@ -1,10 +1,15 @@
+# app/repositories/user_repository.py
 from __future__ import annotations
-from typing import Optional, Dict, Iterable
-from datetime import datetime, timezone
+from typing import Optional, Dict, Iterable, Any
+from datetime import datetime, date, timezone
 import json
+from decimal import Decimal
+from uuid import UUID
 
-from sqlalchemy import text
+from sqlalchemy import text, bindparam
+from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.exc import IntegrityError, OperationalError
+
 from app.db.db import SessionLocal
 
 # อนุญาตเฉพาะฟิลด์เหล่านี้เวลา build SQL
@@ -52,6 +57,29 @@ class UserRepository:
         row = self.session.execute(sql, {"uid": user_id}).first()
         return self._row_to_dict(row)
 
+    # ---- JSON safe helper (สำคัญสำหรับ JSON/JSONB) ----
+    def _to_json_safe(self, obj: Any) -> Any:
+        """
+        แปลง object ให้ serialize เป็น JSON ได้:
+        - datetime/date -> isoformat()
+        - Decimal -> float (หรือ str ถ้าชอบ)
+        - UUID -> str
+        - dict/list/tuple -> เดินซ้ำ
+        """
+        if obj is None:
+            return None
+        if isinstance(obj, (datetime, date)):
+            return obj.isoformat()
+        if isinstance(obj, Decimal):
+            return float(obj)
+        if isinstance(obj, UUID):
+            return str(obj)
+        if isinstance(obj, dict):
+            return {k: self._to_json_safe(v) for k, v in obj.items()}
+        if isinstance(obj, (list, tuple, set)):
+            return [self._to_json_safe(v) for v in obj]
+        return obj  # primitive types
+
     # ===== ensure ตาราง user_audits (กันล้ม ถ้ายังไม่มี) =====
     def _ensure_user_audits_table(self) -> None:
         if self._is_sqlite():
@@ -72,7 +100,7 @@ class UserRepository:
                     user_id    INTEGER NOT NULL REFERENCES users(user_id) ON DELETE CASCADE,
                     action     VARCHAR NOT NULL,
                     actor_id   INTEGER REFERENCES users(user_id) ON DELETE SET NULL,
-                    diff       JSON,
+                    diff       JSONB,
                     created_at TIMESTAMPTZ NOT NULL
                 )
             """)
@@ -104,26 +132,37 @@ class UserRepository:
                 return None
             return {k: v for k, v in d.items() if k not in AUDIT_EXCLUDE_FIELDS}
 
-        payload = {"before": _clean(before), "after": _clean(after)}
+        # ตัด field อ่อนไหว + ทำให้ JSON-safe
+        payload_raw = {"before": _clean(before), "after": _clean(after)}
+        payload = self._to_json_safe(payload_raw)
         ts = self._now()
 
-        # expression ของ JSON ต่อ dialect
-        if self._is_sqlite():
-            diff_expr = ":diff"            # TEXT/JSON (SQLite)
-        elif self._is_postgres():
-            diff_expr = ":diff::json"      # JSON (Postgres)
+        if self._is_postgres():
+            # bind JSONB ด้วย dict ที่ “JSON-safe” แล้ว
+            sql = text("""
+                INSERT INTO user_audits (user_id, action, actor_id, diff, created_at)
+                VALUES (:user_id, :action, :actor_id, :diff, :ts)
+            """).bindparams(bindparam("diff", type_=JSONB))
+            diff_value = payload  # dict
+        elif self._is_sqlite():
+            # เก็บเป็น TEXT (stringified JSON)
+            sql = text("""
+                INSERT INTO user_audits (user_id, action, actor_id, diff, created_at)
+                VALUES (:user_id, :action, :actor_id, :diff, :ts)
+            """)
+            diff_value = json.dumps(payload, ensure_ascii=False)
         else:
-            diff_expr = "CAST(:diff AS VARCHAR)"
+            sql = text("""
+                INSERT INTO user_audits (user_id, action, actor_id, diff, created_at)
+                VALUES (:user_id, :action, :actor_id, :diff, :ts)
+            """)
+            diff_value = json.dumps(payload, ensure_ascii=False)
 
-        sql = text(f"""
-            INSERT INTO user_audits (user_id, action, actor_id, diff, created_at)
-            VALUES (:user_id, :action, :actor_id, {diff_expr}, :ts)
-        """)
         params = {
             "user_id": target_user_id,
             "action": action,
             "actor_id": actor_id,
-            "diff": json.dumps(payload, default=str),
+            "diff": diff_value,
             "ts": ts,
         }
 
@@ -131,33 +170,22 @@ class UserRepository:
             self._ensure_user_audits_table()
             self.session.execute(sql, params)
         except OperationalError as e:
-            # กันเคส race condition/no table
+            # กัน race/no table
             msg = str(e).lower()
-            if ("no such table" in msg and "user_audits" in msg) or ("relation" in msg and "user_audits" in msg and "does not exist" in msg):
+            if (("no such table" in msg and "user_audits" in msg)
+                or ("relation" in msg and "user_audits" in msg and "does not exist" in msg)):
                 self._ensure_user_audits_table()
                 self.session.execute(sql, params)
             else:
                 raise
 
     # ---------- readers ----------
-# === ใส่เพิ่มใน class UserRepository ===
-
     def get_user_by_id(self, user_id: int) -> dict | None:
-        """
-        ดึงผู้ใช้ตาม user_id; คืน dict หรือ None ถ้าไม่พบ
-        """
         row = self.session.execute(
             text("SELECT * FROM users WHERE user_id = :uid LIMIT 1"),
             {"uid": user_id},
         ).first()
-        if not row:
-            return None
-        # ถ้ามี helper แปลง row => dict อยู่แล้วก็ใช้เลย
-        try:
-            return self._row_to_dict(row)  # ใช้ helper เดิมใน repo
-        except Exception:
-            return dict(row._mapping)      # fallback
-
+        return self._row_to_dict(row) if row else None
 
     def find_by_id(self, user_id: int) -> Optional[Dict]:
         return self._get_by_id(user_id)
