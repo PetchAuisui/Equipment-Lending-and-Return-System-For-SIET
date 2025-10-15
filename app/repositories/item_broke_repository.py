@@ -1,80 +1,139 @@
 from app.db.db import SessionLocal, engine
 from sqlalchemy import text
-from app.db.models import ItemBroke, RentReturn, Equipment, User, ItemBrokeImage
+from sqlalchemy.exc import OperationalError
+from app.db.models import ItemBroke, RentReturn, ItemBrokeImage
 from sqlalchemy.orm import joinedload
-from sqlalchemy.orm import load_only
 import os
 import time
 from werkzeug.utils import secure_filename
 from flask import current_app
+from datetime import datetime
+
+
+DEFAULT_SELECT_COLS = [
+    'item_broke_id', 'rent_id', 'type', 'detail', 'status', 'created_at'
+]
 
 
 class ItemBrokeRepository:
+    """Repository for ItemBroke that tolerates older SQLite DBs missing
+    recently-added columns (equipment_name, contact_phone).
+
+    Read operations try a normal SQLAlchemy query and fall back to a raw
+    SELECT when the DB schema is missing columns (to avoid OperationalError).
+    Writes inspect the current table columns and only set values for columns
+    that exist.
+    """
+
     def __init__(self):
         self.db = SessionLocal()
 
+    def _table_columns(self):
+        with engine.connect() as conn:
+            res = conn.execute(text("PRAGMA table_info('item_brokes')"))
+            return [r[1] for r in res.fetchall()]
+
     def list_all(self):
-        # Some deployments may have an older SQLite schema that doesn't include
-        # the `equipment_name` column. Check at runtime and avoid selecting that
-        # column if it's missing to prevent OperationalError until the DB is
-        # migrated.
+        """Return list of dicts suitable for templates.
+
+        Tries ORM joinedload path first; on OperationalError (missing columns)
+        falls back to raw SQL + enrichment of related data.
+        """
         try:
-            has_equipment_name = False
+            q = (
+                self.db.query(ItemBroke)
+                .options(
+                    joinedload(ItemBroke.rent_return).joinedload(RentReturn.equipment),
+                    joinedload(ItemBroke.item_broke_images),
+                )
+                .order_by(ItemBroke.created_at.desc())
+            )
+            rows = q.all()
+            return [self._row_to_dict(r) for r in rows]
+        except OperationalError:
+            cols = self._table_columns()
+            select_cols = [c for c in DEFAULT_SELECT_COLS if c in cols]
+            if 'equipment_name' in cols:
+                select_cols.append('equipment_name')
+            if 'contact_phone' in cols:
+                select_cols.append('contact_phone')
+
+            sql = f"SELECT {', '.join(select_cols)} FROM item_brokes ORDER BY created_at DESC"
             with engine.connect() as conn:
-                res = conn.execute(text("PRAGMA table_info('item_brokes')"))
-                cols = [row[1] for row in res.fetchall()]
-                has_equipment_name = 'equipment_name' in cols
+                res = conn.execute(text(sql))
+                out = []
+                for row in res.fetchall():
+                    # SQLAlchemy Row may expose _mapping on modern versions
+                    d = dict(row._mapping) if hasattr(row, '_mapping') else dict(row)
 
-            if has_equipment_name:
-                results = (
-                    self.db.query(ItemBroke)
-                    .options(joinedload(ItemBroke.rent_return).joinedload(RentReturn.equipment))
-                    .order_by(ItemBroke.created_at.desc())
-                    .all()
-                )
-            else:
-                # Load only the safe columns (do not reference equipment_name)
-                results = (
-                    self.db.query(ItemBroke)
-                    .options(
-                        load_only('item_broke_id', 'rent_id', 'type', 'detail', 'status', 'created_at'),
-                        joinedload(ItemBroke.rent_return).joinedload(RentReturn.equipment),
-                    )
-                    .order_by(ItemBroke.created_at.desc())
-                    .all()
-                )
+                    # enrich equipment info if missing and rent_id is present
+                    if not d.get('equipment_name') and d.get('rent_id'):
+                        try:
+                            rr = (
+                                self.db.query(RentReturn)
+                                .options(joinedload(RentReturn.equipment))
+                                .filter(RentReturn.rent_id == d.get('rent_id'))
+                                .first()
+                            )
+                            if rr and getattr(rr, 'equipment', None):
+                                d['equipment_name'] = getattr(rr.equipment, 'name', None)
+                                d['equipment_code'] = getattr(rr.equipment, 'code', None)
+                        except Exception:
+                            pass
 
-            items = []
-            for it in results:
-                rr = getattr(it, 'rent_return', None)
-                equip = getattr(rr, 'equipment', None) if rr else None
-                items.append({
-                    'item_broke_id': it.item_broke_id,
-                    'rent_id': it.rent_id,
-                    'type': it.type,
-                    'detail': it.detail,
-                    'status': it.status,
-                    'created_at': it.created_at,
-                    # if equipment_name column is missing, it will be None here
-                    'equipment_name': getattr(it, 'equipment_name', None) or getattr(equip, 'name', None),
-                    'equipment_code': getattr(equip, 'code', None),
-                })
+                    # load images if possible
+                    try:
+                        imgs = self.db.query(ItemBrokeImage).filter(ItemBrokeImage.item_broke_id == d.get('item_broke_id')).all()
+                        d['images'] = [i.image_path for i in imgs]
+                    except Exception:
+                        d['images'] = []
 
-            return items
-        except Exception:
-            # In case of any unexpected DB errors, raise so higher layers can
-            # handle/display the traceback (useful during local debugging).
-            raise
+                    # coerce created_at to datetime where possible so templates can use strftime
+                    if 'created_at' in d and isinstance(d['created_at'], str):
+                        raw = d['created_at']
+                        parsed = None
+                        # try ISO first
+                        try:
+                            parsed = datetime.fromisoformat(raw)
+                        except Exception:
+                            # common SQLite formats
+                            for fmt in ('%Y-%m-%d %H:%M:%S.%f', '%Y-%m-%d %H:%M:%S', '%Y-%m-%d'):
+                                try:
+                                    parsed = datetime.strptime(raw, fmt)
+                                    break
+                                except Exception:
+                                    continue
+                        d['created_at'] = parsed
 
-    def get(self, item_broke_id: int):
+                    out.append(d)
+                return out
+
+    def _row_to_dict(self, r):
+        rr = getattr(r, 'rent_return', None)
+        equip = getattr(rr, 'equipment', None) if rr else None
+        images = [img.image_path for img in getattr(r, 'item_broke_images', [])] if getattr(r, 'item_broke_images', None) else []
+        return {
+            'item_broke_id': r.item_broke_id,
+            'rent_id': r.rent_id,
+            'type': r.type,
+            'detail': r.detail,
+            'status': r.status,
+            'created_at': r.created_at,
+            'equipment_name': getattr(r, 'equipment_name', None) or (getattr(equip, 'name', None) if equip else None),
+            'contact_phone': getattr(r, 'contact_phone', None),
+            'equipment_code': getattr(equip, 'code', None) if equip else None,
+            'images': images,
+        }
+
+    def get(self, item_broke_id):
         return (
             self.db.query(ItemBroke)
-            .options(joinedload(ItemBroke.rent_return).joinedload(RentReturn.equipment))
+            .options(joinedload(ItemBroke.rent_return).joinedload(RentReturn.equipment), joinedload(ItemBroke.item_broke_images))
             .filter(ItemBroke.item_broke_id == item_broke_id)
             .first()
         )
 
-    def update_status(self, item_broke_id: int, new_status: str):
+    def update_status(self, item_broke_id, new_status):
         it = self.db.query(ItemBroke).filter(ItemBroke.item_broke_id == item_broke_id).first()
         if not it:
             return False
@@ -83,50 +142,229 @@ class ItemBrokeRepository:
         self.db.commit()
         return True
 
-    def create(self, rent_id: int | None, type: str, detail: str, images: list = None, equipment_name: str = None):
-        """Create an ItemBroke entry and save any uploaded images.
-
-        images should be a list of FileStorage objects (from Flask request.files.getlist)
-        """
+    def create(self, rent_id=None, type='lost', detail='', images=None, equipment_name=None, phone=None):
         images = images or []
-        # create record
-        try:
-            # if equipment_name missing, try to infer from rent_return -> equipment
-            if not equipment_name and rent_id:
-                try:
-                    rr = self.db.query(RentReturn).filter(RentReturn.rent_id == rent_id).first()
-                    if rr and getattr(rr, 'equipment', None):
-                        equipment_name = getattr(rr.equipment, 'name', None)
-                except Exception:
-                    equipment_name = equipment_name
+        cols = self._table_columns()
+        kwargs = {'rent_id': rent_id or 0, 'type': type or 'lost', 'detail': detail or '', 'status': 'pending'}
+        if 'equipment_name' in cols and equipment_name is not None:
+            kwargs['equipment_name'] = equipment_name
+        if 'contact_phone' in cols and phone is not None:
+            kwargs['contact_phone'] = phone
 
-            it = ItemBroke(rent_id=rent_id or 0, type=type or 'lost', detail=detail or '', status='pending', equipment_name=equipment_name)
-            self.db.add(it)
-            self.db.commit()
-            self.db.refresh(it)
+        it = ItemBroke(**kwargs)
+        self.db.add(it)
+        self.db.commit()
+        self.db.refresh(it)
 
-            # handle images
-            upload_dir = os.path.join(current_app.root_path, 'static', 'uploads')
-            os.makedirs(upload_dir, exist_ok=True)
+        # save uploaded images to static/uploads and create ItemBrokeImage rows
+        upload_dir = os.path.join(current_app.root_path, 'static', 'uploads')
+        os.makedirs(upload_dir, exist_ok=True)
 
-            for f in images:
-                if not f or f.filename == '':
-                    continue
+        for f in images:
+            # accept Werkzeug FileStorage-like objects
+            if not f or getattr(f, 'filename', '') == '':
+                continue
+            try:
                 fname = secure_filename(f.filename)
                 uniq = f"itembroke_{it.item_broke_id}_{int(time.time())}_{fname}"
-                dest_path = os.path.join(upload_dir, uniq)
-                f.save(dest_path)
-
-                # store relative path under static/ so templates can use url_for('static', filename=path)
-                rel_path = os.path.join('uploads', uniq).replace('\\', '/')
-                img = ItemBrokeImage(item_broke_id=it.item_broke_id, image_path=rel_path)
+                dest = os.path.join(upload_dir, uniq)
+                f.save(dest)
+                rel = os.path.join('uploads', uniq).replace('\\', '/')
+                img = ItemBrokeImage(item_broke_id=it.item_broke_id, image_path=rel)
                 self.db.add(img)
+            except Exception:
+                # non-fatal: skip problematic images
+                continue
 
-            self.db.commit()
-            return it.item_broke_id
-        except Exception:
-            self.db.rollback()
-            raise
+        self.db.commit()
+        return it.item_broke_id
 
     def close(self):
-        self.db.close()
+        try:
+            self.db.close()
+        except Exception:
+            pass
+"""ItemBroke repository (defensive implementation).
+
+Provides defensive reads so older SQLite databases without new columns
+don't cause OperationalError. Writes still use the ORM; startup migrations
+should add missing columns but code will tolerate their absence when
+reading.
+"""
+
+from app.db.db import SessionLocal, engine
+from sqlalchemy import text
+from sqlalchemy.exc import OperationalError
+from app.db.models import ItemBroke, RentReturn, ItemBrokeImage
+from sqlalchemy.orm import joinedload
+import os
+import time
+from app.db.db import SessionLocal, engine
+from sqlalchemy import text
+from sqlalchemy.exc import OperationalError
+from app.db.models import ItemBroke, RentReturn, ItemBrokeImage
+from sqlalchemy.orm import joinedload
+import os
+import time
+from werkzeug.utils import secure_filename
+from flask import current_app
+
+
+DEFAULT_SELECT_COLS = [
+    'item_broke_id', 'rent_id', 'type', 'detail', 'status', 'created_at'
+]
+
+
+class ItemBrokeRepository:
+    """Repository for ItemBroke that tolerates older SQLite DBs missing
+    recently-added columns (equipment_name, contact_phone).
+
+    read operations try a normal SQLAlchemy query and fall back to a raw
+    SELECT when the DB schema is missing columns (to avoid OperationalError).
+    Writes inspect the current table columns and only set values for columns
+    that exist.
+    """
+
+    def __init__(self):
+        self.db = SessionLocal()
+
+    def _table_columns(self):
+        with engine.connect() as conn:
+            res = conn.execute(text("PRAGMA table_info('item_brokes')"))
+            return [r[1] for r in res.fetchall()]
+
+    def list_all(self):
+        """Return list of dicts suitable for templates.
+
+        Tries ORM joinedload path first; on OperationalError (missing columns)
+        falls back to raw SQL + enrichment of related data.
+        """
+        try:
+            q = (
+                self.db.query(ItemBroke)
+                .options(
+                    joinedload(ItemBroke.rent_return).joinedload(RentReturn.equipment),
+                    joinedload(ItemBroke.item_broke_images),
+                )
+                .order_by(ItemBroke.created_at.desc())
+            )
+            rows = q.all()
+            return [self._row_to_dict(r) for r in rows]
+        except OperationalError:
+            cols = self._table_columns()
+            select_cols = [c for c in DEFAULT_SELECT_COLS if c in cols]
+            if 'equipment_name' in cols:
+                select_cols.append('equipment_name')
+            if 'contact_phone' in cols:
+                select_cols.append('contact_phone')
+
+            sql = f"SELECT {', '.join(select_cols)} FROM item_brokes ORDER BY created_at DESC"
+            with engine.connect() as conn:
+                res = conn.execute(text(sql))
+                out = []
+                for row in res.fetchall():
+                    # SQLAlchemy Row may expose _mapping on modern versions
+                    d = dict(row._mapping) if hasattr(row, '_mapping') else dict(row)
+
+                    # enrich equipment info if missing and rent_id is present
+                    if not d.get('equipment_name') and d.get('rent_id'):
+                        try:
+                            rr = (
+                                self.db.query(RentReturn)
+                                .options(joinedload(RentReturn.equipment))
+                                .filter(RentReturn.rent_id == d.get('rent_id'))
+                                .first()
+                            )
+                            if rr and getattr(rr, 'equipment', None):
+                                d['equipment_name'] = getattr(rr.equipment, 'name', None)
+                                d['equipment_code'] = getattr(rr.equipment, 'code', None)
+                        except Exception:
+                            pass
+
+                    # load images if possible
+                    try:
+                        imgs = self.db.query(ItemBrokeImage).filter(ItemBrokeImage.item_broke_id == d.get('item_broke_id')).all()
+                        d['images'] = [i.image_path for i in imgs]
+                    except Exception:
+                        d['images'] = []
+
+                    out.append(d)
+                return out
+
+    def _row_to_dict(self, r):
+        rr = getattr(r, 'rent_return', None)
+        equip = getattr(rr, 'equipment', None) if rr else None
+        images = [img.image_path for img in getattr(r, 'item_broke_images', [])] if getattr(r, 'item_broke_images', None) else []
+        return {
+            'item_broke_id': r.item_broke_id,
+            'rent_id': r.rent_id,
+            'type': r.type,
+            'detail': r.detail,
+            'status': r.status,
+            'created_at': r.created_at,
+            'equipment_name': getattr(r, 'equipment_name', None) or (getattr(equip, 'name', None) if equip else None),
+            'contact_phone': getattr(r, 'contact_phone', None),
+            'equipment_code': getattr(equip, 'code', None) if equip else None,
+            'images': images,
+        }
+
+    def get(self, item_broke_id):
+        return (
+            self.db.query(ItemBroke)
+            .options(joinedload(ItemBroke.rent_return).joinedload(RentReturn.equipment), joinedload(ItemBroke.item_broke_images))
+            .filter(ItemBroke.item_broke_id == item_broke_id)
+            .first()
+        )
+
+    def update_status(self, item_broke_id, new_status):
+        it = self.db.query(ItemBroke).filter(ItemBroke.item_broke_id == item_broke_id).first()
+        if not it:
+            return False
+        it.status = new_status
+        self.db.add(it)
+        self.db.commit()
+        return True
+
+    def create(self, rent_id=None, type='lost', detail='', images=None, equipment_name=None, phone=None):
+        images = images or []
+        cols = self._table_columns()
+        kwargs = {'rent_id': rent_id or 0, 'type': type or 'lost', 'detail': detail or '', 'status': 'pending'}
+        if 'equipment_name' in cols and equipment_name is not None:
+            kwargs['equipment_name'] = equipment_name
+        if 'contact_phone' in cols and phone is not None:
+            kwargs['contact_phone'] = phone
+
+        it = ItemBroke(**kwargs)
+        self.db.add(it)
+        self.db.commit()
+        self.db.refresh(it)
+
+        # save uploaded images to static/uploads and create ItemBrokeImage rows
+        upload_dir = os.path.join(current_app.root_path, 'static', 'uploads')
+        os.makedirs(upload_dir, exist_ok=True)
+
+        for f in images:
+            # accept Werkzeug FileStorage-like objects
+            if not f or getattr(f, 'filename', '') == '':
+                continue
+            try:
+                fname = secure_filename(f.filename)
+                uniq = f"itembroke_{it.item_broke_id}_{int(time.time())}_{fname}"
+                dest = os.path.join(upload_dir, uniq)
+                f.save(dest)
+                rel = os.path.join('uploads', uniq).replace('\\', '/')
+                img = ItemBrokeImage(item_broke_id=it.item_broke_id, image_path=rel)
+                self.db.add(img)
+            except Exception:
+                # non-fatal: skip problematic images
+                continue
+
+        self.db.commit()
+        return it.item_broke_id
+
+    def close(self):
+        try:
+            self.db.close()
+        except Exception:
+            pass
+

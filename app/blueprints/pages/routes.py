@@ -20,10 +20,13 @@ def home():
     top_borrowed = svc.get_top_borrowed_items(limit=4)
     # ของฉันที่ยังไม่คืน
     outstanding = svc.get_outstanding_items_for_user(user_id, limit=10) if user_id else []
+    # recent lost reports to show on home (no actions, just info)
+    recent_lost = svc.get_recent_lost_reports(limit=4)
 
     return render_template("pages/home.html",
                            top_borrowed=top_borrowed,
-                           outstanding=outstanding)
+                           outstanding=outstanding,
+                           recent_lost=recent_lost)
 
 @pages_bp.get("/about")
 def about_us():
@@ -65,6 +68,7 @@ def lost_report():
     # allow callers to prefill some fields via query string (rent_id, equipment_name, equipment_code)
     rent_id = request.args.get('rent_id')
     equipment_name = request.args.get('equipment_name')
+    equipment_code = request.args.get('equipment_code')
     equipment_code = request.args.get('equipment_code')
 
     return render_template('pages/lost.html',

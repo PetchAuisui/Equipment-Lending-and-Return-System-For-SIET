@@ -43,3 +43,12 @@ class TopBorrowedDTO:
     code: str
     borrow_count: int
     image_path: str | None = None   # 👈 เพิ่มตรงนี้
+
+
+@dataclass
+class RecentLostDTO:
+    item_broke_id: int
+    equipment_name: str | None
+    image_path: str | None
+    created_at: datetime | None
+    contact_phone: str | None
