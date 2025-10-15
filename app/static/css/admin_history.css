@@ -21,8 +21,8 @@
 
 /* ===== พื้นหลัง + เผื่อ sidebar + จัดกึ่งกลาง ===== */
 .dashboard{
-  margin-left: var(--sb-w);
-  padding: 28px 24px 60px;
+  /*margin-left: var(--sb-w);*/
+  padding: 28px 4px 60px;
   color: var(--ink);
   min-height: calc(100vh - var(--nav-h));
   display: block;
