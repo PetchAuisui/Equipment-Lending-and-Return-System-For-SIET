@@ -20,6 +20,16 @@ def create_app():
 
     os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 
+    # Run small idempotent DB migrations (add equipment_name column if missing)
+    try:
+        from app.db.migrations import ensure_equipment_name_column
+        added = ensure_equipment_name_column(backfill=True)
+        if added:
+            app.logger.info('DB migration: added equipment_name column to item_brokes')
+    except Exception as e:
+        # Do not prevent the app from starting; admin route will show a flash
+        app.logger.warning(f'Could not run DB migration for equipment_name: {e}')
+
     # ===== Register blueprints =====
     from .blueprints.pages import pages_bp
     from .blueprints.auth import auth_bp
@@ -44,3 +54,4 @@ def create_app():
     # ===== 🔔 เริ่ม Scheduler สำหรับแจ้งเตือน =====
     start_notification_scheduler(app)
     return app
+

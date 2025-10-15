@@ -1,103 +1,77 @@
 {% extends 'base/base_admin.html' %}
-{% block title %}เพิ่มอุปกรณ์{% endblock %}
-{% set CATEGORIES = ["IT & คอมพิวเตอร์","อุปกรณ์อิเล็กทรอนิกส์/วิศวกรรม","โสตทัศนศึกษา","กีฬา","สำนักงาน "] %}
+{% block title %}home_admin{% endblock %}
+  {% block content %}
+<div class="page-wrap">
 
-{% block content %}
-<style>@import url("{{ url_for('static', filename='css/admin_equipment_new.css') }}?v=5");</style>
-
-<div class="page">
-  <div class="panel">
-    <div class="card">
-      <div class="card__header">
-        <h1>เพิ่มอุปกรณ์</h1>
-      </div>
-
-      {% with errors = get_flashed_messages(with_categories=true, category_filter=['error']) %}
-        {% if errors %}
-          {% set message = errors[-1][1] %}
-          <div style="
-            max-width:640px; margin:16px auto 0; padding:12px 16px;
-            background:#ffebee; color:#b71c1c;
-          ">
-            {{ message }}
-          </div>
-        {% endif %}
-      {% endwith %}
-
-      <div class="card__body">
-        <form action="{{ url_for('inventory.admin_equipment_new') }}" method="post" enctype="multipart/form-data">
-          <div class="row">
-            <label>ชื่ออุปกรณ์ *</label>
-            <input class="ctrl" type="text" name="name" required>
-          </div>
-
-          <div class="row">
-            <label>รหัส/หมายเลข *</label>
-            <input class="ctrl" type="text" name="code" required>
-          </div>
-
-          <div class="row">
-            <label>หมวดหมู่</label>
-            <select class="ctrl" name="category">
-              <option value="">— เลือกหมวดหมู่ —</option>
-              {% for c in CATEGORIES %}
-                <option value="{{ c }}">{{ c }}</option>
-              {% endfor %}
-            </select>
-          </div>
-
-          <div class="row">
-            <label>ยี่ห้อ</label>
-            <input class="ctrl" type="text" name="brand">
-          </div>
-
-          <div class="row">
-            <label>รายละเอียด</label>
-            <textarea class="ctrl" name="detail"></textarea>
-          </div>
-
-          <div class="row">
-            <label>วันที่ซื้อ</label>
-            <input class="ctrl" type="date" name="buy_date">
-          </div>
-
-          <div class="row">
-            <label>สถานะ</label>
-            <select class="ctrl" name="status">
-              <option value="">— เลือกสถานะ —</option>
-              <option value="available">พร้อมใช้งาน</option>
-              <option value="in_use">กำลังถูกยืม</option>
-              <option value="broken">ชำรุด</option>
-              <option value="lost">สูญหาย</option>
-            </select>
-          </div>
-
-          <div class="row">
-            <label style="font-weight:600;">การอนุมัติจากอาจารย์</label>
-            <div class="radio-group">
-              <label class="radio-option">
-                <input type="radio" name="require_teacher_approval" value="1">
-                ต้องขออนุมัติ
-              </label>
-              <label class="radio-option">
-                <input type="radio" name="require_teacher_approval" value="0" checked>
-                ไม่ต้องขออนุมัติ
-              </label>
-            </div>
-          </div>
-
-          <div class="row">
-            <label>แนบรูปภาพ</label>
-            <input class="ctrl" type="file" name="image" accept="image/*">
-          </div>
-
-          <div class="btns">
-            <a class="btn" href="{{ url_for('inventory.admin_equipment_list') }}">ยกเลิก</a>
-            <button type="submit" class="btn primary">บันทึก</button>
-          </div>
-        </form>
-      </div>
+  <!-- Header + Search -->
+  <div class="page-header">
+    <div class="page-title">
+      <h1>จัดการอุปกรณ์</h1>
     </div>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/admin_equipment.css') }}">
+    <form action="{{ url_for('inventory.admin_equipment_list') }}" method="get" class="search-form">
+      <input
+        type="search"
+        name="q"
+        value="{{ request.args.get('q','') }}"
+        placeholder="ค้นหาอุปกรณ์ / หมายเลข"
+        class="search-input">
+      <button class="search-btn">ค้นหา</button>
+    </form>
+  </div>
+
+  <!-- กล่องหลัก -->
+  <div class="panel">
+    {% if items and items|length > 0 %}
+      <div class="equip-grid">
+        {% for e in items %}
+          <a href="{{ url_for('inventory.admin_equipment_detail', eid=e.equipment_id) }}" class="equip-card">
+           <div class="equip-thumb">
+              {# ใช้ความสัมพันธ์ที่ถูกต้อง: equipment_images #}
+              {% if e.equipment_images and e.equipment_images|length > 0 %}
+                {# เอารูปล่าสุดตาม created_at #}
+                {% set latest = (e.equipment_images|sort(attribute='created_at', reverse=True))|first %}
+                <img
+                  src="{{ url_for('static', filename=latest.image_path) }}"
+                  alt="{{ e.name or 'ภาพอุปกรณ์' }}">
+              {% else %}
+                {# มี fallback กันพลาด #}
+                <img
+                  src="{{ url_for('static', filename='images/default_equip.png') }}"
+                  alt="ไม่มีรูป">
+              {% endif %}
+            </div>
+
+
+            <div class="equip-info">
+              <div><strong>หมายเลข:</strong> {{ e.code or '—' }}</div>
+              <div><strong>อุปกรณ์:</strong> {{ e.name or '—' }}</div>
+              <div><strong>ยี่ห้อ:</strong> {{ e.brand or '—' }}</div>
+
+              <div class="equip-status">
+                <strong>สถานะ:</strong>
+                {% if e.status == "available" %}
+                  <span class="badge badge-ok">พร้อมใช้งาน</span>
+                {% elif e.status == "in_use" %}
+                  <span class="badge badge-warn">กำลังใช้งาน</span>
+                {% elif e.status == "broken" %}
+                  <span class="badge badge-error">ชำรุด</span>
+                {% elif e.status == "lost" %}
+                  <span class="badge badge-dim">สูญหาย</span>
+                {% else %}
+                  <span class="badge badge-dim">{{ e.status or '—' }}</span>
+                {% endif %}
+
+              </div>
+            </div>
+          </a>
+        {% endfor %}
+      </div>
+    {% else %}
+
+      <div class="empty-hint">— ยังไม่มีอุปกรณ์ในระบบ —</div>
+    {% endif %}
+    <a href="{{ url_for('inventory.admin_equipment_new') }}" class="fab-add">➕ เพิ่มอุปกรณ์</a>
   </div>
 </div>
 {% endblock %}

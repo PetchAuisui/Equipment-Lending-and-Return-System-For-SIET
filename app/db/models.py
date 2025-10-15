@@ -173,8 +173,12 @@ class ItemBroke(Base):
 
     item_broke_id = Column(Integer, primary_key=True, autoincrement=True)
     rent_id       = Column(Integer, ForeignKey("rent_returns.rent_id"), nullable=False)
+    equipment_name = Column(String)
     type          = Column(String, nullable=False)
     detail        = Column(Text)
+    created_at    = Column(DateTime, default=datetime.utcnow)
+
+    status        = Column(String, nullable=False, default="pending") 
     created_at    = Column(DateTime, default=datetime.utcnow)
 
     rent_return        = relationship("RentReturn", back_populates="item_brokes")
