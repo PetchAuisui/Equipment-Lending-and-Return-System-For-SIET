@@ -5,6 +5,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/trackstatus.css') }}">
     <title>Track Status</title>
+    <style>
+        .actions-grid {
+            display: flex;
+            flex-wrap: wrap; /* ให้ปุ่มขึ้นบรรทัดใหม่ได้หากไม่พอ */
+            gap: 4px;       /* ระยะห่างระหว่างปุ่ม */
+            justify-content: flex-start;
+        }
+        /* อาจจะต้องปรับขนาดฟอนต์ของปุ่มใน CSS เดิม (trackstatus.css) ให้เป็น 12px หรือ 13px */
+        .actions-grid .btn {
+            padding: 4px 8px; /* ปรับขนาด Padding ให้ปุ่มเล็กลง */
+            font-size: 13px; /* ลดขนาดตัวอักษร */
+            min-width: unset; /* ให้ความกว้างปรับตามเนื้อหา */
+        }
+    </style>
 </head>
 
 {% extends 'base/base.html' %}
@@ -40,10 +54,11 @@
                                 {% if r.status_name == 'approved','pending extend time','approved extend time','cancle extend time' %}
                                     <a href="{{ url_for('tracking.add_time') }}?rent_id={{ r.rent_id }}" class="btn blue">ขยายเวลาการยืม</a>
                                     <a href="{{ url_for('tracking.user_return', rent_id=r.rent_id) }}" class="btn green">แจ้งคืน</a>
-                                    <a href="#" class="btn red">แจ้งเสียหาย</a>   
+                                    <a href="{{ url_for('pages.lost_report') }}?rent_id={{ r.id }}&equipment_name={{ r.equipment_name|urlencode }}&equipment_code={{ r.equipment_code|urlencode }}"
+                                           class="btn red">แจ้งเสียหาย/สูญหาย</a>   
                                     <a class="btn yellow" href="{{ url_for('tracking.lend_detial') }}?rent_id={{ r.rent_id }}">รายละเอียด</a>
                                 {% else %}
-                                    <a class="btn yellow" href="{{ url_for('tracking.lend_detial') }}?rent_id={{ r.rent_id }}">รายละเอียด</a>
+                                    <a href="#" class="btn yellow">รายละเอียด</a>
                                 {% endif %}
                             </td>
                         </tr>
