@@ -143,3 +143,12 @@
   position: relative;
   overflow: visible;
 }
+
+/* 🎯 ลบเงาเฉพาะส่วนของปุ่มกระดิ่งและ dropdown แจ้งเตือน */
+.navbar_light .btn-bell,
+.navbar_light #notifDropdown,
+.navbar_light #notifCount {
+  box-shadow: none !important;
+  filter: none !important;
+  background-image: none !important;
+}
