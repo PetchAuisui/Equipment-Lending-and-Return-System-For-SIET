@@ -1,7 +1,7 @@
 from datetime import datetime,time
 from sqlalchemy.orm import joinedload
 from app.db.db import SessionLocal
-from app.db.models import RentReturn, Equipment, EquipmentImage, StatusRent, Subject, User, Renewal
+from app.db.models import RentReturn, Equipment, EquipmentImage, StatusRent, User, Renewal
 from zoneinfo import ZoneInfo
 
 
@@ -84,7 +84,6 @@ def get_all_rent_returns_with_renewal():
                     .joinedload(Equipment.equipment_images),
                 joinedload(RentReturn.status),
                 joinedload(RentReturn.user),
-                joinedload(RentReturn.subject),
                 joinedload(RentReturn.teacher_confirm),
                 joinedload(RentReturn.renewals)
                     .joinedload(Renewal.approver)

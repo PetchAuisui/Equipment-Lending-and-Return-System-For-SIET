@@ -25,7 +25,6 @@ class User(Base):
     created_at    = Column(DateTime, default=datetime.utcnow)
     updated_at    = Column(DateTime, default=datetime.utcnow)
 
-    instructors        = relationship("Instructor", back_populates="user")
     stock_movements    = relationship("StockMovement", back_populates="actor")
     notifications      = relationship("Notification", back_populates="user")
     
@@ -36,47 +35,6 @@ class User(Base):
     renewals_approved  = relationship("Renewal", back_populates="approver")
     audits_made        = relationship("UserAudit",back_populates="actor",foreign_keys="UserAudit.actor_id",cascade="all, delete-orphan")
     audits_received    = relationship("UserAudit",back_populates="target_user",foreign_keys="UserAudit.user_id",cascade="all, delete-orphan")
-
-
-
-
-
-
-# ---------- subjects ----------
-class Subject(Base):
-    __tablename__ = "subjects"
-
-    subject_id   = Column(Integer, primary_key=True, autoincrement=True)
-    subject_code = Column(String)
-    subject_name = Column(String, nullable=False)
-
-    instructors = relationship("Instructor", back_populates="subject")
-    sections    = relationship("Section", back_populates="subject")
-    rent_returns = relationship("RentReturn", back_populates="subject")
-
-
-# ---------- instructors ----------
-class Instructor(Base):
-    __tablename__ = "instructors"
-
-    instructor_id = Column(Integer, primary_key=True, autoincrement=True)
-    subject_id    = Column(Integer, ForeignKey("subjects.subject_id"), nullable=False)
-    user_id       = Column(Integer, ForeignKey("users.user_id"), nullable=False)
-
-    subject = relationship("Subject", back_populates="instructors")
-    user    = relationship("User", back_populates="instructors")
-
-
-# ---------- sections ----------
-class Section(Base):
-    __tablename__ = "sections"
-
-    section_id   = Column(Integer, primary_key=True, autoincrement=True)
-    section_name = Column(String, nullable=False)
-    subject_id   = Column(Integer, ForeignKey("subjects.subject_id"), nullable=False)
-
-    subject = relationship("Subject", back_populates="sections")
-
 
 # ---------- equipments ----------
 class Equipment(Base):
@@ -145,7 +103,6 @@ class RentReturn(Base):
     rent_id      = Column(Integer, primary_key=True, autoincrement=True)
     equipment_id = Column(Integer, ForeignKey("equipments.equipment_id"), nullable=False)
     user_id      = Column(Integer, ForeignKey("users.user_id"), nullable=False)
-    subject_id   = Column(Integer, ForeignKey("subjects.subject_id"))
     start_date   = Column(DateTime, nullable=False)
     due_date     = Column(DateTime, nullable=False)
     teacher_confirmed = Column(Integer, ForeignKey("users.user_id"))
@@ -159,7 +116,6 @@ class RentReturn(Base):
     user      = relationship("User", foreign_keys=[user_id], back_populates="rent_requests")
     teacher_confirm = relationship("User", foreign_keys=[teacher_confirmed], back_populates="teacher_confirmed")
     checker   = relationship("User", foreign_keys=[check_by], back_populates="rent_checked")
-    subject   = relationship("Subject", back_populates="rent_returns")
     status    = relationship("StatusRent", back_populates="rent_returns")
     item_brokes = relationship("ItemBroke", back_populates="rent_return")
     renewals = relationship("Renewal", back_populates="rent_return")
