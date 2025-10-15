@@ -8,7 +8,7 @@ html, body {
   font-family: 'Kanit','Poppins',sans-serif;
   overflow-x: hidden;
 }
-.container2 { display: flex; margin: 0; padding: 0; }
+.container2 { margin: 0; padding: 0; }
 
 /* =========================
    Navbar (ชมพู) - fixed
