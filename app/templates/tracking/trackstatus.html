@@ -48,8 +48,8 @@
                             <td class="status">
                                 <span style="color: {{ r.status_color }}">{{ r.status_name }}</span>
                             </td>
-                            <td>{{ r.start_date.strftime('%d-%m-%Y') }}</td>
-                            <td>{{ r.due_date.strftime('%d-%m-%Y') }}</td>
+                            <td>{{ r.start_date|safe_date('%d-%m-%Y') }}</td>
+                            <td>{{ r.due_date|safe_date('%d-%m-%Y') }}</td>
                             <td class="actions">
                                 {% if r.status_name == 'approved','pending extend time','approved extend time','cancle extend time' %}
                                     <a href="{{ url_for('tracking.add_time') }}?rent_id={{ r.rent_id }}" class="btn blue">ขยายเวลาการยืม</a>

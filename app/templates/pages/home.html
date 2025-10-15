@@ -104,6 +104,40 @@
       {% endif %}
     </section>
 
+      {# =============== LOST ITEMS (from lost reports) =============== #}
+      <section class="section-block">
+        <div class="section-header">
+          <h2>อุปกรณ์สูญหาย</h2>
+          <span class="muted">หากพบอุปกรณ์โปรดติดต่อจากข้อมูลด้านล่าง</span>
+        </div>
+
+        {% if lost_items and lost_items|length > 0 %}
+          <div class="grid-cards center-cards">
+            {% for it in lost_items %}
+              <div class="equip-card lost-card">
+                <div class="equip-thumb">
+                  {% set img = (it.get('images') and it.get('images')|length > 0) and it.get('images')[0] or 'images/no_image.png' %}
+                  <img src="{{ url_for('static', filename= img) }}" alt="{{ it.equipment_name or '-' }}">
+                </div>
+
+                <div class="equip-card__head">
+                  <div class="equip-card__title">{{ it.equipment_name or '-' }}</div>
+                  <div class="equip-card__code">#{{ it.equipment_code or '' }}</div>
+                </div>
+
+                <div class="equip-card__meta">
+                  <div style="font-size:0.9rem;color:#666">**วันที่ที่หาย:** {{ it.created_at|safe_date('%d/%m/%Y') if it.created_at else '-' }}</div>
+                  <div style="margin-top:6px;color:#333">เบอร์ติดต่อ: <strong>{{ it.contact_phone or 'N/A' }}</strong></div>
+                  <div style="margin-top:6px"><span class="badge danger">สูญหาย</span></div>
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+        {% else %}
+          <p class="muted">ยังไม่มีรายงานอุปกรณ์สูญหาย</p>
+        {% endif %}
+      </section>
+
     <section class="section-block">
       <div class="section-header">
         <h2>อุปกรณ์ที่ยังไม่คืน</h2>

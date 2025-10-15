@@ -38,6 +38,14 @@ def ensure_equipment_name_column(backfill: bool = True):
                 )
                 conn.execute(update_sql)
 
+        # ensure contact_phone exists (idempotent)
+        with engine.connect() as conn:
+            res = conn.execute(text("PRAGMA table_info('item_brokes')"))
+            cols = [row[1] for row in res.fetchall()]
+        if 'contact_phone' not in cols:
+            with engine.begin() as conn:
+                conn.execute(text("ALTER TABLE item_brokes ADD COLUMN contact_phone TEXT"))
+
         return True
     except Exception:
         # Let caller decide how to react; do not swallow exceptions here

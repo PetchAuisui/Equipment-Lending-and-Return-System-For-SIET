@@ -24,21 +24,21 @@
 <div class="meta split">
   <div class="row">
     <strong class="label dot dot-start">เริ่ม:</strong>
-    <span class="chip">วันที่: {{ it.start_date.strftime('%Y-%m-%d') }}</span>
-    <span class="chip">เวลา: {{ it.start_date.strftime('%H:%M') }}</span>
+  <span class="chip">วันที่: {{ it.start_date|safe_date('%Y-%m-%d') }}</span>
+  <span class="chip">เวลา: {{ it.start_date|safe_date('%H:%M') }}</span>
   </div>
 
   <div class="row">
     <strong class="label dot dot-due">ครบกำหนด:</strong>
-    <span class="chip">วันที่: {{ it.due_date.strftime('%Y-%m-%d') }}</span>
-    <span class="chip">เวลา: {{ it.due_date.strftime('%H:%M') }}</span>
+  <span class="chip">วันที่: {{ it.due_date|safe_date('%Y-%m-%d') }}</span>
+  <span class="chip">เวลา: {{ it.due_date|safe_date('%H:%M') }}</span>
   </div>
 
   {% if it.return_date %}
   <div class="row">
     <strong class="label dot dot-ret">คืนจริง:</strong>
-    <span class="chip">วันที่: {{ it.return_date.strftime('%Y-%m-%d') }}</span>
-    <span class="chip">เวลา: {{ it.return_date.strftime('%H:%M') }}</span>
+  <span class="chip">วันที่: {{ it.return_date|safe_date('%Y-%m-%d') }}</span>
+  <span class="chip">เวลา: {{ it.return_date|safe_date('%H:%M') }}</span>
   </div>
   {% else %}
   <div class="row">

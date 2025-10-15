@@ -31,16 +31,16 @@
     </div>
 
     <div class="date-row">
-      <p><strong>วันที่ยืม:</strong> {{ rent.start_date.strftime('%d %B %Y') }}</p>
-      <p><strong>วันที่กำหนดคืน:</strong> {{ rent.due_date.strftime('%d %B %Y') }}</p>
+  <p><strong>วันที่ยืม:</strong> {{ rent.start_date|safe_date('%d %B %Y') }}</p>
+  <p><strong>วันที่กำหนดคืน:</strong> {{ rent.due_date|safe_date('%d %B %Y') }}</p>
     </div>
   </div>
 
   <!-- ✅ ฟอร์มส่งข้อมูล -->
   <form action="{{ url_for('tracking.add_time_submit') }}" method="POST" class="extend-section">
     <input type="hidden" name="rent_id" value="{{ rent.rent_id }}">
-    <input type="hidden" name="old_due" value="{{ rent.due_date.strftime('%Y-%m-%d') }}">
-    <input type="hidden" name="created_at" value="{{ now().strftime('%Y-%m-%d %H:%M:%S') }}">
+  <input type="hidden" name="old_due" value="{{ rent.due_date|safe_date('%Y-%m-%d') }}">
+  <input type="hidden" name="created_at" value="{{ now()|safe_date('%Y-%m-%d %H:%M:%S') }}">
 
     <div class="input-block">
       <label for="extend_date"><strong>กำหนดคืนใหม่:</strong></label>
@@ -68,7 +68,7 @@
 <script>
   document.addEventListener("DOMContentLoaded", function() {
     const extendInput = document.querySelector('input[name="new_due"]');
-    const dueDate = "{{ rent.due_date.strftime('%Y-%m-%d') if rent and rent.due_date else '' }}";
+  const dueDate = "{{ rent.due_date|safe_date('%Y-%m-%d') if rent and rent.due_date else '' }}";
     if (extendInput && dueDate) {
       extendInput.min = dueDate;
     }
