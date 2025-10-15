@@ -51,7 +51,7 @@
                             <td>{{ r.start_date.strftime('%d-%m-%Y') }}</td>
                             <td>{{ r.due_date.strftime('%d-%m-%Y') }}</td>
                             <td class="actions">
-                              {% if r.status_name in ['approved', 'pending extend time', 'approved extend time', 'cancle extend time'] %}
+                              {% if r.status_name in ['approved', 'pending extend time', 'approved extend time', 'cancel extend time'] %}
                                   <a href="{{ url_for('tracking.add_time') }}?rent_id={{ r.rent_id }}" class="btn blue">ขยายเวลาการยืม</a>
                                   <a href="{{ url_for('tracking.user_return', rent_id=r.rent_id) }}" class="btn green">แจ้งคืน</a>
                                   <a href="{{ url_for('pages.lost_report') }}?rent_id={{ r.id }}&equipment_name={{ r.equipment_name|urlencode }}&equipment_code={{ r.equipment_code|urlencode }}" class="btn red">แจ้งเสียหาย/สูญหาย</a>   
