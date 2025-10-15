@@ -5,20 +5,18 @@
     justify-content: center;
     align-items: flex-start;
     width: calc(100% - 260px);  /* ปรับจาก 100% → ลบขนาด Sidebar */
-    margin-left: 260px;         /* ระยะ Sidebar ด้านซ้าย */
-    padding: 60px 0;
+    margin-left: 170px;         /* ระยะ Sidebar ด้านซ้าย */
+    padding: 50px 0;
     box-sizing: border-box;
 }
 
 /* ✅ กล่องเนื้อหาให้อยู่ตรงกลางพอดี */
 .content-container {
     width: 100%;
-    max-width: 1150px;
+    max-width: 1600px;
     text-align: center;
-    background: linear-gradient(180deg, #ffffff, #f9faff);
-    border-radius: 18px;
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.05);
-    padding: 40px;
+    border-radius: 22px;
+    padding: 30px;  /* ✅ เพิ่ม padding ด้านในมากขึ้น */
     transition: 0.3s;
     margin: 0 auto;
 }
@@ -68,7 +66,7 @@
 
 /* ตาราง */
 .equipment-table {
-    width: 100%;
+    width: 120%;
     border-collapse: separate;
     border-spacing: 0;
     background: white;
@@ -135,10 +133,15 @@
     background-color: #fce374;
     color: #333;
     box-shadow: 0 2px 6px rgba(252, 227, 116, 0.4);
+    text-decoration: none !important; /* 🔹 ลบขีดเส้นใต้ */
+    display: inline-block;             /* เพื่อให้เป็นปุ่มจริง */
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
+
 .btn-yellow:hover {
     background-color: #ffe781;
     transform: translateY(-2px);
+    text-decoration: none; /* ป้องกันไม่ให้มีขีดเส้นใต้เวลา hover */
 }
 
 .btn-green {
@@ -165,7 +168,6 @@
 .center {
     text-align: center;
     color: #888;
-    font-style: italic;
     padding: 20px 0;
 }
 

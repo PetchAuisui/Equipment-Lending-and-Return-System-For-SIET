@@ -4,29 +4,124 @@
 {% block content %}
 
 <style>
-.detail-wrapper{width:calc(100% - 260px);margin-left:260px;padding:40px 0;display:flex;justify-content:center;}
-.detail-card{width:100%;max-width:1050px;background:#fff;border-radius:16px;box-shadow:0 10px 30px rgba(0,0,0,0.06);padding:28px 28px 32px;}
-.detail-header{display:flex;align-items:center;gap:12px;margin-bottom:16px}
-.detail-header .icon{background:#4a68e0;color:#fff;border-radius:50%;width:36px;height:36px;display:flex;align-items:center;justify-content:center}
-.detail-grid{display:grid;grid-template-columns:260px 1fr;gap:24px;margin-top:14px}
-.preview{width:100%;border:1px dashed #d8dbe8;border-radius:12px;display:flex;align-items:center;justify-content:center;background:#fafbff}
-.preview img{width:210px;height:210px;object-fit:cover;border-radius:8px}
-.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-.form-grid .full{grid-column:span 2}
-.input{display:flex;flex-direction:column;gap:6px}
-.input label{font-size:.92rem;color:#334;opacity:.9}
-.input input{height:40px;border:1px solid #d8dbe8;border-radius:10px;padding:0 12px;background:#f9fbff}
-.actions{display:flex;gap:10px;justify-content:flex-end;margin-top:18px}
-.btn{border:none;border-radius:9px;padding:10px 16px;font-weight:600;cursor:pointer}
-.btn-outline{background:#fff;border:1px solid #d7daea}
-.btn-green{background:#3ac97c;color:#fff}
-.btn-red{background:#ff5b5b;color:#fff}
+.detail-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  width: calc(100% - 260px); /* เผื่อ sidebar */
+  margin-left: 260px;
+  padding: 60px 0;
+  box-sizing: border-box;
+}
+
+/* การ์ดกลาง */
+.detail-card {
+  width: 100%;
+  max-width: 900px; /* ✅ ปรับให้ขนาดเหมาะกับเนื้อหา */
+  background: #fff;
+  border-radius: 18px;
+  box-shadow: 0 8px 26px rgba(0, 0, 0, 0.05);
+  padding: 40px 50px;
+  margin: 0 auto; /* ✅ ให้จัดกึ่งกลาง */
+  transition: all 0.3s ease;
+}
+
+/* ส่วนหัว */
+.detail-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.detail-header h2 {
+  margin: 0;
+  color: #1e2a78;
+  font-size: 1.6rem;
+  font-weight: 700;
+}
+
+/* ปุ่มกลับ */
+.detail-header .btn-outline {
+  background: #fff;
+  border: 2px solid #8b78e6;
+  color: #4a3dc6;
+  font-weight: 600;
+  border-radius: 8px;
+  padding: 8px 16px;
+  text-decoration: none;
+  transition: 0.25s ease;
+}
+.detail-header .btn-outline:hover {
+  background: #fafafa;
+}
+
+/* กริดฟอร์ม */
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+}
+.form-grid .full {
+  grid-column: span 2;
+}
+
+.input {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.input label {
+  font-size: 0.92rem;
+  font-weight: 500;
+  color: #444;
+}
+.input input {
+  height: 42px;
+  border: 1px solid #d0d4e4;
+  border-radius: 10px;
+  padding: 0 12px;
+  background: #f9fbff;
+}
+
+/* ปุ่มล่าง */
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 25px;
+}
+.btn {
+  border: none;
+  border-radius: 8px;
+  padding: 10px 18px;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 1rem;
+}
+.btn-red {
+  background-color: #ff5b5b;
+  color: white;
+  text-decoration: none; /* เพิ่มบรรทัดนี้ */
+}
+.btn-green {
+  background-color: #3ac97c;
+  color: white;
+}
+.btn-red:hover {
+  background-color: #ff7373;
+  text-decoration: none; /* เพิ่มบรรทัดนี้ เพื่อป้องกันเส้นใต้เมื่อเมาส์ไปวาง */
+}
+.btn-green:hover {
+  background-color: #4ad48b;
+}
+
 </style>
 
 <div class="detail-wrapper">
   <div class="detail-card">
     <div class="detail-header">
-      <div class="icon">⟳</div>
+      
       <h2 style="margin:0">คืนอุปกรณ์</h2>
       <div style="margin-left:auto">
         <a class="btn btn-outline" href="{{ url_for('admin_success_return.admin_return_page') }}">↩ กลับรายการ</a>
@@ -37,14 +132,6 @@
       <p>ไม่พบข้อมูล</p>
     {% else %}
     <div class="detail-grid">
-
-      <div class="preview">
-        {% if rent.image %}
-          <img src="{{ url_for('static', filename=rent.image) }}" alt="">
-        {% else %}
-          <img src="https://cdn-icons-png.flaticon.com/512/337/337940.png" alt="">
-        {% endif %}
-      </div>
 
       <div class="form-grid">
         <div class="input">
