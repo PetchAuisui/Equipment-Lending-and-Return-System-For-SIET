@@ -22,6 +22,8 @@ def _equip_svc():
     """helper สำหรับสร้าง service ของอุปกรณ์"""
     return EquipmentService()
 
+
+
 @inventory_bp.route("/lend_device")
 def lend_device():
     equipments = get_grouped_equipments_separated()
@@ -222,3 +224,4 @@ def equipment_detail(eid):
         abort(404)
 
     return render_template("pages_inventory/equipment_detail.html", item=item)
+
