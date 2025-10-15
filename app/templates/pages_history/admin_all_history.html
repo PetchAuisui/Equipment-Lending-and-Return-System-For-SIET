@@ -65,7 +65,7 @@
     <td>{{ item.user_name }}</td>
     <td>{{ item.student_id or item.employee_id or '-' }}</td>
     <td>{{ item.equipment_name }}</td>
-    <td>{{ item.start_date.strftime('%d/%m/%Y') if item.start_date else '-' }}</td>
+  <td>{{ item.start_date|safe_date('%d/%m/%Y') if item.start_date else '-' }}</td>
     <td>{{ item.due_date.strftime('%d/%m/%Y') if item.due_date else '-' }}</td>
     <td>{{ item.return_date.strftime('%d/%m/%Y') if item.return_date else '-' }}</td>
     <td>{{ item.receiver_name or '-' }}</td>        <!-- 🆕 -->

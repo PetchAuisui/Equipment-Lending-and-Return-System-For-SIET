@@ -62,7 +62,7 @@
         <div class="eqedit-row">
           <label class="eqedit-label">วันที่ซื้อ</label>
           <input class="eqedit-ctrl" type="date" name="buy_date"
-                 value="{{ item.buy_date.strftime('%Y-%m-%d') if item.buy_date else '' }}">
+                 value="{{ item.buy_date|safe_date('%Y-%m-%d') if item.buy_date else '' }}">
         </div>
 
         <div class="eqedit-row">

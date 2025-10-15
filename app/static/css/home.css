@@ -236,9 +236,11 @@
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 280px));
   gap: 24px;
-  justify-content: start;        
+  justify-content: start;       
   align-items: stretch;
 }
+
+.center-cards { justify-content: center; }
 
 .equip-card {
   width: 280px; 

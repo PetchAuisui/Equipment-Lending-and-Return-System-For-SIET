@@ -14,5 +14,5 @@ class ItemBrokeService:
     def set_status(self, item_broke_id: int, status: str):
         return self.repo.update_status(item_broke_id, status)
 
-    def create_report(self, rent_id: int | None, type: str, detail: str, images: list = None, equipment_name: str = None):
-        return self.repo.create(rent_id=rent_id, type=type, detail=detail, images=images, equipment_name=equipment_name)
+    def create_report(self, rent_id: int | None, type: str, detail: str, images: list = None, equipment_name: str = None, phone: str = None):
+        return self.repo.create(rent_id=rent_id, type=type, detail=detail, images=images, equipment_name=equipment_name, phone=phone)

@@ -5,6 +5,40 @@ from app.blueprints.inventory.api_equipment import api_equipment_bp
 from app.scheduler import start_notification_scheduler 
 from app.db.db import Base, engine
 from app.db import models
+from datetime import datetime
+
+
+def _safe_date(value, fmt='%Y-%m-%d'):
+    if not value:
+        return ''
+    # already a datetime
+    try:
+        from datetime import datetime as _dt
+    except Exception:
+        _dt = datetime
+    if isinstance(value, _dt):
+        return value.strftime(fmt)
+    # if it's a string, try to parse common formats
+    if isinstance(value, str):
+        try:
+            dt = datetime.fromisoformat(value)
+        except Exception:
+            dt = None
+            for f in ('%Y-%m-%d %H:%M:%S.%f', '%Y-%m-%d %H:%M:%S', '%Y-%m-%d'):
+                try:
+                    dt = datetime.strptime(value, f)
+                    break
+                except Exception:
+                    dt = None
+        if dt:
+            return dt.strftime(fmt)
+        # fallback: return the original string
+        return value
+    # other types: convert to string
+    try:
+        return str(value)
+    except Exception:
+        return ''
 
 
 def create_app():
@@ -54,6 +88,9 @@ def create_app():
     app.register_blueprint(history_bp)
     app.register_blueprint(admin_history_bp)
     app.register_blueprint(notifications_bp)
+
+    # Register Jinja filter to safely format dates from datetime or string
+    app.jinja_env.filters['safe_date'] = _safe_date
 
 
     

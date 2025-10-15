@@ -30,8 +30,8 @@
             <div class="return-info">
                 <p><strong>รหัสอุปกรณ์:</strong> {{ rent_info.equipment_id }}</p>
                 <p><strong>ชื่ออุปกรณ์:</strong> {{ rent_info.equipment_name }}</p>
-                <p><strong>วันที่ยืม:</strong> {{ rent_info.start_date.strftime('%d-%m-%Y') }}</p>
-                <p><strong>กำหนดคืน:</strong> {{ rent_info.due_date.strftime('%d-%m-%Y') }}</p>
+                <p><strong>วันที่ยืม:</strong> {{ rent_info.start_date|safe_date('%d-%m-%Y') }}</p>
+                <p><strong>กำหนดคืน:</strong> {{ rent_info.due_date|safe_date('%d-%m-%Y') }}</p>
             </div>
         </div>
 

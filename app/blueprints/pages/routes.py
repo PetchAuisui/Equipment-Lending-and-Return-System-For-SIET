@@ -20,10 +20,17 @@ def home():
     top_borrowed = svc.get_top_borrowed_items(limit=4)
     # ของฉันที่ยังไม่คืน
     outstanding = svc.get_outstanding_items_for_user(user_id, limit=10) if user_id else []
+    # fetch reported lost/damaged items to show on home (only 'lost' status shown on home)
+    try:
+        ibs = ItemBrokeService()
+        lost_items = [i for i in ibs.list_reports() if i.get('type') == 'lost' or (i.get('status') and i.get('status') == 'lost')]
+    except Exception:
+        lost_items = []
 
     return render_template("pages/home.html",
                            top_borrowed=top_borrowed,
-                           outstanding=outstanding)
+                           outstanding=outstanding,
+                           lost_items=lost_items)
 
 @pages_bp.get("/about")
 def about_us():
@@ -47,12 +54,14 @@ def lost_report():
         # persist via service
         ibs = ItemBrokeService()
         device_name = form.get('device') or form.get('equipment_name')
+        phone = form.get('phone')
         try:
             item_id = ibs.create_report(rent_id=int(rent_id) if rent_id else None,
                                         type=report_type,
                                         detail=detail,
                                         images=images,
-                                        equipment_name=device_name)
+                                        equipment_name=device_name,
+                                        phone=phone)
             flash('แบบแจ้งความถูกส่งเรียบร้อย', 'success')
         except Exception as e:
             # log/flash and redirect back with error
