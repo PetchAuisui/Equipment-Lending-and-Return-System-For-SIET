@@ -104,7 +104,7 @@ class EquipmentService:
         eq.status = (status or eq.status or "").strip()
         if buy_date:
             eq.buy_date = buy_date
-
+        eq.confirm = confirm
         # ✅ อัปเดตรูป: ลบเก่า เพิ่มใหม่
         if image_file and image_file.filename:
             for im in list(self._images_of(eq)):

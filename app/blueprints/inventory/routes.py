@@ -168,7 +168,8 @@ def admin_equipment_edit(eid):
             name=form.get("name"), code=form.get("code"),
             category=form.get("category"), brand=form.get("brand"),
             detail=form.get("detail"), buy_date=buy_date,
-            status=form.get("status"), confirm=form.get("confirm"),
+            status=form.get("status"),
+            confirm=form.get("require_teacher_approval") == "1",
             image_file=request.files.get("image"),
             actor_id=session.get("user_id"),
         )
