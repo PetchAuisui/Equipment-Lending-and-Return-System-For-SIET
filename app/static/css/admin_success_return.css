@@ -5,7 +5,7 @@
     justify-content: center;
     align-items: flex-start;
     width: calc(100% - 260px);  /* ปรับจาก 100% → ลบขนาด Sidebar */
-    margin-left: 140px;         /* ระยะ Sidebar ด้านซ้าย */
+    margin-left: 10px;         /* ระยะ Sidebar ด้านซ้าย */
     padding: 50px 0;
     box-sizing: border-box;
 }
