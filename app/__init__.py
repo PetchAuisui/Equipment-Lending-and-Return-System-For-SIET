@@ -3,13 +3,17 @@ from flask import Flask
 from .config import Config
 from app.blueprints.inventory.api_equipment import api_equipment_bp
 from app.scheduler import start_notification_scheduler 
+from app.db.db import Base, engine
+from app.db import models
 
 
 def create_app():
     app = Flask(__name__, template_folder="templates", static_folder="static")
 
-    app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY", "super-secret-key-change-this")
+    with engine.begin() as conn:
+        Base.metadata.create_all(bind=conn)
 
+    app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY", "super-secret-key-change-this")
 
     app.config.from_object(Config)
     app.register_blueprint(api_equipment_bp)
@@ -51,6 +55,8 @@ def create_app():
     app.register_blueprint(admin_history_bp)
     app.register_blueprint(notifications_bp)
 
+
+    
     # ===== 🔔 เริ่ม Scheduler สำหรับแจ้งเตือน =====
     start_notification_scheduler(app)
     return app
