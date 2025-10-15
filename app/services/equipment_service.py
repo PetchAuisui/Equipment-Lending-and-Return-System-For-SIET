@@ -49,6 +49,7 @@ class EquipmentService:
             detail=detail,
             buy_date=buy_date,
             status=status or "available",
+            confirm=confirm,
             created_at=datetime.utcnow(),
         )
         self.repo.add_equipment(equipment)
