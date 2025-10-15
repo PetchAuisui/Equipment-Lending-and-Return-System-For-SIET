@@ -41,7 +41,7 @@ def lend_data_service(data):
         now_bkk = datetime.now(ZoneInfo("Asia/Bangkok")).replace(tzinfo=None)
 
         # ✅ กำหนด status อัตโนมัติ
-        if user.member_type in ["teacher", "staff"]:
+        if user.member_type in ["teacher", "officer"]:
             status_id = 2  # approved
         else:
             status_id = 1 if equipment.confirm == 1 else 2
