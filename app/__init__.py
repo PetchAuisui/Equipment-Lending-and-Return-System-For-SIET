@@ -36,6 +36,7 @@ def create_app():
     from app.blueprints.admin.routes import admin_bp, admin_users_bp, admin_history_bp                  # root: "/"
     from app.blueprints.pages.routes import pages_bp
     from app.blueprints.history.routes import history_bp
+    from app.blueprints.inventory.admin_success_return import admin_success_return_bp
 
     app.register_blueprint(pages_bp)
     app.register_blueprint(auth_bp, url_prefix="/auth")
@@ -45,4 +46,6 @@ def create_app():
     app.register_blueprint(admin_bp)
     app.register_blueprint(history_bp)
     app.register_blueprint(admin_history_bp)
+    app.register_blueprint(admin_success_return_bp)
+    
     return app
