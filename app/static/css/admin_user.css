@@ -25,7 +25,7 @@
   box-sizing: border-box;
   width: 100%;
   padding: 20px 24px 32px;
-  padding-left: calc(var(--sb) + 10px);  /* ✅ เว้นพื้นที่ sidebar แบบยืดหยุ่น */
+  padding-left: 10px;  /* ✅ เว้นพื้นที่ sidebar แบบยืดหยุ่น */
 
   color: var(--ink);
   font-size: 16px;
