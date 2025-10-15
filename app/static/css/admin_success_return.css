@@ -5,7 +5,7 @@
     justify-content: center;
     align-items: flex-start;
     width: calc(100% - 260px);  /* ปรับจาก 100% → ลบขนาด Sidebar */
-    margin-left: 170px;         /* ระยะ Sidebar ด้านซ้าย */
+    margin-left: 10px;         /* ระยะ Sidebar ด้านซ้าย */
     padding: 50px 0;
     box-sizing: border-box;
 }
@@ -16,7 +16,7 @@
     max-width: 1600px;
     text-align: center;
     border-radius: 22px;
-    padding: 30px;  /* ✅ เพิ่ม padding ด้านในมากขึ้น */
+    padding: 25px;  /* ✅ เพิ่ม padding ด้านในมากขึ้น */
     transition: 0.3s;
     margin: 0 auto;
 }
@@ -66,7 +66,7 @@
 
 /* ตาราง */
 .equipment-table {
-    width: 120%;
+    width: 100%;
     border-collapse: separate;
     border-spacing: 0;
     background: white;
