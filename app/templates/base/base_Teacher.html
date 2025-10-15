@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{% block title %}Instructor Page{% endblock %}</title>
+
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/navbar.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/instructor.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/instructor_cards.css') }}">
+</head>
+
+<body class="instructor-page">
+  {# แถบชมพู (ของนักเรียน/ทุกหน้า) #}
+  {% include 'base/_navbar.html' %}
+
+  {# โครงหน้าเฉพาะ Instructor #}
+  <div class="instructor-layout">
+    <aside class="instructor-sidebar">
+      {% include 'base/_navbar_instructor.html' %}
+    </aside>
+
+    <main class="content-area">
+      {% block content %}{% endblock %}
+    </main>
+  </div>
+</body>
+</html>
