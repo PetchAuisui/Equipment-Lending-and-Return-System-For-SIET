@@ -23,17 +23,10 @@
         <p><strong>ยี่ห้อ:</strong> {{ item.brand or '-' }}</p>
         <p><strong>รายละเอียด:</strong> {{ item.detail or '-' }}</p>
 
-        <p><strong>สถานะ:</strong>
-          {% if item.status == 'available' %}
-            <span class="status available">พร้อมใช้งาน</span>
-          {% elif item.status == 'in_use' %}
-            <span class="status in-use">กำลังถูกยืม</span>
-          {% elif item.status == 'broken' %}
-            <span class="status broken">ชำรุด</span>
-          {% else %}
-            <span class="status lost">สูญหาย</span>
-          {% endif %}
-        </p>
+        <div class="status-row">
+          <span class="label">สถานะ:</span>
+          <span class="status-badge">{{ item.status or '-' }}</span>
+        </div>
 
         <p><strong>ต้องให้อาจารย์อนุมัติ:</strong>
           {% if item.confirm %}

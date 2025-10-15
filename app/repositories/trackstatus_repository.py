@@ -1,6 +1,6 @@
 from sqlalchemy.orm import joinedload
 from app.db.db import SessionLocal, Base, engine
-from app.db.models import RentReturn, Equipment, EquipmentImage, StatusRent, Subject, User, Renewal
+from app.db.models import RentReturn, Equipment, EquipmentImage, StatusRent, User, Renewal
 class TrackStatusRepository:
     def __init__(self):
         self.db = SessionLocal()
@@ -25,7 +25,6 @@ class TrackStatusRepository:
                 "rent_id": r.rent_id,
                 "equipment_id": r.equipment_id,
                 "user_id": r.user_id,
-                "subject_id": r.subject_id,
                 "start_date": r.start_date,
                 "due_date": r.due_date,
                 "teacher_confirmed": r.teacher_confirmed,
@@ -67,7 +66,6 @@ class TrackStatusRepository:
                 joinedload(RentReturn.equipment)
                     .joinedload(Equipment.equipment_images),
                 joinedload(RentReturn.status),
-                joinedload(RentReturn.subject),
                 joinedload(RentReturn.teacher_confirm),
                 joinedload(RentReturn.user),
             )
@@ -91,9 +89,6 @@ class TrackStatusRepository:
                     "name": getattr(r.equipment, "name", None),
                     "code": getattr(r.equipment, "code", None),
                     "image_path": image_path,
-                },
-                "subject": {
-                    "name": getattr(r.subject, "subject_name", None),
                 },
                 "teacher": {
                     "name": getattr(r.teacher_confirm, "name", None),
