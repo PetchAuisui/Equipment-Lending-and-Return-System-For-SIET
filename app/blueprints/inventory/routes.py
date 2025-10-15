@@ -77,14 +77,17 @@ def lend():
     )
 
 
+from flask import flash, redirect, url_for, current_app
+from app.repositories.lend_repository import insert_rent_record  # ✅ ใช้ชื่อฟังก์ชันจริง
+
 @inventory_bp.route("/lend_submit", methods=["POST"])
 def lend_submit():
     """
-    ✅ รับข้อมูลจากฟอร์ม /lend แล้วส่งให้ lend_service.lend_data()
+    ✅ รับข้อมูลจากฟอร์ม /lend แล้วส่งไปบันทึก DB
     """
     form = request.form
 
-    # เก็บข้อมูลจากฟอร์มทั้งหมด
+    # เก็บข้อมูลจากฟอร์มเป็น dict
     data = {
         "device_name": form.get("device_name") or None,
         "code": form.get("code") or None,
@@ -93,18 +96,29 @@ def lend_submit():
         "borrower_name": form.get("borrower_name") or None,
         "phone": form.get("phone") or None,
         "major": form.get("major") or None,
-        "subject": form.get("subject") or None,
-        "teacher": form.get("teacher") or None,
+        "subject_id": form.get("subject") or None,
+        "teacher_confirmed": form.get("teacher") or None,
         "reason": form.get("reason") or None,
+        "status_id": 1,  # ตัวอย่าง status_id เริ่มต้น
+        "start_date": form.get("borrow_date") or None
     }
 
-    # แปลงเป็น list
-    data_list = [data.get(key, None) for key in data]
+    try:
+        # ✅ เรียกฟังก์ชัน insert_rent_record (รวม retry ภายในแล้ว)
+        result = insert_rent_record(data)
 
-    # ✅ เรียกไปที่ lend_service.py
-    lend_service.lend_data(data_list)
+        if result.get("status") == "success":
+            flash("✅ บันทึกการยืมสำเร็จ", "success")
+        else:
+            flash("❌ ล้มเหลวหลังจาก retry 3 ครั้ง กรุณาลองใหม่", "danger")
 
-    flash("✅ ส่งข้อมูลไปยัง lend_service แล้ว", "success")
+    except ValueError as ve:
+        flash(f"❌ {ve}", "warning")
+    except Exception as e:
+        flash("❌ เกิดข้อผิดพลาดของระบบ กรุณาลองใหม่อีกครั้ง", "danger")
+        current_app.logger.error(f"lend_submit error: {e}")
+
+    # ส่งกลับไปหน้า track
     return redirect(url_for("tracking.track_index"))
 
 # ------------------------------------------------------------
