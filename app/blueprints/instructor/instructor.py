@@ -1,11 +1,12 @@
 # app/blueprints/instructor/instructor.py
-from flask import Blueprint, render_template, url_for, request, redirect 
-from flask_login import  current_user 
-from sqlalchemy import select, func , or_ ,false
-from sqlalchemy.orm import joinedload
+from flask import Blueprint, render_template, url_for, request, redirect, session
+# ไม่ต้องใช้ current_user แล้ว (ระบบนี้ใช้ session อยู่แล้ว)
+# from flask_login import current_user
+from sqlalchemy import select, func, or_, false
+from sqlalchemy.orm import joinedload, aliased
 
 from app.db.db import SessionLocal
-from app.db.models import RentReturn, Equipment, User, StatusRent , EquipmentImage
+from app.db.models import RentReturn, Equipment, User, StatusRent, EquipmentImage
 
 bp = Blueprint("instructor", __name__)
 
@@ -16,10 +17,13 @@ _STATUS_MAP = {
     "rejected": "REJECTED",
     "returned": "RETURNED",
 }
-#--- helper functions ---
+
+# --- helpers ---
 def _get_or_create_status(s, name: str) -> StatusRent:
     norm = _STATUS_MAP.get(name, name).upper()
-    st = s.execute(select(StatusRent).where(func.upper(StatusRent.name) == norm)).scalar_one_or_none()
+    st = s.execute(
+        select(StatusRent).where(func.upper(StatusRent.name) == norm)
+    ).scalar_one_or_none()
     if not st:
         st = StatusRent(name=norm, color_code="#888888")
         s.add(st)
@@ -27,66 +31,54 @@ def _get_or_create_status(s, name: str) -> StatusRent:
     return st
 
 
-
 def _equip_image_url(eq) -> str:
-    """คืน URL รูปของอุปกรณ์แบบ robust + fallback."""
     if not eq or not getattr(eq, "image", None):
         return url_for("static", filename="images/device/default.png")
     raw = str(eq.image).replace("\\", "/").lstrip("/")
-    # มี static/ มาแล้ว
     if raw.startswith("static/"):
         return "/" + raw
-    # กรณีเก็บใต้ static/images/... หรือ static/uploads/...
     if raw.startswith(("images/", "uploads/")):
         return url_for("static", filename=raw)
-    # เก็บมาเป็นชื่อไฟล์อย่างเดียว
     return url_for("static", filename=f"images/device/{raw}")
 
 
-# app/blueprints/instructor/instructor.py
-
-
-
-def _only_my_requests(stmt, employee_id):
+def _only_my_requests(stmt):
     """
-    กรองเฉพาะคำขอที่ส่งถึงอาจารย์คนนี้ (ถ้าระบุตัวได้)
-    รองรับ 3 เคสตาม schema ที่มีจริงในโปรเจกต์
+    แสดงเฉพาะคำขอที่ 'ส่งถึงอาจารย์ที่ล็อกอินอยู่'
+    ใช้ session['user_id'] / session['user_email'] (ไม่พึ่ง flask-login)
+    map: RentReturn.teacher_confirmed -> users.user_id
     """
-    if not employee_id:
-        return stmt
+    uid = session.get("user_id")            # <-- สำคัญ: user_id จาก session ตอน login
+    email = session.get("user_email")
 
-    # A) ถ้า RentReturn มีฟิลด์ teacher_confirmed (ชี้ไปที่ user.employee_id)
-    if hasattr(RentReturn, "teacher_confirmed"):
-        return stmt.where(RentReturn.teacher_confirmed == employee_id)
+    # กันหลุดข้อมูล: ถ้าไม่รู้ว่าเป็นใคร -> ไม่แสดง
+    if not uid and not email:
+        return stmt.where(false())
 
-    # B) ถ้ามี subject และ Subject มี instructor_id
-    try:
-        from app.db.models import Subject
-        if hasattr(RentReturn, "subject") and hasattr(Subject, "instructor_id"):
-            return stmt.join(Subject, RentReturn.subject)\
-                       .where(Subject.instructor_id == employee_id)
-    except Exception:
-        pass
+    Teacher = aliased(User)
+    stmt = stmt.join(Teacher, RentReturn.teacher_confirmed == Teacher.user_id)
 
-    # C) ถ้ามี clazz และ Clazz มี teacher_id
-    try:
-        from app.db.models import Clazz
-        if hasattr(RentReturn, "clazz") and hasattr(Clazz, "teacher_id"):
-            return stmt.join(Clazz, RentReturn.clazz)\
-                       .where(Clazz.teacher_id == employee_id)
-    except Exception:
-        pass
+    conditions = []
+    if uid:
+        try:
+            conditions.append(Teacher.user_id == int(uid))
+        except Exception:
+            pass
+    if email:
+        conditions.append(Teacher.email == str(email))
 
-    return stmt
+    if not conditions:
+        return stmt.where(false())
+
+    return stmt.where(or_(*conditions))
+
 
 def _query_requests(statuses: list[str] | None = None, require_confirm: bool | None = None):
     """
-    ดึงคำขอ:
-      - statuses: รายชื่อสถานะที่ต้องการกรอง (เช่น ["pending"])
-      - require_confirm=True  -> กรองเฉพาะอุปกรณ์ที่ Equipment.confirm == 1
-        require_confirm=False -> ไม่บังคับ (ดึงทั้งหมด)
-        require_confirm=None  -> ไม่แตะเรื่อง confirm เลย
-    จะกรองให้เห็นเฉพาะของอาจารย์ปัจจุบันโดยอัตโนมัติ
+    - statuses: รายชื่อสถานะที่ต้องการกรอง (เช่น ["pending"])
+    - require_confirm=True  -> เฉพาะอุปกรณ์ที่ Equipment.confirm == 1
+      require_confirm=False/None -> ไม่แตะเรื่อง confirm
+    - จะกรองให้เห็นเฉพาะของอาจารย์คนที่ล็อกอินโดยอัตโนมัติ (ผ่าน _only_my_requests)
     """
     with SessionLocal() as s:
         stmt = (
@@ -99,40 +91,37 @@ def _query_requests(statuses: list[str] | None = None, require_confirm: bool | N
             .order_by(RentReturn.created_at.desc())
         )
 
-        # กรองตามสถานะ (case-insensitive)
         if statuses:
             norm = [(_STATUS_MAP.get(x, x)).lower() for x in statuses]
             stmt = stmt.join(StatusRent).where(func.lower(StatusRent.name).in_(norm))
 
-        # ✅ กรองเฉพาะรายการของอาจารย์คนนี้
-        employee_id = getattr(current_user, "employee_id", None)
-        stmt = _only_my_requests(stmt, employee_id)
+        # ✅ ฟิลเตอร์ให้เหลือเฉพาะคำขอที่ส่งถึงอาจารย์คนนี้
+        stmt = _only_my_requests(stmt)
 
-        # ✅ ถ้าต้องบังคับเฉพาะอุปกรณ์ที่ require confirm
-        if require_confirm is True:
+        # ✅ ถ้าต้องบังคับเฉพาะอุปกรณ์ที่ต้องให้อาจารย์อนุมัติ
+        if require_confirm is True and hasattr(Equipment, "confirm"):
             stmt = stmt.join(Equipment).where(Equipment.confirm == 1)
-        # ถ้า False หรือ None จะไม่กรองเรื่อง confirm เพิ่มเติม
 
         rows = s.execute(stmt).unique().scalars().all()
 
-        # ใส่ URL รูปให้ทุกรายการ
+        # เติม URL รูป
         for r in rows:
             if r.equipment:
                 r.equipment.image_url = _equip_image_url(r.equipment)
 
         return rows
+
+
 def _to_static_url(path: str) -> str:
-    """รับ path จาก DB แล้วคืน URL ของ static"""
     if not path:
         return url_for("static", filename="images/device/default.png")
     p = str(path).replace("\\", "/").lstrip("/")
     if p.startswith("static/"):
         return "/" + p
-    # DB เก็บแบบ images/device/… -> ครอบด้วย static
     return url_for("static", filename=p)
 
+
 def _images_map_for(reqs: list[RentReturn]) -> dict[int, str]:
-    """ดึงรูปแรกของอุปกรณ์ทุกชิ้นใน reqs ทีเดียว แล้วคืน dict {equipment_id: url}"""
     eq_ids = [r.equipment_id for r in reqs if r.equipment_id]
     if not eq_ids:
         return {}
@@ -140,30 +129,37 @@ def _images_map_for(reqs: list[RentReturn]) -> dict[int, str]:
         rows = s.execute(
             select(EquipmentImage.equipment_id, EquipmentImage.image_path)
             .where(EquipmentImage.equipment_id.in_(eq_ids))
-            .order_by(EquipmentImage.created_at.asc())  # รูปแรก
+            .order_by(EquipmentImage.created_at.asc())
         ).all()
 
     first_by_eq: dict[int, str] = {}
     for eq_id, img_path in rows:
-        if eq_id not in first_by_eq:          # เก็บรูปแรกเท่านั้น
+        if eq_id not in first_by_eq:
             first_by_eq[eq_id] = _to_static_url(img_path)
     return first_by_eq
-#--- routes ---
+
+
+# --- routes ---
 @bp.get("/home", endpoint="teacher_home")
 def home():
     return redirect(url_for("instructor.pending"))
 
+
 @bp.get("/requests")  # งานที่ต้องอนุมัติ
 def requests_cards():
-    reqs = _query_requests(["pending"], require_confirm=True)  # ต้อง confirm
+    reqs = _query_requests(["pending"], require_confirm=True)
     images = _images_map_for(reqs)
     return render_template("instructor/requests.html", reqs=reqs, images=images)
 
+
 @bp.get("/pending")  # ประวัติ/ภาพรวมของอาจารย์คนนี้
 def pending():
-    # ไม่บังคับ confirm เพื่อให้เห็นทุกคำขอที่ส่งถึงอาจารย์คนนี้
-    reqs = _query_requests(["pending", "approved", "rejected", "returned"], require_confirm=None)
+    reqs = _query_requests(
+        ["pending", "approved", "rejected", "returned"],
+        require_confirm=None,
+    )
     return render_template("instructor/pending.html", reqs=reqs)
+
 
 @bp.post("/pending/decide/<int:req_id>", endpoint="pending_decide")
 def pending_decide(req_id: int):
@@ -178,9 +174,6 @@ def pending_decide(req_id: int):
         s.commit()
     return redirect(url_for("instructor.requests_cards"))
 
-# app/blueprints/instructor/instructor.py
-
-# app/blueprints/instructor/instructor.py
 
 @bp.get("/requests/<int:req_id>", endpoint="request_detail")
 def request_detail(req_id: int):
@@ -192,8 +185,6 @@ def request_detail(req_id: int):
                     joinedload(RentReturn.equipment),
                     joinedload(RentReturn.user),
                     joinedload(RentReturn.status),
-                    # ถ้ามีความสัมพันธ์พวก subject/clazz จริง ๆ แต่อิมพอร์ตชื่อโมเดลลำบาก
-                    # ใช้วิธี "แตะ" เพื่อให้โหลดเข้าหน่วยความจำก่อนปิด session ก็ได้:
                 )
                 .where(RentReturn.rent_id == req_id)
             )
@@ -203,10 +194,8 @@ def request_detail(req_id: int):
         if not r:
             return redirect(url_for("instructor.requests_cards"))
 
-        # ---- เตรียมข้อมูลแสดงผลให้เป็นสตริง ----
-        # วิชา (พยายามดึงจาก r.subject ถ้าไม่มีลอง r.clazz.subject)
+        # วิชา
         try:
-            subject_name = None
             if getattr(r, "subject", None) and getattr(r.subject, "name", None):
                 subject_name = r.subject.name
             elif getattr(r, "clazz", None) and getattr(r.clazz, "subject", None) and getattr(r.clazz.subject, "name", None):
@@ -216,7 +205,7 @@ def request_detail(req_id: int):
         except Exception:
             subject_name = "-"
 
-        # ข้อมูลคลาส/เซกชัน (ถ้ามี)
+        # คลาส/เซกชัน
         try:
             clazz_bits = []
             if getattr(r, "clazz", None):
@@ -228,47 +217,19 @@ def request_detail(req_id: int):
         except Exception:
             clazz_info = ""
 
-        # รูปอุปกรณ์ (เหมือนเดิม)
         img_path = s.execute(
             select(EquipmentImage.image_path)
             .where(EquipmentImage.equipment_id == r.equipment_id)
             .order_by(EquipmentImage.created_at.asc())
         ).scalar_one_or_none()
 
-    # นอก session แล้ว: แปลง path -> static url
     img_url = _to_static_url(img_path)
-
     return render_template(
         "instructor/request_detail.html",
-        r=r,           # เผื่อจุดอื่นใช้
-        req=r,         # กันเทมเพลตบางจุดอ้าง req
+        r=r,
+        req=r,
         img_url=img_url,
         subject_name=subject_name,
         clazz_info=clazz_info,
-        back_to=url_for("instructor.pending")
+        back_to=url_for("instructor.pending"),
     )
-# controller ที่รับคำขอยืม (ตัวอย่าง)
-
-
-@bp.post("/borrow")
-def create_borrow():
-    # ... รับค่าอื่นๆ มาแล้ว ...
-    teacher_empid = request.form.get("teacher_empid")  # เช่น "T001"
-    teacher = None
-    if teacher_empid:
-        teacher = User.query.filter_by(employee_id=teacher_empid, member_type="teacher").first()
-
-    if not teacher:
-        # ถ้าไม่เจออาจารย์ → ให้แจ้งเตือนและไม่บันทึก (หรือจะ fallback ก็ได้)
-        flash("กรุณาเลือกอาจารย์ผู้อนุมัติให้ถูกต้อง", "error")
-        return redirect(url_for("inventory.lend_page"))
-
-    # สร้างคำขอ (ตัวอย่างเรียก service)
-    rents = borrow_service.request_borrow(
-        student_id=current_user.user_id,
-        equipment_id=int(request.form["equipment_id"]),
-        qty=int(request.form.get("qty", 1)),
-        start_date=..., due_date=..., reason=request.form.get("reason",""),
-        instructor_id=teacher.user_id,   # <-- สำคัญ: เก็บ user_id ของอาจารย์ลง teacher_confirmed
-    )
-    # ...
