@@ -69,17 +69,6 @@
         <input type="text" name="phone" value="{{ current_user.phone }}" readonly />
       </div>
 
-      <!-- วิชา -->
-      <div class="form-group">
-        <label>วิชา</label>
-        <select id="subjectSelect" name="subject" class="auth__input" required>
-          <option value="">เลือกวิชา</option>
-          {% for subj in subjects %}
-            <option value="{{ subj.subject_id }}">{{ subj.subject_name }} ({{ subj.subject_code }})</option>
-          {% endfor %}
-        </select>
-      </div>
-
       <!-- อาจารย์ -->
       <div class="form-group">
         <label>อาจารย์ประจำวิชา</label>
@@ -193,7 +182,6 @@
 <script>
 $(document).ready(function() {
   $('#subjectSelect').select2({ placeholder: "ค้นหาวิชา...", allowClear: false, width: '100%' });
-  $('#teacherSelect').select2({ placeholder: "ค้นหาอาจารย์...", allowClear: false, width: '100%' });
 });
 </script>
 

@@ -1,11 +1,16 @@
+# app/services/lend_service.py
 from app.repositories import lend_repository
 from app.db.db import SessionLocal
 from app.db.models import Equipment, User
 from datetime import datetime
 from zoneinfo import ZoneInfo  # Python 3.9+
+from flask import flash, redirect, url_for, current_app
+from app.repositories.lend_repository import insert_rent_record
+
 
 def get_all_subjects():
     return lend_repository.get_all_subjects()
+
 
 def get_all_users():
     users = lend_repository.get_all_users()
@@ -15,53 +20,63 @@ def get_all_users():
     ]
     return {"teachers": teachers}
 
-def lend_data(data_list):
-    """
-    รับข้อมูลจากฟอร์มยืม แล้วบันทึกลงตาราง rent_returns
-    โดยใช้เวลา Bangkok
-    """
-    print("📦 ข้อมูลการยืมที่ได้รับ:")
-    print(data_list)
 
+# services/lend_service.py
+def lend_data_service(data):
     db = SessionLocal()
     try:
-        data = {
-            "device_name": data_list[0],
-            "code": data_list[1],
-            "borrow_date": data_list[2],
-            "return_date": data_list[3],
-            "borrower_name": data_list[4],
-            "phone": data_list[5],
-            "major": data_list[6],
-            "subject_id": data_list[7],
-            "teacher_confirmed": data_list[8],
-            "reason": data_list[9],
-        }
-
-        # หา user
-        user = db.query(User).filter(User.name == data["borrower_name"]).first()
+        # ✅ ใช้ user_id แทน id
+        user = db.query(User).filter(User.user_id == data["borrower_id"]).first()
         if not user:
             raise ValueError("❌ ไม่พบผู้ใช้ในระบบ")
 
-        # หา equipment
         equipment = db.query(Equipment).filter(Equipment.code == data["code"]).first()
         if not equipment:
             raise ValueError("❌ ไม่พบอุปกรณ์ในระบบ")
 
-        # ✅ ใช้เวลา Bangkok แทน UTC
-        data["start_date"] = datetime.now(ZoneInfo("Asia/Bangkok"))
+        # ... (ส่วนอื่นเหมือนเดิม)
 
-        # กำหนด status ตาม member_type
+
+        # ✅ เวลาโซน Bangkok
+        now_bkk = datetime.now(ZoneInfo("Asia/Bangkok")).replace(tzinfo=None)
+
+        # ✅ กำหนด status อัตโนมัติ
         if user.member_type in ["teacher", "staff"]:
-            data["status_id"] = 2  # approved
+            status_id = 2  # approved
         else:
-            if equipment.confirm == 1:
-                data["status_id"] = 1  # pending
-            else:
-                data["status_id"] = 2  # approved
+            status_id = 1 if equipment.confirm == 1 else 2
 
-        # ส่งข้อมูลไปบันทึก
-        lend_repository.insert_rent_record(data)
+        # ✅ เตรียมข้อมูลสำหรับบันทึก
+        rent_data = {
+            "equipment_id": equipment.equipment_id,
+            "user_id": user.user_id,
+            "subject_id": None,
+            "start_date": now_bkk,
+            "due_date": datetime.strptime(data["return_date"], "%Y-%m-%d"),
+            "teacher_confirmed": data.get("teacher_confirmed"),
+            "reason": data.get("reason"),
+            "status_id": status_id,
+            "created_at": now_bkk,
+        }
 
+        # ✅ เรียก repository เพื่อบันทึก (มี retry 3 ครั้งภายใน)
+        result = insert_rent_record(rent_data)
+
+        if result.get("status") == "success":
+            # ✅ อัปเดตสถานะอุปกรณ์เป็น unavailable
+            equipment.status = "unavailable"
+            db.commit()
+            flash("✅ บันทึกการยืมสำเร็จ", "success")
+        else:
+            flash("❌ ล้มเหลวหลังจาก retry 3 ครั้ง กรุณาลองใหม่", "danger")
+
+    except ValueError as ve:
+        flash(str(ve), "warning")
+    except Exception as e:
+        current_app.logger.error(f"lend_data_service error: {e}")
+        flash("❌ เกิดข้อผิดพลาดของระบบ กรุณาลองใหม่อีกครั้ง", "danger")
     finally:
         db.close()
+
+    # ✅ กลับหน้า track เสมอ
+    return redirect(url_for("tracking.track_index"))
