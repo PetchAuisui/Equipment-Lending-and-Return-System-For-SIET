@@ -46,8 +46,8 @@
       </td>
       <td>{{ r.note or r.reason or '-' }}</td>
       <td>
-        <a class="btn btn-sm btn-outline" href="{{ url_for('instructor.request_detail', req_id=r.rent_id) }}">
-          🔍 ดูรายละเอียด
+        <a href="{{ url_for('instructor.request_detail', req_id=r.rent_id) }}" class="btn btn-detail btn-sm">
+          🔍details
         </a>
       </td>
     </tr>

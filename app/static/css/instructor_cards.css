@@ -26,3 +26,160 @@
 .pill.wait { background:#fef3c7; color:#7c2d12; }
 
 .empty { color:#666; }
+
+/* === Layout การ์ดรวม === */
+.card-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill, minmax(320px,1fr));
+  gap: 16px;
+  align-items:start;
+}
+
+/* === การ์ดแต่ละใบ === */
+.card{
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+  border-radius:16px;
+  padding:16px;
+  background:#fff;
+  box-shadow:0 2px 12px rgba(0,0,0,.06);
+  position:relative;
+}
+
+/* บางธีมมี pseudo-elements ตกแต่งวงกลม/แถบยาว – ปิดทิ้ง */
+.card::before,
+.card::after{ content:none !important; display:none !important; }
+
+/* === กล่องรูป: กำหนดสัดส่วนให้แน่นอน === */
+.card-img{
+  width:100%;
+  aspect-ratio: 4 / 3;      /* หรือ 1/1 ถ้าอยากเป็นสี่เหลี่ยมจัตุรัส */
+  overflow:hidden;
+  border-radius:12px;
+  background:#f6f6f6;
+}
+
+.card-img img{
+  width:100%;
+  height:100%;
+  display:block;
+  object-fit:cover;          /* ครอบให้พอดีกรอบ */
+}
+
+/* === meta list === */
+.card-meta{
+  list-style:none;
+  padding:0;
+  margin:0;
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+  font-size:14px;
+}
+.card-meta > li > span{
+  color:#666;
+  min-width:84px;
+  display:inline-block;
+}
+
+/* === สถานะ === */
+.pill{
+  align-self:flex-start;
+  padding:4px 10px;
+  border-radius:999px;
+  font-size:12px;
+  font-weight:600;
+  text-transform:uppercase;
+  background:#ffe6a6;
+}
+.pill.ok{ background:#d7f7d7; }
+.pill.bad{ background:#ffd6d6; }
+.pill.warn{ background:#ffe6a6; }
+
+/* === ปุ่มด้านล่าง === */
+.card-actions{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  margin-top:4px;
+}
+.card-actions .btn{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  padding:8px 12px;
+  border-radius:10px;
+  border:1px solid #ddd;
+  background:#fff;
+  cursor:pointer;
+  text-decoration:none;
+}
+.card-actions .btn-approve{ background:#30d158; color:#fff; border-color:#30d158; }
+.card-actions .btn-reject{ background:#ff3b30; color:#fff; border-color:#ff3b30; }
+.card-actions .btn-detail{ background:#f3f3f3; }
+
+
+
+.card-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill, minmax(300px,1fr));
+  gap:16px;
+  align-items:start;
+}
+
+/* การ์ดพื้นฐาน */
+.card{
+  position:relative;
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+  padding:16px;
+  border-radius:16px;
+  background:#fff;
+  box-shadow:0 2px 12px rgba(0,0,0,.07);
+}
+
+/* ปิดของตกแต่งเดิมที่เป็น before/after ถ้ามี */
+.card::before,.card::after{content:none !important; display:none !important;}
+
+.card-img{
+  width:100%;
+  aspect-ratio: 4/3;
+  border-radius:12px;
+  overflow:hidden;
+  background:#f5f5f5;
+}
+.card-img img{ width:100%; height:100%; display:block; object-fit:cover; }
+
+.card-title{
+  font-weight:700;
+  line-height:1.2;
+}
+.card-title .muted{ color:#666; font-weight:400; margin-top:2px; }
+
+.card-meta{
+  list-style:none; padding:0; margin:0; display:flex; flex-direction:column; gap:6px;
+  font-size:14px;
+}
+.card-meta span{ color:#666; min-width:86px; display:inline-block; }
+
+/* ป้ายสถานะมุมบนขวา */
+.card-status{
+  position:absolute; top:12px; right:12px;
+  padding:4px 10px; border-radius:999px; font-size:12px; text-transform:uppercase;
+  background:#ffe6a6; font-weight:600;
+}
+.card-status.ok{ background:#d7f7d7; }
+.card-status.bad{ background:#ffd6d6; }
+.card-status.warn{ background:#ffe6a6; }
+
+/* ปุ่ม */
+.card-actions{ display:flex; flex-wrap:wrap; gap:8px; margin-top:4px; }
+.card-actions .btn{
+  border:1px solid #ddd; background:#fff; border-radius:10px; padding:8px 12px;
+  text-decoration:none; cursor:pointer; display:inline-flex; align-items:center;
+}
+.card-actions .btn-approve{ background:#30d158; color:#fff; border-color:#30d158; }
+.card-actions .btn-reject{ background:#ff3b30; color:#fff; border-color:#ff3b30; }
+.card-actions .btn-detail{ background:#f3f3f3; }

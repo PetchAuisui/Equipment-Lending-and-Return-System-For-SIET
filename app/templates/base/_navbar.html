@@ -32,7 +32,7 @@
           {% if request.path.startswith('/instructor') %}
             <a href="{{ url_for('pages.home') }}" class="btn-nav btn-admin">Back</a>
           {% else %}
-            <a href="{{ url_for('instructor.teacher_home') }}" class="btn-nav btn-admin">Instructor</a>
+            <a href="{{ url_for('instructor.pending') }}" class="btn-nav btn-admin">Instructor</a>
           {% endif %}
         {% endif %}
 

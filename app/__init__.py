@@ -41,7 +41,7 @@ def create_app():
     from .blueprints.auth import auth_bp
     from .blueprints.inventory import inventory_bp
     from .blueprints.tracking import tracking_bp
-    from .blueprints.instructor import instructor_bp  
+    from .blueprints.instructor.routes import bp as instructor_bp  
     from app.blueprints.admin.routes import admin_bp, admin_users_bp, admin_history_bp                  # root: "/"
     from app.blueprints.pages.routes import pages_bp
     from app.blueprints.history.routes import history_bp                 # root: "/"

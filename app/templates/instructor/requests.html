@@ -1,69 +1,58 @@
 {% extends 'base/base_teacher.html' %}
 {% block title %}Requests (Pending){% endblock %}
 {% block content %}
-
-<h2>คำขอรออนุมัติ</h2>
+<h2>Requests</h2>
 
 <div class="card-grid">
-
   {% if reqs|length == 0 %}
     <p class="empty">ไม่มีคำขอค้างอยู่</p>
   {% endif %}
 
   {% for r in reqs %}
-  {% set st = (r.status.name if r.status else 'PENDING')|lower %}
-  
-  {# ✅ ใช้ dict images ที่ส่งมาจาก instructor.py เพื่อแสดงรูป #}
-  {% set img_url = images.get(r.equipment_id) 
-      or url_for('static', filename='images/device/default.png') %}
+    {% set st = (r.status.name if r.status else 'PENDING')|lower %}
+    {% set img_url = images.get(r.equipment_id) or url_for('static', filename='images/device/default.png') %}
 
-  <div class="card">
-    <div class="card-img">
-      <img
-        src="{{ images.get(r.equipment_id, url_for('static', filename='images/device/default.png')) }}"
-        alt="{{ r.equipment.name if r.equipment else 'device' }}"
-      />
-    </div>
+    <article class="card">
+      <div class="card-status {{ 'ok' if st=='approved' else ('bad' if st=='rejected' else 'warn') }}">
+        {{ st }}
+      </div>
 
-    <ul class="card-meta">
-      <li><span>รหัสคำขอ:</span> {{ r.rent_id }}</li>
-      <li><span>ผู้ขอ:</span>
-        {{ (r.user.student_id or r.user.employee_id) if r.user else '-' }}
-      </li>
-      <li><span>อุปกรณ์:</span>
+      <div class="card-img">
+        <img
+          src="{{ img_url }}"
+          alt="{{ r.equipment.name if r.equipment else 'device' }}"
+          loading="lazy"
+          onerror="this.onerror=null;this.src='{{ url_for('static', filename='images/device/default.png') }}';"
+        />
+      </div>
+
+      <header class="card-title">
         {{ r.equipment.code if r.equipment and r.equipment.code else '-' }}
         <div class="muted">{{ r.equipment.name if r.equipment else '' }}</div>
-      </li>
-      <li><span>ยืมเมื่อ:</span>
-        {{ r.start_date.strftime('%d/%m/%Y %H:%M') if r.start_date else '-' }}
-      </li>
-      <li><span>กำหนดคืน:</span>
-        {{ r.due_date.strftime('%d/%m/%Y %H:%M') if r.due_date else '-' }}
-      </li>
-      <li><span>หมายเหตุ:</span> {{ r.note or r.reason or '-' }}</li>
-    </ul>
+      </header>
 
-    <div class="pill {% if st=='approved' %}ok{% elif st=='rejected' %}bad{% else %}warn{% endif %}">
-      {{ st }}
-    </div>
+      <ul class="card-meta">
+        <li><span>รหัสคำขอ</span><strong>#{{ r.rent_id }}</strong></li>
+        <li><span>ผู้ขอ</span>{{ (r.user.student_id or r.user.employee_id) if r.user else '-' }}</li>
+        <li><span>ยืมเมื่อ</span>{{ r.start_date.strftime('%d/%m/%Y %H:%M') if r.start_date else '-' }}</li>
+        <li><span>กำหนดคืน</span>{{ r.due_date.strftime('%d/%m/%Y %H:%M') if r.due_date else '-' }}</li>
+        <li><span>หมายเหตุ</span>{{ r.note or r.reason or '-' }}</li>
+      </ul>
 
-    <div class="card-actions">
-      <a class="btn btn-detail"
-         href="{{ url_for('instructor.request_detail', req_id=r.rent_id) }}">รายละเอียด</a>
+      <div class="card-actions">
+        <a class="btn btn-detail" href="{{ url_for('instructor.request_detail', req_id=r.rent_id) }}">details</a>
 
-      <form method="post" action="{{ url_for('instructor.pending_decide', req_id=r.rent_id) }}">
-        <input type="hidden" name="action" value="approve">
-        <button type="submit" class="btn btn-approve">อนุมัติ</button>
-      </form>
+        <form method="post" action="{{ url_for('instructor.pending_decide', req_id=r.rent_id) }}">
+          <input type="hidden" name="action" value="approve" />
+          <button type="submit" class="btn btn-approve">อนุมัติ</button>
+        </form>
 
-      <form method="post" action="{{ url_for('instructor.pending_decide', req_id=r.rent_id) }}">
-        <input type="hidden" name="action" value="reject">
-        <button type="submit" class="btn btn-reject">ปฏิเสธ</button>
-      </form>
-    </div>
-  </div>
-
+        <form method="post" action="{{ url_for('instructor.pending_decide', req_id=r.rent_id) }}">
+          <input type="hidden" name="action" value="reject" />
+          <button type="submit" class="btn btn-reject">ปฏิเสธ</button>
+        </form>
+      </div>
+    </article>
   {% endfor %}
 </div>
-
 {% endblock %}
