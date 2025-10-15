@@ -1,0 +1,174 @@
+
+/* ============================
+   Lost / Broken List (Admin)
+   ============================ */
+
+/* Table Container */
+.lost-table-card-v2 {
+  background: #fff;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 12px 30px rgba(10, 20, 40, 0.06);
+}
+
+/* Table Layout */
+.lost-admin-table-v2 {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+  color: #111;
+}
+
+.lost-admin-table-v2 thead th {
+  background: #fafafa;
+  padding: 14px 12px;
+  font-weight: 800;
+  text-align: left;
+  border-bottom: 2px solid #f0f0f0;
+}
+
+.lost-admin-table-v2 tbody td {
+  padding: 12px 12px;
+  vertical-align: middle;
+  border-bottom: 1px solid #f4f4f6;
+}
+
+.lost-admin-table-v2 tbody tr:nth-child(odd) { background: #fff; }
+.lost-admin-table-v2 tbody tr:nth-child(even) { background: #fbfbfd; }
+
+/* Column Layout */
+.lost-col-no { width: 48px; text-align: center; }
+.lost-col-id { width: 64px; text-align: center; }
+.lost-col-rent { width: 88px; text-align: center; }
+.lost-col-equip { width: 220px; }
+.lost-col-detail { width: 320px; }
+.lost-col-type { width: 120px; }
+.lost-col-status { width: 140px; text-align: center; }
+.lost-col-action { width: 120px; text-align: center; }
+
+/* Text and Badge */
+.lost-equip-name { font-weight: 700; color: #111; }
+.lost-detail-text { color: #333; }
+
+.lost-badge {
+  display: inline-block;
+  padding: 6px 10px;
+  border-radius: 8px;
+  font-weight: 700;
+  color: #fff;
+  font-size: 13px;
+}
+
+.lost-badge--pending { background: #f0ad4e; }
+.lost-badge--ready { background: #28a745; }
+
+/* ============================
+   Dashboard Layout (Admin)
+   ============================ */
+
+:root {
+  --navbar-total-v2: 112px;
+  --sidebar-v2: 80px;
+}
+
+/* Dashboard Wrapper */
+.dashboard-v2 {
+  margin-left: var(--sidebar-v2);
+  padding-top: var(--navbar-total-v2);
+  min-height: calc(100vh - var(--navbar-total-v2));
+  box-sizing: border-box;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Grid */
+.dashboard-grid-v2 {
+  max-width: 1000px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 32px 48px;
+  justify-items: center;
+}
+
+/* Card Style */
+.card-v2 {
+  width: 340px;
+  height: 180px;
+  background: #e0e0e0;
+  border-radius: 12px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  color: #222;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card-v2:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Lost-specific card */
+.card-v2--lost {
+  background: linear-gradient(180deg, #fdecea 0%, #f8d6d6 100%);
+  border: 1px solid #f2a7a7;
+  color: #5a1a1a;
+}
+
+/* Lost tag */
+.lost-tag-v2 {
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 6px;
+  background: #e74c3c;
+  color: #fff;
+  font-weight: 600;
+  font-size: 12px;
+}
+
+/* ============================
+   Responsive Design
+   ============================ */
+@media (max-width: 1100px) {
+  .dashboard-grid-v2 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  :root {
+    --navbar-total-v2: 120px;
+    --sidebar-v2: 0px;
+  }
+  .dashboard-v2 {
+    margin-left: 0;
+    padding-top: var(--navbar-total-v2);
+    justify-content: center;
+    align-items: flex-start;
+  }
+  .dashboard-grid-v2 {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  .card-v2 {
+    width: 100%;
+    max-width: 360px;
+    margin: 0 auto;
+    height: 200px;
+  }
+}
+
+/* ============================
+   Utility
+   ============================ */
+html, body {
+  height: 100%;
+  overflow: hidden;
+  margin: 0;
+}
+

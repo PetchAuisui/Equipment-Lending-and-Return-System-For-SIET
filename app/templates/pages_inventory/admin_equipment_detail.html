@@ -41,19 +41,7 @@
           <div class="label">วันที่ซื้อ:</div> <div>{{ item.buy_date or '-' }}</div>
 
           <div class="label">สถานะ:</div>
-          <div>
-            {% if item.status == "available" %}
-              <span class="badge badge--available">พร้อมใช้งาน</span>
-            {% elif item.status == "in_use" %}
-              <span class="badge badge--inuse">กำลังใช้งาน</span>
-            {% elif item.status == "broken" %}
-              <span class="badge badge--broken">ชำรุด</span>
-            {% elif item.status == "lost" %}
-              <span class="badge badge--lost">สูญหาย</span>
-            {% else %}
-              <span class="badge badge--default">{{ item.status or '-' }}</span>
-            {% endif %}
-          </div>
+          <div class="status-badge">{{ item.status or '-' }}</div>
 
           <!-- ✅ การอนุมัติจากอาจารย์ (ข้อความธรรมดา ไม่มีสีพื้น) -->
           <div style="font-weight:600;">การอนุมัติจากอาจารย์:</div>
