@@ -43,7 +43,6 @@ def lend():
     codes = [c.strip() for c in codes_raw.split(",") if c.strip()]
 
     # ✅ ดึงข้อมูลวิชาและอาจารย์จาก service
-    subjects = lend_service.get_all_subjects()
     teachers_data = lend_service.get_all_users()
     teachers = teachers_data["teachers"]
 
@@ -70,7 +69,6 @@ def lend():
         name=name,
         image=image,
         codes=codes,
-        subjects=subjects,
         teachers=teachers,
         confirm=confirm_status,
         now_bangkok=now_bangkok  # <-- ส่งเวลา Bangkok ไป template
