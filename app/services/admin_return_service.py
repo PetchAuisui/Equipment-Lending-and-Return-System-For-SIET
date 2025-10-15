@@ -1,5 +1,7 @@
 from datetime import datetime
+from flask_login import current_user
 from app.repositories.admin_return_repository import AdminReturnRepository
+from app.db.models import Equipment
 
 class AdminReturnService:
     """Business Logic สำหรับการคืนอุปกรณ์"""
@@ -8,7 +10,7 @@ class AdminReturnService:
         self.repo = AdminReturnRepository()
 
     def list_pending_returns(self):
-        """ดึงข้อมูลอุปกรณ์ที่รอคืน (status_id = 3)"""
+        """แสดงอุปกรณ์ที่รอคืน"""
         rent_list = self.repo.get_pending_returns(status_id=3)
         data = []
         for r in rent_list:
@@ -25,13 +27,63 @@ class AdminReturnService:
         return data
 
     def confirm_return(self, rent_id):
-        """อัปเดตสถานะการคืน"""
+        """อัปเดตสถานะคืน + ผู้ตรวจสอบ + เปลี่ยนอุปกรณ์เป็น available"""
         rent = self.repo.get_by_id(rent_id)
         if not rent:
+            self.repo.close()
             return {"status": "error", "message": "ไม่พบข้อมูลการยืมนี้"}
 
-        rent.status_id = 4  # สมมติว่า 4 = คืนแล้ว
+        # ✅ ตรวจสอบอุปกรณ์
+        equipment = rent.equipment
+        if not equipment:
+            equipment = self.repo.db.query(Equipment).get(rent.equipment_id)
+
+        if not equipment:
+            self.repo.close()
+            return {"status": "error", "message": "ไม่พบข้อมูลอุปกรณ์ในรายการนี้"}
+
+        # ✅ อัปเดตสถานะใน rent_returns
+        rent.status_id = 4  # คืนแล้ว
         rent.return_date = datetime.utcnow()
-        self.repo.update()
+
+        # ✅ บันทึกผู้ตรวจสอบ
+        rent.check_by = getattr(current_user, "user_id", getattr(current_user, "id", None))
+
+        # ✅ อัปเดตสถานะอุปกรณ์
+        equipment.status = "available"
+
+        print(f"🟢 DEBUG | RentID: {rent_id} | CheckBy: {rent.check_by} | Equipment: {equipment.name} -> {equipment.status}")
+
+        # ✅ commit จริงใน session เดียวกัน
+        self.repo.commit()
         self.repo.close()
-        return {"status": "success", "message": f"คืนอุปกรณ์หมายเลข {rent_id} เรียบร้อยแล้ว"}
+
+        return {"status": "success", "message": f"คืนอุปกรณ์ {equipment.name} สำเร็จ ✅"}
+
+    def get_return_detail(self, rent_id: int):
+        """ดึงรายละเอียดรายการเดียว"""
+        r = self.repo.get_detail(rent_id)
+        if not r:
+            self.repo.close()
+            return None
+
+        data = {
+            "rent_id": r.rent_id,
+            "equipment_id": r.equipment_id,
+            "equipment_code": r.equipment.code,
+            "equipment_name": r.equipment.name,
+            "brand": r.equipment.brand,
+            "buy_date": (r.equipment.buy_date.strftime("%d/%m/%Y") if r.equipment.buy_date else "-"),
+            "start_date": r.start_date.strftime("%d/%m/%Y") if r.start_date else "-",
+            "due_date": r.due_date.strftime("%d/%m/%Y") if r.due_date else "-",
+            "return_date": r.return_date.strftime("%d/%m/%Y") if r.return_date else "-",
+            "user_id": r.user.user_id,
+            "user_code": r.user.student_id or r.user.employee_id or "-",
+            "user_name": r.user.name,
+            "phone": r.user.phone or "-",
+            "status_id": r.status_id,
+            "image": (r.equipment.equipment_images[0].image_path
+                      if getattr(r.equipment, "equipment_images", []) else None),
+        }
+        self.repo.close()
+        return data
