@@ -83,42 +83,23 @@ from app.repositories.lend_repository import insert_rent_record  # ✅ ใช้
 @inventory_bp.route("/lend_submit", methods=["POST"])
 def lend_submit():
     """
-    ✅ รับข้อมูลจากฟอร์ม /lend แล้วส่งไปบันทึก DB
+    ✅ รับข้อมูลจากฟอร์ม /lend แล้วส่งต่อให้ service จัดการทั้งหมด
     """
-    form = request.form
+    from app.services.lend_service import lend_data_service
 
-    # เก็บข้อมูลจากฟอร์มเป็น dict
+    form = request.form
     data = {
-        "device_name": form.get("device_name") or None,
-        "code": form.get("code") or None,
-        "borrow_date": form.get("borrow_date") or None,
-        "return_date": form.get("return_date") or None,
-        "borrower_name": form.get("borrower_name") or None,
-        "phone": form.get("phone") or None,
-        "subject_id": form.get("subject") or None,
+        "code": form.get("code"),                 # รหัสอุปกรณ์
+        "borrow_date": form.get("borrow_date"),   # วันยืม
+        "return_date": form.get("return_date"),   # วันคืน
+        "borrower_id": session.get("user_id") or None,  # คนยืม
         "teacher_confirmed": form.get("teacher") or None,
-        "reason": form.get("reason") or None,
-        "status_id": 1,  # ตัวอย่าง status_id เริ่มต้น
-        "start_date": form.get("borrow_date") or None
+        "reason": form.get("reason"),
     }
 
-    try:
-        # ✅ เรียกฟังก์ชัน insert_rent_record (รวม retry ภายในแล้ว)
-        result = insert_rent_record(data)
+    # ✅ ส่ง data ให้ service จัดการ (รวม flash และ redirect)
+    return lend_data_service(data)
 
-        if result.get("status") == "success":
-            flash("✅ บันทึกการยืมสำเร็จ", "success")
-        else:
-            flash("❌ ล้มเหลวหลังจาก retry 3 ครั้ง กรุณาลองใหม่", "danger")
-
-    except ValueError as ve:
-        flash(f"❌ {ve}", "warning")
-    except Exception as e:
-        flash("❌ เกิดข้อผิดพลาดของระบบ กรุณาลองใหม่อีกครั้ง", "danger")
-        current_app.logger.error(f"lend_submit error: {e}")
-
-    # ส่งกลับไปหน้า track
-    return redirect(url_for("tracking.track_index"))
 
 # ------------------------------------------------------------
 # 2️⃣ ส่วนของแอดมิน - แสดง/เพิ่ม/แก้ไข/ลบ อุปกรณ์
