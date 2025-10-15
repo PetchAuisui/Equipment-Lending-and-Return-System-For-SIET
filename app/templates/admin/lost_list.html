@@ -1,0 +1,104 @@
+{% extends 'base/base_admin.html' %}
+{% block title %}รายการอุปกรณ์สูญหาย/ชำรุด{% endblock %}
+{% block content %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/home_admin.css') }}">
+
+<div style="padding:40px 24px; display:flex; justify-content:center;">
+  <div style="width:95%; max-width:1100px; margin:0 auto; position:relative; left:50%; transform:translateX(-50%);">
+    <h2 style="text-align:center; margin-bottom:18px;">รายการแจ้งสูญหาย/ชำรุด</h2>
+
+    <style>
+      .admin-lost-table{ width:100%; border-collapse:separate; border-spacing:0; box-shadow:0 6px 20px rgba(10,20,40,0.04); border-radius:8px; overflow:hidden; }
+      .admin-lost-table th{ background:#fff; padding:12px 10px; font-weight:800; text-align:left; border-bottom:1px solid #f0f0f0; }
+      .admin-lost-table td{ padding:12px 10px; vertical-align:middle; border-bottom:1px solid #f7f7f7; }
+      .admin-lost-table tr:nth-child(even) td{ background:#fff; }
+      .admin-lost-table tr:nth-child(odd) td{ background:#fbfbfb; }
+      .admin-lost-table a.detail-link{ color:#6a3ea8; text-decoration:underline; }
+      .badge-small{ display:inline-block; padding:6px 10px; border-radius:8px; font-weight:700; color:#fff; }
+    </style>
+
+      <style>
+      /* Card wrapper */
+      .lost-table-card{ background:#fff; padding:20px; border-radius:12px; box-shadow:0 12px 30px rgba(10,20,40,0.06); }
+
+      /* Table */
+      .admin-lost-table{ width:100%; border-collapse:collapse; font-size:14px; color:#111; }
+      .admin-lost-table thead th{ background:#fafafa; padding:14px 12px; font-weight:800; text-align:left; border-bottom:2px solid #f0f0f0; }
+      .admin-lost-table tbody td{ padding:12px 12px; vertical-align:middle; border-bottom:1px solid #f4f4f6; }
+
+      /* Column widths and align */
+      .col-no{ width:48px; text-align:center; }
+      .col-id{ width:64px; text-align:center; }
+      .col-rent{ width:88px; text-align:center; }
+      .col-equip{ width:220px; }
+      .col-detail{ width:320px; }
+      .col-type{ width:120px; }
+      .col-status{ width:140px; text-align:center; }
+      .col-action{ width:120px; text-align:center; }
+
+      /* Zebra subtle */
+      .admin-lost-table tbody tr:nth-child(odd){ background:#fff; }
+      .admin-lost-table tbody tr:nth-child(even){ background:#fbfbfd; }
+
+      .badge-small{ display:inline-block; padding:6px 10px; border-radius:8px; font-weight:700; color:#fff; font-size:13px; }
+
+      .equip-name{ font-weight:700; color:#111; }
+      .detail-text{ color:#333; }
+      </style>
+
+  <div class="lost-table-card">
+  <table class="table admin-lost-table">
+    <thead>
+      <tr>
+          <th class="col-no">#</th>
+          <th class="col-id">ID</th>
+          <th class="col-rent">รหัสเช่า</th>
+          <th class="col-equip">ชื่ออุปกรณ์</th>
+          <th class="col-detail">รายละเอียดเพิ่มเติม</th>
+          <th class="col-type">ประเภท</th>
+          <th class="col-status">สถานะ</th>
+          <th class="col-action">การจัดการ</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% if items %}
+        {% for it in items %}
+        <tr>
+          <td style="padding:8px;">{{ loop.index }}</td>
+          <td style="padding:8px;">{{ it.item_broke_id }}</td>
+          <td style="padding:8px;">{{ it.rent_id }}</td>
+            <td class="col-equip"><span class="equip-name">{{ it.equipment_name if it.equipment_name else '-' }}</span></td>
+            <td class="col-detail"><span class="detail-text">{% if it.detail %}{{ it.detail[:120] }}{% if it.detail|length > 120 %}...{% endif %}{% else %}-{% endif %}</span></td>
+          <td style="padding:8px;">
+            {% set t = it.type or '' %}
+            {% if t.lower() in ['lost','สูญหาย'] %}
+              <span style="color:#d9534f;font-weight:700;">สูญหาย</span>
+            {% elif t.lower() in ['damaged','เสียหาย'] %}
+              <span style="color:#d9534f;font-weight:700;">เสียหาย</span>
+            {% else %}
+              {{ it.type }}
+            {% endif %}
+          </td>
+          <td style="padding:8px;">
+            {% if it.status == 'pending' %}
+              <span class="badge-small" style="background:#f0ad4e;">รอดำเนินการ</span>
+            {% elif it.status == 'ส่งซ่อม' %}
+              <span class="badge-small" style="background:#f0ad4e;">ส่งซ่อม</span>
+            {% elif it.status == 'พร้อมใช้งาน' %}
+              <span class="badge-small" style="background:#28a745;">พร้อมใช้งาน</span>
+            {% else %}
+              <span>{{ it.status }}</span>
+            {% endif %}
+          </td>
+          <td class="col-action" style="padding:8px;"><a class="btn yellow" href="{{ url_for('admin.lost_report_detail', item_id=it.item_broke_id) }}">รายละเอียด</a></td>
+        </tr>
+        {% endfor %}
+      {% else %}
+        <tr><td colspan="8" style="padding:16px; text-align:center;">ไม่มีรายการ</td></tr>
+      {% endif %}
+    </tbody>
+  </table>
+  </div>
+</div>
+
+{% endblock %}
