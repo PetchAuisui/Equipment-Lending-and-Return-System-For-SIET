@@ -25,15 +25,11 @@ def create_app():
     from .blueprints.auth import auth_bp
     from .blueprints.inventory import inventory_bp
     from .blueprints.tracking import tracking_bp
-<<<<<<< HEAD
     from app.blueprints.admin.routes import admin_bp, admin_users_bp, admin_history_bp                  # root: "/"
     from app.blueprints.pages.routes import pages_bp
-    from app.blueprints.history.routes import history_bp
-=======
-    from .blueprints.admin import admin_users_bp
-    from .blueprints.admin import admin_bp                     # root: "/"
+    from app.blueprints.history.routes import history_bp                 # root: "/"
     from .blueprints.notifications import notifications_bp
->>>>>>> function/overdue-alert-4
+
 
     app.register_blueprint(pages_bp)
     app.register_blueprint(auth_bp, url_prefix="/auth")
@@ -41,15 +37,10 @@ def create_app():
     app.register_blueprint(tracking_bp, url_prefix="/track-status")
     app.register_blueprint(admin_users_bp)
     app.register_blueprint(admin_bp)
-<<<<<<< HEAD
     app.register_blueprint(history_bp)
     app.register_blueprint(admin_history_bp)
-=======
     app.register_blueprint(notifications_bp)
 
     # ===== 🔔 เริ่ม Scheduler สำหรับแจ้งเตือน =====
     start_notification_scheduler(app)
-
-    
->>>>>>> function/overdue-alert-4
     return app

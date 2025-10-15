@@ -41,18 +41,45 @@
   background: #fff;
   border-radius: 12px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  overflow: hidden;
   z-index: 9999;
   padding: 12px;
+  overflow: hidden; /* ✅ ป้องกัน scroll ทั้ง navbar */
 }
 
-#notifDropdown .card-header {
+/* ===== 🧾 รายการภายใน (จำกัดการเลื่อนเฉพาะตรงนี้) ===== */
+#notifList {
+  max-height: 400px;        /* ความสูงสูงสุดของรายการ */
+  overflow-y: auto;          /* ✅ scroll ได้เฉพาะภายใน */
+  padding-right: 4px;        /* เผื่อพื้นที่ scrollbar */
+  scrollbar-width: thin;
+  scrollbar-color: #ccc transparent;
+}
+
+/* Scrollbar สำหรับ Chrome / Edge */
+#notifList::-webkit-scrollbar {
+  width: 6px;
+}
+#notifList::-webkit-scrollbar-thumb {
+  background-color: #ccc;
+  border-radius: 4px;
+}
+#notifList::-webkit-scrollbar-thumb:hover {
+  background-color: #999;
+}
+
+/* ===== ส่วนหัวของ dropdown ===== */
+#notifDropdown {
+  display: none;
+  position: fixed;          /* ✅ จาก absolute → fixed */
+  right: 20px;              /* ปรับระยะจากขวาตามตำแหน่งกระดิ่งจริง */
+  top: 115px;                /* ✅ ให้อยู่ใต้ navbar (ลองปรับตามความสูง navbar ของคุณ) */
+  width: 340px;
   background: #fff;
-  font-weight: 600;
-  color: #333;
-  font-size: 0.95rem;
-  border-bottom: 1px solid #eee;
-  padding-bottom: 8px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  z-index: 9999;
+  padding: 12px;
+  overflow: hidden;
 }
 
 /* ===== 🧾 การ์ดแจ้งเตือน ===== */
@@ -109,4 +136,10 @@
   color: #999;
   padding: 16px 0;
   font-size: 0.85rem;
+}
+
+/* ===== ✅ ป้องกัน dropdown ดัน navbar ===== */
+.navbar_light {
+  position: relative;
+  overflow: visible;
 }
