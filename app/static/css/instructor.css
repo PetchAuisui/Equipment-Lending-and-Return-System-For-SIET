@@ -235,3 +235,19 @@ body.instructor-page .navbar_menu {
   background: #eaf3ff;
   border-color: #88b6ff;
 }
+/* ปุ่มเล็กๆ ในตาราง Pending */
+.btn-detail.btn-sm {
+  background-color: #f4f4f4;
+  color: #333;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  padding: 4px 10px;
+  font-size: 13px;
+  transition: all 0.2s ease-in-out;
+}
+
+.btn-detail.btn-sm:hover {
+  background-color: #e6e6e6;
+  border-color: #bbb;
+  color: #000;
+}

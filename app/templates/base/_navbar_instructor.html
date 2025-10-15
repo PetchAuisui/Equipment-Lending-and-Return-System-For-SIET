@@ -2,10 +2,10 @@
 <nav class="instructor-menu">
   <a href="{{ url_for('instructor.pending') }}"
      class="{% if request.path.startswith('/instructor/pending') %}active{% endif %}">
-     Asking for permission
+    Request history
   </a>
-  <a href="{{ url_for('instructor.requests_cards') }}"
+  <a href="{{ url_for('instructor.requests') }}"
      class="{% if request.path.startswith('/instructor/requests') %}active{% endif %}">
-     Requests
+    Requests
   </a>
 </nav>

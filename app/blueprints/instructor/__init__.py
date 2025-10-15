@@ -1,2 +1,4 @@
-from .instructor import bp as instructor_bp
-__all__ = ["instructor_bp"]
+# keep package lightweight & compatible with new layout
+from .routes import bp  # expose blueprint
+
+__all__ = ["bp"]
