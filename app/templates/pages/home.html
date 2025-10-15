@@ -104,6 +104,39 @@
       {% endif %}
     </section>
 
+    {# Recent lost reports: show image, name, time, and contact phone (informational only) #}
+    <section class="section-block">
+      <div class="section-header">
+        <h2>แจ้งอุปกรณ์สูญหายล่าสุด</h2>
+        <span class="muted">หากพบเจอโปรดติดต่อเจ้าหน้าที่ 012-000-0000</span>
+      </div>
+
+      {% if recent_lost and recent_lost|length > 0 %}
+        <div class="grid-cards">
+          {% for it in recent_lost %}
+            <div class="equip-card">
+              <div class="equip-thumb">
+                <img src="{{ url_for('static', filename=it.image_path) }}" alt="{{ it.equipment_name }}">
+              </div>
+
+              <div class="equip-card__head">
+                <div class="equip-card__title">{{ it.equipment_name }}</div>
+              </div>
+
+              <div class="equip-card__meta">
+                <div class="muted">{{ it.created_at.strftime('%d/%m/%Y %H:%M') if it.created_at else '-' }}</div>
+                {% if it.contact_phone %}
+                  <div class="muted">ติดต่อ: {{ it.contact_phone }}</div>
+                {% endif %}
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <p class="muted">ไม่มีรายการแจ้งสูญหายล่าสุด</p>
+      {% endif %}
+    </section>
+
     <section class="section-block">
       <div class="section-header">
         <h2>อุปกรณ์ที่ยังไม่คืน</h2>
