@@ -1,4 +1,5 @@
-import json, os
+import json
+import os
 from typing import List, Dict
 
 class BaseJsonRepository:

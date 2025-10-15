@@ -2,7 +2,7 @@
 
 from sqlalchemy.orm import joinedload
 from app.db.db import SessionLocal
-from app.db.models import RentReturn, Equipment, StatusRent
+from app.db.models import RentReturn, Equipment
 from datetime import datetime
 
 class UserReturnRepository:

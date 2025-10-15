@@ -1,6 +1,6 @@
 from sqlalchemy.orm import joinedload
-from app.db.db import SessionLocal, Base, engine
-from app.db.models import RentReturn, Equipment, EquipmentImage, StatusRent, User, Renewal
+from app.db.db import SessionLocal
+from app.db.models import RentReturn, Equipment
 class TrackStatusRepository:
     def __init__(self):
         self.db = SessionLocal()

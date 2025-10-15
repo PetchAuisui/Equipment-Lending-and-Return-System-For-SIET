@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Optional, Dict
+from typing import Dict
 from datetime import datetime
 
 @dataclass
@@ -18,13 +18,6 @@ class LoginDTO:
             password=(raw.get("password") or "").strip(),
         )
     
-@dataclass
-class TopBorrowedDTO:
-    equipment_id: int
-    name: str
-    code: str
-    borrow_count: int
-
 @dataclass
 class OutstandingDTO:
     rent_id: int

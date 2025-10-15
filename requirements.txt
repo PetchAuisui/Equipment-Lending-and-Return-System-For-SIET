@@ -1,0 +1,10 @@
+flask
+sqlalchemy
+werkzeug
+# ถ้าใช้ Postgres:
+psycopg2-binary
+# optional:
+python-dotenv
+gunicorn
+apscheduler
+flask-login

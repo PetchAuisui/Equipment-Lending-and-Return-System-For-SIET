@@ -1,21 +1,13 @@
-from flask import render_template, request, redirect, url_for, current_app, flash, abort, session
+from flask import render_template, request, redirect, url_for, flash, abort, session
 from app.blueprints.inventory import inventory_bp
 from app.services.lend_device_service import get_grouped_equipments_separated
 from app.services import lend_service
 from app.db.db import SessionLocal
-from app.models.equipment import Equipment
-from app.db.models import EquipmentImage
-from sqlalchemy.orm import joinedload
-from sqlalchemy.exc import IntegrityError
-from werkzeug.utils import secure_filename
 from datetime import datetime
 from zoneinfo import ZoneInfo  # Python 3.9+
-from sqlalchemy.sql import exists, and_
-from app.models.stock_movements import StockMovement
-import os, uuid
 from app.utils.decorators import staff_required
 from app.services.equipment_service import EquipmentService
-
+from app.db.models import Equipment
 
 # ===== Helper Factory =====
 def _equip_svc():
@@ -77,8 +69,6 @@ def lend():
     )
 
 
-from flask import flash, redirect, url_for, current_app
-from app.repositories.lend_repository import insert_rent_record  # ✅ ใช้ชื่อฟังก์ชันจริง
 
 @inventory_bp.route("/lend_submit", methods=["POST"])
 def lend_submit():

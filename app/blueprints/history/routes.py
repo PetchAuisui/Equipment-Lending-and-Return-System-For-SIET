@@ -1,7 +1,5 @@
 from __future__ import annotations
-from functools import wraps
 from flask import render_template, session, redirect, url_for, current_app
-from sqlalchemy import text
 
 from . import history_bp
 from app.db.db import SessionLocal

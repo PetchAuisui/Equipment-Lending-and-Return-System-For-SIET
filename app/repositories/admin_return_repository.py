@@ -1,5 +1,5 @@
 from app.db.db import SessionLocal
-from app.db.models import RentReturn, Equipment, EquipmentImage, User, StatusRent
+from app.db.models import RentReturn, Equipment
 from sqlalchemy.orm import joinedload
 
 class AdminReturnRepository:
