@@ -2,7 +2,7 @@
 from app.repositories import lend_repository
 from app.db.db import SessionLocal
 from app.db.models import Equipment, User
-from datetime import datetime
+from datetime import datetime,time
 from zoneinfo import ZoneInfo  # Python 3.9+
 from flask import flash, redirect, url_for, current_app
 from app.repositories.lend_repository import insert_rent_record
@@ -46,12 +46,15 @@ def lend_data_service(data):
         else:
             status_id = 1 if equipment.confirm == 1 else 2
 
+        return_date = datetime.strptime(data["return_date"], "%Y-%m-%d")
+        due_date = datetime.combine(return_date.date(), time(18, 0, 0))
+
         # ✅ เตรียมข้อมูลสำหรับบันทึก
         rent_data = {
             "equipment_id": equipment.equipment_id,
             "user_id": user.user_id,
             "start_date": now_bkk,
-            "due_date": datetime.strptime(data["return_date"], "%Y-%m-%d"),
+            "due_date": due_date,
             "teacher_confirmed": data.get("teacher_confirmed"),
             "reason": data.get("reason"),
             "status_id": status_id,
