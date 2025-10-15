@@ -4,8 +4,9 @@ from app.repositories.trackstatus_repository import TrackStatusRepository
 
 ACTIVE_STATUSES = {
     # สถานะที่ยังอยู่ระหว่างยืมหรือกระบวนการ
-    "pending", "approved",
+    "pending", "approved", "returned",
     "pending extend time", "approved extend time", "cancel extend time",
+    "lost", 
     "borrowing", "in progress",
 }
 
